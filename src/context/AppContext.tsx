@@ -16,7 +16,7 @@ import {
   AppNotification,
   LoggedExercise
 } from '../types';
-import { SupabaseService } from '../services/supabaseService';
+import { SupabaseService, type SupabaseWriteResult } from '../services/supabaseService';
 import { supabase } from '../lib/supabase';
 
 interface SupabaseAuthResult {
@@ -98,11 +98,11 @@ interface AppContextType {
   logWorkoutCompletion: (workoutId: string, loggedData: LoggedExercise[], overallRpe?: number, clientFeedback?: string) => void;
   
   // Check-In Actions
-  submitCheckIn: (checkInData: Omit<CheckIn, 'id' | 'status' | 'submittedAt'>) => CheckIn;
-  reviewCheckIn: (checkInId: string, coachFeedback: string) => void;
+  submitCheckIn: (checkInData: Omit<CheckIn, 'id' | 'status' | 'submittedAt'>) => Promise<SupabaseWriteResult>;
+  reviewCheckIn: (checkInId: string, coachFeedback: string) => Promise<SupabaseWriteResult>;
   
   // Step Actions
-  logDailySteps: (dateStr: string, stepCount: number, notes?: string) => void;
+  logDailySteps: (dateStr: string, stepCount: number, notes?: string) => Promise<SupabaseWriteResult>;
   
   // Nutrition Actions
   addFood: (food: Omit<Food, 'id' | 'createdAt'>) => Food;
@@ -112,7 +112,7 @@ interface AppContextType {
   deleteFoodLogItem: (id: string) => void;
   
   // Messaging Actions
-  sendMessage: (conversationId: string, content: string) => void;
+  sendMessage: (recipientId: string, content: string) => Promise<{ success: boolean; error?: string }>;
   markConversationRead: (conversationId: string) => void;
   
   // Notification Actions
@@ -382,6 +382,7 @@ export const AppProvider: React.FC<{
           id: `msg-${Date.now()}`,
           conversationId: convId,
           senderId: coachUser.id,
+          recipientId: targetUser.id,
           senderName: coachUser.fullName,
           senderRole: 'coach',
           content: `Welcome to the team ${targetUser.fullName}! I've been assigned as your primary coach. Take a look at your dashboard and let me know if you have any questions before we get started.`,
@@ -493,7 +494,7 @@ export const AppProvider: React.FC<{
         title: 'New Training Program Assigned',
         message: `Coach ${currentUser.fullName} assigned "${prog.name}" starting ${startDateStr}.`,
         type: 'workout_assigned',
-        linkTarget: { view: 'workouts' },
+        linkTarget: { view: 'calendar' },
         isRead: false,
         createdAt: new Date().toISOString()
       },
@@ -524,7 +525,7 @@ export const AppProvider: React.FC<{
           completedAt: new Date().toISOString(),
           overallRpe: overallRpe || 8,
           clientFeedback,
-          exercises: loggedData
+          loggedData
         };
       }
       return w;
@@ -539,7 +540,7 @@ export const AppProvider: React.FC<{
           title: 'Workout Completed',
           message: `${currentUser.fullName} completed "${workout.title}".`,
           type: 'workout_completed',
-          linkTarget: { view: 'workouts' },
+          linkTarget: { view: 'calendar' },
           isRead: false,
           createdAt: new Date().toISOString()
         },
@@ -548,16 +549,17 @@ export const AppProvider: React.FC<{
     }
   };
 
-  const submitCheckIn = (checkInData: Omit<CheckIn, 'id' | 'status' | 'submittedAt'>): CheckIn => {
+  const submitCheckIn = async (checkInData: Omit<CheckIn, 'id' | 'status' | 'submittedAt'>): Promise<SupabaseWriteResult> => {
     const newCheckIn: CheckIn = {
       ...checkInData,
-      id: `chk-${Date.now()}`,
+      id: crypto.randomUUID(),
       status: 'submitted',
       submittedAt: new Date().toISOString()
     };
 
+    const saveResult = await SupabaseService.saveCheckIn(newCheckIn);
+    if (!saveResult.success) return saveResult;
     setCheckIns(prev => [newCheckIn, ...prev]);
-    SupabaseService.saveCheckIn(newCheckIn);
 
     if (checkInData.weightKg) {
       setAllProfiles(prev => prev.map(p => (p.id === currentUser.id ? { ...p, currentWeightKg: checkInData.weightKg } : p)));
@@ -579,26 +581,22 @@ export const AppProvider: React.FC<{
       ]);
     }
 
-    return newCheckIn;
+    return { success: true };
   };
 
-  const reviewCheckIn = (checkInId: string, coachFeedback: string) => {
-    let updatedChk: CheckIn | undefined;
-    setCheckIns(prev => prev.map(c => {
-      if (c.id === checkInId) {
-        updatedChk = {
-          ...c,
-          status: 'reviewed',
-          coachFeedback,
-          reviewedAt: new Date().toISOString()
-        };
-        return updatedChk;
-      }
-      return c;
-    }));
-
-    if (updatedChk) {
-      SupabaseService.saveCheckIn(updatedChk);
+  const reviewCheckIn = async (checkInId: string, coachFeedback: string): Promise<SupabaseWriteResult> => {
+    const existingCheckIn = checkIns.find(checkIn => checkIn.id === checkInId);
+    if (!existingCheckIn) return { success: false, error: 'Check-in not found.' };
+    const updatedChk: CheckIn = {
+      ...existingCheckIn,
+      status: 'reviewed',
+      coachFeedback,
+      reviewedAt: new Date().toISOString()
+    };
+    const saveResult = await SupabaseService.saveCheckIn(updatedChk);
+    if (!saveResult.success) return saveResult;
+    setCheckIns(prev => prev.map(checkIn => checkIn.id === checkInId ? updatedChk : checkIn));
+    {
       setNotifications(prev => [
         {
           id: `notif-rev-${Date.now()}`,
@@ -613,26 +611,30 @@ export const AppProvider: React.FC<{
         ...prev
       ]);
     }
+    return { success: true };
   };
 
-  const logDailySteps = (dateStr: string, stepCount: number, notes?: string) => {
+  const logDailySteps = async (dateStr: string, stepCount: number, notes?: string): Promise<SupabaseWriteResult> => {
     const existing = stepRecords.find(s => s.clientId === currentUser.id && s.logDate === dateStr);
     let recordToSave: StepRecord;
     if (existing) {
       recordToSave = { ...existing, stepCount, notes, loggedAt: new Date().toISOString() };
-      setStepRecords(prev => prev.map(s => (s.id === existing.id ? recordToSave : s)));
     } else {
       recordToSave = {
-        id: `step-${Date.now()}`,
+        id: crypto.randomUUID(),
         clientId: currentUser.id,
         logDate: dateStr,
         stepCount,
         notes,
         loggedAt: new Date().toISOString()
       };
-      setStepRecords(prev => [recordToSave, ...prev]);
     }
-    SupabaseService.saveStepRecord(recordToSave);
+    const saveResult = await SupabaseService.saveStepRecord(recordToSave);
+    if (!saveResult.success) return saveResult;
+    setStepRecords(prev => existing
+      ? prev.map(record => record.id === existing.id ? recordToSave : record)
+      : [recordToSave, ...prev]);
+    return { success: true };
   };
 
   const addFood = (food: Omit<Food, 'id' | 'createdAt'>): Food => {
@@ -678,11 +680,18 @@ export const AppProvider: React.FC<{
     setFoodLogs(prev => prev.filter(f => f.id !== id));
   };
 
-  const sendMessage = (conversationId: string, content: string) => {
+  const sendMessage = async (recipientId: string, content: string): Promise<{ success: boolean; error?: string }> => {
+    const thread = conversations.find(conversation =>
+      (conversation.coachId === currentUser.id && conversation.clientId === recipientId)
+      || (conversation.clientId === currentUser.id && conversation.coachId === recipientId)
+    );
+    if (!thread) return { success: false, error: 'There is no active conversation with this user.' };
+
     const newMsg: Message = {
-      id: `msg-${Date.now()}`,
-      conversationId,
+      id: crypto.randomUUID(),
+      conversationId: thread.id,
       senderId: currentUser.id,
+      recipientId,
       senderName: currentUser.fullName,
       senderRole: currentUser.role,
       content,
@@ -690,11 +699,12 @@ export const AppProvider: React.FC<{
       createdAt: new Date().toISOString()
     };
 
+    const saved = await SupabaseService.saveMessage(newMsg);
+    if (!saved.success) return { success: false, error: saved.error || 'Message was not saved to Supabase.' };
     setMessages(prev => [...prev, newMsg]);
-    SupabaseService.saveMessage(newMsg);
 
     setConversations(prev => prev.map(c => {
-      if (c.id === conversationId) {
+      if (c.id === thread.id) {
         const isCoach = currentUser.role === 'coach';
         return {
           ...c,
@@ -706,6 +716,7 @@ export const AppProvider: React.FC<{
       }
       return c;
     }));
+    return { success: true };
   };
 
   const markConversationRead = (conversationId: string) => {

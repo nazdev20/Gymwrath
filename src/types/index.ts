@@ -252,6 +252,7 @@ export interface Message {
   id: string;
   conversationId: string;
   senderId: string;
+  recipientId: string;
   senderName: string;
   senderRole: UserRole;
   content: string;
@@ -279,9 +280,9 @@ export interface AppNotification {
   recipientId: string;
   title: string;
   message: string;
-  type: 'checkin_submitted' | 'checkin_reviewed' | 'workout_completed' | 'workout_assigned' | 'new_message' | 'account_pending' | 'step_goal';
+  type: 'checkin_submitted' | 'checkin_reviewed' | 'workout_completed' | 'workout_assigned' | 'new_message' | 'account_pending' | 'account_approved' | 'step_goal';
   linkTarget?: {
-    view: 'dashboard' | 'clients' | 'workouts' | 'checkins' | 'steps' | 'nutrition' | 'messages' | 'admin';
+    view: 'dashboard' | 'clients' | 'calendar' | 'checkins' | 'steps' | 'nutrition' | 'messages' | 'admin';
     entityId?: string;
   };
   isRead: boolean;

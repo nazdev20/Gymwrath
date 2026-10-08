@@ -22,6 +22,8 @@ export const CheckInReviewModal: React.FC = () => {
   } = useApp();
 
   const [feedbackText, setFeedbackText] = useState('');
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   if (!activeCheckInReviewId) return null;
 
@@ -42,12 +44,24 @@ export const CheckInReviewModal: React.FC = () => {
     ? (currentCheckIn.waistCm - prevCheckIn.waistCm).toFixed(1)
     : null;
 
-  const handleSendReview = (e: React.FormEvent) => {
+  const handleSendReview = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!feedbackText.trim()) return;
+    if (!feedbackText.trim() || isSaving) return;
 
-    reviewCheckIn(currentCheckIn.id, feedbackText.trim());
-    setActiveCheckInReviewId(null);
+    setSaveError(null);
+    setIsSaving(true);
+    try {
+      const result = await reviewCheckIn(currentCheckIn.id, feedbackText.trim());
+      if (!result.success) {
+        setSaveError(result.error || 'Review was not saved.');
+        return;
+      }
+      setActiveCheckInReviewId(null);
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : 'Review was not saved.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -177,6 +191,7 @@ export const CheckInReviewModal: React.FC = () => {
 
           {/* Coach Feedback Form */}
           <form onSubmit={handleSendReview} className="space-y-3 border-t border-slate-800 pt-4">
+            {saveError && <p role="alert" className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">{saveError}</p>}
             <div className="flex items-center justify-between">
               <label className="block text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
                 <MessageSquare className="w-4 h-4" /> Coach Feedback & Next Week Instructions
@@ -202,9 +217,10 @@ export const CheckInReviewModal: React.FC = () => {
               </button>
               <button
                 type="submit"
-                className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20"
+                disabled={isSaving}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20 disabled:opacity-60"
               >
-                Submit Feedback & Mark Reviewed
+                {isSaving ? 'Saving…' : 'Submit Feedback & Mark Reviewed'}
               </button>
             </div>
           </form>

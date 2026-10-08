@@ -39,6 +39,11 @@ export interface DatabaseLoadResult {
   fromDatabase: boolean;
 }
 
+export interface SupabaseWriteResult {
+  success: boolean;
+  error?: string;
+}
+
 export const SupabaseService = {
   // Test connection to Supabase instance
   async testConnection(customUrl?: string, customKey?: string): Promise<{ success: boolean; message: string; isDomainError?: boolean }> {
@@ -364,6 +369,7 @@ export const SupabaseService = {
           id: m.id,
           conversationId: m.conversation_id,
           senderId: m.sender_id,
+          recipientId: m.recipient_id,
           senderName: sender?.fullName || 'User',
           senderRole: sender?.role || 'coach',
           content: m.content,
@@ -435,27 +441,36 @@ export const SupabaseService = {
   },
 
   // Insert or Upsert a message
-  async saveMessage(msg: Message): Promise<boolean> {
-    if (getSupabaseConfig().isOfflineMode || getSupabaseReachableState() === false) return false;
+  async saveMessage(msg: Message): Promise<SupabaseWriteResult> {
+    if (getSupabaseConfig().isOfflineMode || getSupabaseReachableState() === false) {
+      return { success: false, error: 'Supabase is not configured or is unreachable.' };
+    }
     try {
       const { error } = await supabase.from('messages').insert({
         id: msg.id,
         conversation_id: msg.conversationId,
         sender_id: msg.senderId,
-        recipient_id: msg.senderId,
+        recipient_id: msg.recipientId,
         content: msg.content,
         is_read: msg.isRead,
         created_at: msg.createdAt
       });
-      return !error;
-    } catch {
-      return false;
+      if (error) {
+        console.error('Failed to save message to Supabase:', error);
+        return { success: false, error: error.message };
+      }
+      return { success: true };
+    } catch (error) {
+      console.error('Failed to save message to Supabase:', error);
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown Supabase error.' };
     }
   },
 
   // Insert or Upsert a check-in
-  async saveCheckIn(chk: CheckIn): Promise<boolean> {
-    if (getSupabaseConfig().isOfflineMode || getSupabaseReachableState() === false) return false;
+  async saveCheckIn(chk: CheckIn): Promise<SupabaseWriteResult> {
+    if (getSupabaseConfig().isOfflineMode || getSupabaseReachableState() === false) {
+      return { success: false, error: 'Supabase is not configured or is unreachable.' };
+    }
     try {
       const { error } = await supabase.from('check_ins').upsert({
         id: chk.id,
@@ -480,15 +495,22 @@ export const SupabaseService = {
         coach_reviewed_at: chk.reviewedAt,
         updated_at: new Date().toISOString()
       }, { onConflict: 'id' });
-      return !error;
-    } catch {
-      return false;
+      if (error) {
+        console.error('Failed to save check-in to Supabase:', error);
+        return { success: false, error: error.message };
+      }
+      return { success: true };
+    } catch (error) {
+      console.error('Failed to save check-in to Supabase:', error);
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown Supabase error.' };
     }
   },
 
   // Insert or Upsert a step record
-  async saveStepRecord(step: StepRecord): Promise<boolean> {
-    if (getSupabaseConfig().isOfflineMode || getSupabaseReachableState() === false) return false;
+  async saveStepRecord(step: StepRecord): Promise<SupabaseWriteResult> {
+    if (getSupabaseConfig().isOfflineMode || getSupabaseReachableState() === false) {
+      return { success: false, error: 'Supabase is not configured or is unreachable.' };
+    }
     try {
       const { error } = await supabase.from('progress_records').upsert({
         id: step.id,
@@ -498,9 +520,14 @@ export const SupabaseService = {
         step_count: step.stepCount,
         notes: step.notes
       }, { onConflict: 'id' });
-      return !error;
-    } catch {
-      return false;
+      if (error) {
+        console.error('Failed to save step record to Supabase:', error);
+        return { success: false, error: error.message };
+      }
+      return { success: true };
+    } catch (error) {
+      console.error('Failed to save step record to Supabase:', error);
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown Supabase error.' };
     }
   },
 

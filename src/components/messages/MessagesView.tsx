@@ -16,38 +16,45 @@ export const MessagesView: React.FC = () => {
     messages,
     sendMessage,
     selectedClientId,
-    setSelectedClientId
+    setSelectedClientId,
+    getAssignedClients
   } = useApp();
 
   const isClient = currentUser.role === 'client';
-  const assignedCoach = allProfiles.find(p => p.id === currentUser.assignedCoachId) || allProfiles.find(p => p.role === 'coach');
-  const availableClients = allProfiles.filter(p => p.role === 'client');
+  const assignedCoach = allProfiles.find(p => p.id === currentUser.assignedCoachId);
+  const availableClients = getAssignedClients();
 
   // If coach/admin, select active chat partner
   const [activePartnerId, setActivePartnerId] = useState<string>(() => {
-    if (isClient) return assignedCoach?.id || 'user-coach-1';
+    if (isClient) return assignedCoach?.id || '';
     if (selectedClientId) return selectedClientId;
-    return availableClients[0]?.id || 'user-client-1';
+    return availableClients[0]?.id || '';
   });
 
   // Mobile navigation state between client list and active conversation
   const [mobileShowChat, setMobileShowChat] = useState<boolean>(isClient);
 
   const [inputContent, setInputContent] = useState('');
+  const [sendError, setSendError] = useState<string | null>(null);
 
   const activePartner = allProfiles.find(p => p.id === activePartnerId);
 
   // Filter messages between currentUser and activePartner
   const conversation = messages.filter(
-    m => (m.senderId === currentUser.id && m.receiverId === activePartnerId) ||
-         (m.senderId === activePartnerId && m.receiverId === currentUser.id)
+    m => (m.senderId === currentUser.id && m.recipientId === activePartnerId)
+      || (m.senderId === activePartnerId && m.recipientId === currentUser.id)
   ).sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
-  const handleSend = (e: React.FormEvent) => {
+  const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputContent.trim() || !activePartnerId) return;
 
-    sendMessage(activePartnerId, inputContent.trim());
+    setSendError(null);
+    const result = await sendMessage(activePartnerId, inputContent.trim());
+    if (!result.success) {
+      setSendError(result.error || 'Message was not sent.');
+      return;
+    }
     setInputContent('');
   };
 
@@ -92,7 +99,7 @@ export const MessagesView: React.FC = () => {
               {availableClients.map(client => {
                 const isSelected = activePartnerId === client.id;
                 const lastMsg = messages
-                  .filter(m => (m.senderId === client.id && m.receiverId === currentUser.id) || (m.senderId === currentUser.id && m.receiverId === client.id))
+                  .filter(m => (m.senderId === client.id && m.recipientId === currentUser.id) || (m.senderId === currentUser.id && m.recipientId === client.id))
                   .pop();
 
                 return (
@@ -224,6 +231,7 @@ export const MessagesView: React.FC = () => {
 
           {/* Message Input Box */}
           <form onSubmit={handleSend} className="p-2.5 sm:p-3 bg-slate-850 border-t border-slate-800 flex items-center gap-2 shrink-0">
+            {sendError && <p role="alert" className="absolute -translate-y-12 rounded-lg bg-rose-950 px-3 py-2 text-xs text-rose-300">{sendError}</p>}
             <input
               type="text"
               placeholder={`Message ${activePartner?.fullName || 'athlete'}...`}

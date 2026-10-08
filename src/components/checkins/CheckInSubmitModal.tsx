@@ -50,37 +50,55 @@ export const CheckInSubmitModal: React.FC = () => {
       uploadedAt: new Date().toISOString()
     }
   ]);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   if (!isCheckInModalOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSaving) return;
     const parsedWeight = parseFloat(weightKg);
     if (isNaN(parsedWeight) || parsedWeight <= 0) return;
+    if (!currentUser.assignedCoachId) {
+      setSaveError('A coach must be assigned to your account before submitting a check-in.');
+      return;
+    }
 
-    submitCheckIn({
-      clientId: currentUser.id,
-      coachId: currentUser.assignedCoachId || 'user-coach-1',
-      checkInDate: new Date().toISOString().slice(0, 10),
-      weightKg: parsedWeight,
-      waistCm: parseFloat(waistCm) || undefined,
-      chestCm: parseFloat(chestCm) || undefined,
-      armsCm: parseFloat(armsCm) || undefined,
-      hipsCm: parseFloat(hipsCm) || undefined,
-      thighsCm: parseFloat(thighsCm) || undefined,
-      sleepRating,
-      stressRating,
-      energyRating,
-      hungerRating,
-      digestionRating,
-      workoutAdherenceRating: workoutAdherence,
-      nutritionAdherenceRating: nutritionAdherence,
-      clientNotes: clientNotes.trim() || 'Weekly check-in submitted.',
-      questions: questions.trim() || undefined,
-      photos
-    });
-
-    setIsCheckInModalOpen(false);
+    setSaveError(null);
+    setIsSaving(true);
+    try {
+      const result = await submitCheckIn({
+        clientId: currentUser.id,
+        coachId: currentUser.assignedCoachId,
+        checkInDate: new Date().toISOString().slice(0, 10),
+        weightKg: parsedWeight,
+        waistCm: parseFloat(waistCm) || undefined,
+        chestCm: parseFloat(chestCm) || undefined,
+        armsCm: parseFloat(armsCm) || undefined,
+        hipsCm: parseFloat(hipsCm) || undefined,
+        thighsCm: parseFloat(thighsCm) || undefined,
+        sleepRating,
+        stressRating,
+        energyRating,
+        hungerRating,
+        digestionRating,
+        workoutAdherenceRating: workoutAdherence,
+        nutritionAdherenceRating: nutritionAdherence,
+        clientNotes: clientNotes.trim() || 'Weekly check-in submitted.',
+        questions: questions.trim() || undefined,
+        photos
+      });
+      if (!result.success) {
+        setSaveError(result.error || 'Check-in was not saved.');
+        return;
+      }
+      setIsCheckInModalOpen(false);
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : 'Check-in was not saved.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -108,6 +126,7 @@ export const CheckInSubmitModal: React.FC = () => {
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+          {saveError && <p role="alert" className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">{saveError}</p>}
           {/* Section 1: Bodyweight & Tape Measurements */}
           <div className="space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
@@ -337,9 +356,10 @@ export const CheckInSubmitModal: React.FC = () => {
             </button>
             <button
               type="submit"
-              className="flex-1 py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-lg shadow-amber-500/20"
+              disabled={isSaving}
+              className="flex-1 py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-lg shadow-amber-500/20 disabled:opacity-60"
             >
-              Submit Check-In to Coach
+              {isSaving ? 'Saving…' : 'Submit Check-In to Coach'}
             </button>
           </div>
         </form>

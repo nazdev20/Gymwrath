@@ -26,6 +26,8 @@ export const StepsTrackerView: React.FC = () => {
   const [logDate, setLogDate] = useState(new Date().toISOString().slice(0, 10));
   const [stepInput, setStepInput] = useState('10500');
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const clients = allProfiles.filter(p => p.role === 'client');
 
@@ -42,13 +44,25 @@ export const StepsTrackerView: React.FC = () => {
   const complianceRate = totalLogs > 0 ? Math.round((hitGoalCount / totalLogs) * 100) : 0;
   const highestDay = totalLogs > 0 ? Math.max(...clientSteps.map(r => r.stepCount)) : 0;
 
-  const handleSaveStep = (e: React.FormEvent) => {
+  const handleSaveStep = async (e: React.FormEvent) => {
     e.preventDefault();
     const count = parseInt(stepInput, 10);
-    if (!isNaN(count) && count >= 0) {
-      logDailySteps(logDate, count);
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 2500);
+    if (!isNaN(count) && count >= 0 && !isSaving) {
+      setIsSaving(true);
+      setSaveError(null);
+      try {
+        const result = await logDailySteps(logDate, count);
+        if (!result.success) {
+          setSaveError(result.error || 'Step record was not saved.');
+          return;
+        }
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 2500);
+      } catch (error) {
+        setSaveError(error instanceof Error ? error.message : 'Step record was not saved.');
+      } finally {
+        setIsSaving(false);
+      }
     }
   };
 
@@ -156,9 +170,10 @@ export const StepsTrackerView: React.FC = () => {
           <div className="flex items-end">
             <button
               type="submit"
-              className="w-full py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-md"
+              disabled={isSaving}
+              className="w-full py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-md disabled:opacity-60"
             >
-              <Plus className="w-4 h-4" /> Save Step Record
+              <Plus className="w-4 h-4" /> {isSaving ? 'Saving…' : 'Save Step Record'}
             </button>
           </div>
         </form>
@@ -168,6 +183,7 @@ export const StepsTrackerView: React.FC = () => {
             <CheckCircle2 className="w-3.5 h-3.5" /> Step record successfully saved to database!
           </p>
         )}
+        {saveError && <p role="alert" className="mt-3 text-xs text-rose-300">{saveError}</p>}
       </div>
 
       {/* History Grid */}
