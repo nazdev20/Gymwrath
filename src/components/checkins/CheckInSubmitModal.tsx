@@ -85,7 +85,7 @@ export const CheckInSubmitModal: React.FC = () => {
         digestionRating,
         workoutAdherenceRating: workoutAdherence,
         nutritionAdherenceRating: nutritionAdherence,
-        clientNotes: clientNotes.trim() || 'Weekly check-in submitted.',
+        clientNotes: clientNotes.trim() || 'Check-in submitted.',
         questions: questions.trim() || undefined,
         photos
       });
@@ -111,7 +111,7 @@ export const CheckInSubmitModal: React.FC = () => {
               <ClipboardCheck className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-white">Weekly Athlete Check-In</h2>
+              <h2 className="text-base sm:text-lg font-bold text-white">Athlete Check-In</h2>
               <p className="text-xs text-slate-400">Submit weight, body tape measurements, biofeedback & progress photos</p>
             </div>
           </div>
@@ -309,16 +309,29 @@ export const CheckInSubmitModal: React.FC = () => {
           {/* Section 4: Progress Photos */}
           <div className="space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-purple-400"></span> 4. Progress Photos (Front, Side, Back)
+              <span className="w-2 h-2 rounded-full bg-purple-400"></span> 4. Progress Photos
             </h3>
 
             <div className="grid grid-cols-2 min-[480px]:grid-cols-3 gap-3">
               {photos.map(p => (
                 <div key={p.id} className="relative rounded-xl overflow-hidden border border-slate-750 group">
                   <img src={p.url} alt="Progress" className="w-full h-32 object-cover" />
-                  <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-slate-900/80 text-[10px] uppercase font-bold text-white">
-                    {p.photoType}
-                  </span>
+                  <select
+                    aria-label="Progress photo type"
+                    value={p.photoType}
+                    onChange={event => {
+                      const photoType = event.target.value as ProgressPhoto['photoType'];
+                      setPhotos(prev => prev.map(photo =>
+                        photo.id === p.id ? { ...photo, photoType } : photo
+                      ));
+                    }}
+                    className="absolute bottom-1 left-1 rounded bg-slate-900/90 px-1.5 py-0.5 text-[10px] uppercase font-bold text-white"
+                  >
+                    <option value="front">Front</option>
+                    <option value="side">Side</option>
+                    <option value="back">Back</option>
+                    <option value="other">Other</option>
+                  </select>
                 </div>
               ))}
 

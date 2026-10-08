@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Program, ProgramWorkout, WorkoutExercise, PrescribedSet } from '../../types';
+import { Program, ProgramDayOfWeek, ProgramWorkout, WorkoutExercise, PrescribedSet } from '../../types';
 import {
   BookOpen,
   Plus,
@@ -14,6 +14,16 @@ import {
   ArrowRight,
   Clock
 } from 'lucide-react';
+
+const WEEKDAYS: { value: ProgramDayOfWeek; label: string }[] = [
+  { value: 0, label: 'Sunday' },
+  { value: 1, label: 'Monday' },
+  { value: 2, label: 'Tuesday' },
+  { value: 3, label: 'Wednesday' },
+  { value: 4, label: 'Thursday' },
+  { value: 5, label: 'Friday' },
+  { value: 6, label: 'Saturday' }
+];
 
 export const ProgramBuilder: React.FC = () => {
   const {
@@ -67,7 +77,7 @@ export const ProgramBuilder: React.FC = () => {
   const clients = allProfiles.filter(p => p.role === 'client' && p.status === 'active');
 
   const handleAddWorkoutToNewProgram = () => {
-    const nextDay = (newWorkouts.length % 7) + 1;
+    const nextDay = ((newWorkouts.length + 1) % 7) as ProgramDayOfWeek;
     setNewWorkouts(prev => [
       ...prev,
       {
@@ -257,8 +267,8 @@ export const ProgramBuilder: React.FC = () => {
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className="w-6 h-6 rounded-md bg-slate-750 text-slate-300 text-xs font-mono font-bold flex items-center justify-center">
-                            D{pw.dayOfWeek}
+                          <span className="w-6 h-6 rounded-md bg-slate-750 text-slate-300 text-[10px] font-bold flex items-center justify-center">
+                            {WEEKDAYS.find(day => day.value === pw.dayOfWeek)?.label.slice(0, 3)}
                           </span>
                           <h4 className="text-sm font-bold text-white">{pw.title}</h4>
                         </div>
@@ -457,6 +467,23 @@ export const ProgramBuilder: React.FC = () => {
                           }}
                           className="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-emerald-500"
                         />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold uppercase text-slate-400 mb-1">Training Day</label>
+                        <select
+                          value={workout.dayOfWeek}
+                          onChange={event => {
+                            const dayOfWeek = Number(event.target.value) as ProgramDayOfWeek;
+                            setNewWorkouts(prev => prev.map((item, index) =>
+                              index === wIdx ? { ...item, dayOfWeek } : item
+                            ));
+                          }}
+                          className="w-full sm:w-1/2 px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-emerald-500"
+                        >
+                          {WEEKDAYS.map(day => (
+                            <option key={day.value} value={day.value}>{day.label}</option>
+                          ))}
+                        </select>
                       </div>
 
                       {/* Exercises */}

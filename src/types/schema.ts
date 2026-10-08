@@ -12,8 +12,8 @@ export interface DbProfile {
   avatar_url?: string;
   phone?: string;
   date_of_birth?: string;
-  gender?: string;
-  approval_status: 'pending' | 'active' | 'suspended' | 'archived';
+  gender?: 'male' | 'female' | 'other' | 'prefer_not_to_say';
+  approval_status: 'not_applicable' | 'pending' | 'approved' | 'rejected';
   specializations?: string[];
   bio?: string;
   certifications?: string[];
@@ -33,7 +33,7 @@ export interface DbCoachClientAssignment {
   id: string;
   coach_id: string;
   client_id: string;
-  status: 'active' | 'inactive' | 'requested' | 'declined';
+  status: 'pending' | 'active' | 'rejected' | 'inactive' | 'suspended' | 'archived';
   requested_at: string;
   responded_at?: string;
   deactivated_at?: string;
@@ -46,12 +46,12 @@ export interface DbExercise {
   id: string;
   coach_id?: string;
   name: string;
-  description: string;
-  category: string;
-  muscle_groups: string[];
-  equipment: string;
-  instructions: string;
-  difficulty_level: string;
+  description?: string;
+  category: 'strength' | 'cardio' | 'flexibility' | 'balance' | 'plyometric' | 'other' | null;
+  muscle_groups?: string[];
+  equipment?: string;
+  instructions?: string;
+  difficulty_level: 'beginner' | 'intermediate' | 'advanced' | null;
   is_global: boolean;
   created_at: string;
   updated_at: string;
@@ -62,9 +62,9 @@ export interface DbWorkout {
   coach_id: string;
   name: string;
   description?: string;
-  type: string;
-  estimated_duration_min: number;
-  difficulty_level: string;
+  type: 'strength' | 'cardio' | 'flexibility' | 'hiit' | 'mixed' | 'other' | null;
+  estimated_duration_min?: number;
+  difficulty_level: 'beginner' | 'intermediate' | 'advanced' | null;
   created_at: string;
   updated_at: string;
 }
@@ -82,9 +82,9 @@ export interface DbExerciseSetTemplate {
   id: string;
   workout_exercise_id: string;
   set_number: number;
-  target_reps: string;
+  target_reps?: number;
   target_weight?: number;
-  weight_unit: string;
+  weight_unit?: 'kg' | 'lbs';
   target_duration_sec?: number;
   rest_period_sec?: number;
   instructions?: string;
@@ -97,7 +97,7 @@ export interface DbTrainingProgram {
   name: string;
   description?: string;
   duration_weeks: number;
-  difficulty_level: string;
+  difficulty_level: 'beginner' | 'intermediate' | 'advanced' | null;
   created_at: string;
   updated_at: string;
 }
@@ -107,7 +107,7 @@ export interface DbProgramWorkout {
   program_id: string;
   workout_id: string;
   week_number: number;
-  day_of_week: number;
+  day_of_week: 0 | 1 | 2 | 3 | 4 | 5 | 6;
   order_index: number;
   created_at: string;
 }
@@ -118,7 +118,7 @@ export interface DbProgramAssignment {
   client_id: string;
   coach_id: string;
   start_date: string;
-  end_date: string;
+  end_date?: string;
   status: 'active' | 'completed' | 'paused' | 'cancelled';
   created_at: string;
   updated_at: string;
@@ -131,7 +131,7 @@ export interface DbWorkoutAssignment {
   workout_id: string;
   program_assignment_id?: string;
   scheduled_date: string;
-  status: 'scheduled' | 'in_progress' | 'completed' | 'missed';
+  status: 'scheduled' | 'due' | 'completed' | 'missed' | 'skipped';
   notes?: string;
   created_at: string;
   updated_at: string;
@@ -142,8 +142,8 @@ export interface DbWorkoutCompletion {
   assignment_id: string;
   client_id: string;
   completed_at: string;
-  duration_min: number;
-  perceived_difficulty: number;
+  duration_min?: number;
+  perceived_difficulty?: number;
   notes?: string;
   coach_feedback?: string;
   coach_feedback_at?: string;
@@ -155,9 +155,9 @@ export interface DbCompletedExerciseSet {
   completion_id: string;
   exercise_id: string;
   set_number: number;
-  actual_reps: number;
-  actual_weight: number;
-  weight_unit: string;
+  actual_reps?: number;
+  actual_weight?: number;
+  weight_unit?: 'kg' | 'lbs';
   actual_duration_sec?: number;
   completed: boolean;
   notes?: string;
@@ -212,7 +212,7 @@ export interface DbNutritionPlanAssignment {
   coach_id: string;
   start_date: string;
   end_date?: string;
-  status: 'active' | 'completed' | 'paused';
+  status: 'active' | 'paused' | 'completed' | 'cancelled';
   custom_target_calories?: number;
   custom_target_protein_g?: number;
   custom_target_carbs_g?: number;
@@ -261,9 +261,9 @@ export interface DbCheckInSchedule {
   id: string;
   coach_id: string;
   client_id: string;
-  frequency: 'weekly' | 'biweekly' | 'monthly' | 'custom';
+  frequency: 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'custom';
   custom_interval_days?: number;
-  day_of_week?: string;
+  day_of_week?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
   time_of_day?: string;
   is_active: boolean;
   questions?: any;
@@ -273,11 +273,11 @@ export interface DbCheckInSchedule {
 
 export interface DbCheckIn {
   id: string;
-  schedule_id?: string;
+  schedule_id: string;
   client_id: string;
   coach_id: string;
   due_date: string;
-  status: 'pending' | 'submitted' | 'reviewed';
+  status: 'pending' | 'submitted' | 'missed' | 'reviewed';
   submitted_at?: string;
   responses?: any;
   weight_kg?: number;
@@ -292,7 +292,7 @@ export interface DbProgressRecord {
   id: string;
   client_id: string;
   recorded_at: string;
-  record_type: 'daily_metrics' | 'weekly_checkin' | 'body_measurement' | 'step_entry';
+  record_type: 'weight' | 'measurement' | 'steps' | 'photo' | 'general';
   weight_kg?: number;
   chest_cm?: number;
   waist_cm?: number;
@@ -314,7 +314,7 @@ export interface DbProgressPhoto {
   client_id: string;
   progress_record_id?: string;
   storage_path: string;
-  photo_type: 'front' | 'side' | 'back' | 'other';
+  photo_type: 'front' | 'side' | 'back' | 'other' | null;
   caption?: string;
   uploaded_at: string;
 }

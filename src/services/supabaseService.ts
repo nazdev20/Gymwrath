@@ -9,9 +9,13 @@ import {
 import {
   Profile,
   Exercise,
+  ExerciseCategory,
+  MuscleGroup,
   Program,
   ScheduledWorkout,
   CheckIn,
+  CheckInFrequency,
+  ProgramDayOfWeek,
   StepRecord,
   Food,
   NutritionTarget,
@@ -42,6 +46,7 @@ export interface DatabaseLoadResult {
 export interface SupabaseWriteResult {
   success: boolean;
   error?: string;
+  scheduleId?: string;
 }
 
 export const SupabaseService = {
@@ -157,7 +162,11 @@ export const SupabaseService = {
         email: p.email,
         fullName: p.first_name ? `${p.first_name} ${p.last_name || ''}`.trim() : p.email,
         role: p.role || 'client',
-        status: p.approval_status || 'active',
+        status: p.approval_status === 'pending'
+          ? 'pending'
+          : p.approval_status === 'rejected' || !p.is_active
+            ? 'suspended'
+            : 'active',
         assignedCoachId: assignmentMap.get(p.id),
         avatarUrl: p.avatar_url || `https://images.unsplash.com/photo-${p.role === 'coach' ? '1534528741775-53994a69daeb' : '1535713875002-d1d0cf377fde'}?auto=format&fit=crop&q=80&w=256`,
         bio: p.bio,
@@ -174,12 +183,22 @@ export const SupabaseService = {
 
       // 3. Query Exercises
       const { data: dbExercises } = await supabase.from('exercises').select('*');
+      const validMuscleGroups: MuscleGroup[] = [
+        'Chest', 'Back', 'Shoulders', 'Quads', 'Hamstrings', 'Glutes',
+        'Calves', 'Biceps', 'Triceps', 'Core', 'Full Body', 'Cardio'
+      ];
+      const validExerciseCategories: ExerciseCategory[] = [
+        'strength', 'cardio', 'flexibility', 'balance', 'plyometric', 'other'
+      ];
       const exercises: Exercise[] = (dbExercises || []).map(e => ({
         id: e.id,
         name: e.name,
         description: e.description || e.name,
-        muscleGroup: (e.category as any) || 'Chest',
-        secondaryMuscles: e.muscle_groups || [],
+        category: validExerciseCategories.includes(e.category) ? e.category : 'other',
+        muscleGroup: e.muscle_groups?.find((group: string) => validMuscleGroups.includes(group as MuscleGroup)) || 'Chest',
+        secondaryMuscles: (e.muscle_groups || [])
+          .filter((group: string) => validMuscleGroups.includes(group as MuscleGroup))
+          .slice(1) as MuscleGroup[],
         equipment: (e.equipment as any) || 'Dumbbell',
         instructions: typeof e.instructions === 'string' ? e.instructions.split('\n') : (e.instructions || []),
         isGlobal: e.is_global ?? true,
@@ -234,10 +253,11 @@ export const SupabaseService = {
         const resp = c.responses || {};
         return {
           id: c.id,
+          scheduleId: c.schedule_id,
           clientId: c.client_id,
           coachId: c.coach_id,
           checkInDate: c.due_date,
-          status: c.status === 'reviewed' ? 'reviewed' : 'submitted',
+          status: c.status,
           submittedAt: c.submitted_at || c.created_at,
           weightKg: c.weight_kg || resp.weightKg || 70,
           sleepRating: resp.sleepRating || 8,
@@ -453,6 +473,11 @@ export const SupabaseService = {
   async saveProfile(profile: Partial<Profile>): Promise<boolean> {
     if (getSupabaseConfig().isOfflineMode || getSupabaseReachableState() === false) return false;
     try {
+      const approvalStatus = profile.status === 'pending'
+        ? 'pending'
+        : profile.status === 'active'
+          ? profile.role === 'client' ? 'approved' : 'not_applicable'
+          : 'rejected';
       const payload: any = {
         id: profile.id,
         role: profile.role,
@@ -461,7 +486,7 @@ export const SupabaseService = {
         last_name: profile.fullName?.split(' ').slice(1).join(' ') || '',
         avatar_url: profile.avatarUrl,
         phone: profile.phone,
-        approval_status: profile.status,
+        approval_status: approvalStatus,
         bio: profile.bio,
         onboarding_completed: true,
         height_cm: profile.heightCm,
@@ -508,8 +533,32 @@ export const SupabaseService = {
       return { success: false, error: 'Supabase is not configured or is unreachable.' };
     }
     try {
+      let scheduleId = chk.scheduleId;
+      if (!scheduleId) {
+        const { data: schedule, error: scheduleError } = await supabase
+          .from('check_in_schedules')
+          .select('id')
+          .eq('client_id', chk.clientId)
+          .eq('coach_id', chk.coachId)
+          .eq('is_active', true)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (scheduleError) {
+          console.error('Failed to find an active check-in schedule:', scheduleError);
+          return { success: false, error: scheduleError.message };
+        }
+        scheduleId = schedule?.id;
+      }
+      if (!scheduleId) {
+        return {
+          success: false,
+          error: 'Your coach must create an active check-in schedule before you can submit a check-in.'
+        };
+      }
       const { error } = await supabase.from('check_ins').upsert({
         id: chk.id,
+        schedule_id: scheduleId,
         client_id: chk.clientId,
         coach_id: chk.coachId,
         due_date: chk.checkInDate,
@@ -535,9 +584,45 @@ export const SupabaseService = {
         console.error('Failed to save check-in to Supabase:', error);
         return { success: false, error: error.message };
       }
-      return { success: true };
+      return { success: true, scheduleId };
     } catch (error) {
       console.error('Failed to save check-in to Supabase:', error);
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown Supabase error.' };
+    }
+  },
+
+  async createCheckInSchedule(input: {
+    clientId: string;
+    frequency: CheckInFrequency;
+    customIntervalDays?: number;
+    dayOfWeek?: ProgramDayOfWeek;
+  }): Promise<SupabaseWriteResult> {
+    if (getSupabaseConfig().isOfflineMode || getSupabaseReachableState() === false) {
+      return { success: false, error: 'Supabase is not configured or is unreachable.' };
+    }
+    try {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError) return { success: false, error: `Unable to verify the signed-in user: ${authError.message}` };
+      if (!user) return { success: false, error: 'Sign in as the assigned coach to create a check-in schedule.' };
+      if (input.frequency === 'custom' && (!input.customIntervalDays || input.customIntervalDays < 1)) {
+        return { success: false, error: 'Custom check-in intervals must be at least 1 day.' };
+      }
+      const { error } = await supabase.from('check_in_schedules').insert({
+        coach_id: user.id,
+        client_id: input.clientId,
+        frequency: input.frequency,
+        custom_interval_days: input.frequency === 'custom' ? input.customIntervalDays : null,
+        day_of_week: input.dayOfWeek ?? null,
+        is_active: true,
+        questions: []
+      });
+      if (error) {
+        console.error('Failed to create check-in schedule:', error);
+        return { success: false, error: error.message };
+      }
+      return { success: true };
+    } catch (error) {
+      console.error('Failed to create check-in schedule:', error);
       return { success: false, error: error instanceof Error ? error.message : 'Unknown Supabase error.' };
     }
   },
@@ -552,7 +637,7 @@ export const SupabaseService = {
         id: step.id,
         client_id: step.clientId,
         recorded_at: step.loggedAt,
-        record_type: 'step_entry',
+        record_type: 'steps',
         step_count: step.stepCount,
         notes: step.notes
       }, { onConflict: 'id' });
@@ -632,11 +717,11 @@ export const SupabaseService = {
         coach_id: coachId,
         name: ex.name,
         description: ex.description,
-        category: ex.muscleGroup,
+        category: ex.category,
         muscle_groups: [ex.muscleGroup, ...(ex.secondaryMuscles || [])],
         equipment: ex.equipment,
         instructions: ex.instructions.join('\n'),
-        difficulty_level: 'Intermediate',
+        difficulty_level: 'intermediate',
         is_global: ex.isGlobal,
         created_at: ex.createdAt,
         updated_at: new Date().toISOString()

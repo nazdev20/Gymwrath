@@ -1,5 +1,9 @@
 export type UserRole = 'admin' | 'coach' | 'client';
 export type AccountStatus = 'pending' | 'active' | 'suspended' | 'archived';
+export type ProfileGender = 'male' | 'female' | 'other' | 'prefer_not_to_say';
+export type ProgramDayOfWeek = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+export type CheckInFrequency = 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'custom';
+export type CheckInStatus = 'pending' | 'submitted' | 'missed' | 'reviewed';
 
 export interface Profile {
   id: string;
@@ -20,7 +24,7 @@ export interface Profile {
   targetWeightKg?: number;
   heightCm?: number;
   age?: number;
-  gender?: 'male' | 'female' | 'other';
+  gender?: ProfileGender;
   activityLevel?: 'sedentary' | 'lightly_active' | 'moderately_active' | 'very_active';
   checkInDay?: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
 }
@@ -36,11 +40,13 @@ export interface ClientCoachAssignment {
 
 export type MuscleGroup = 'Chest' | 'Back' | 'Shoulders' | 'Quads' | 'Hamstrings' | 'Glutes' | 'Calves' | 'Biceps' | 'Triceps' | 'Core' | 'Full Body' | 'Cardio';
 export type EquipmentType = 'Barbell' | 'Dumbbell' | 'Kettlebell' | 'Cable' | 'Machine' | 'Bodyweight' | 'Bands' | 'Cardio Machine' | 'Other';
+export type ExerciseCategory = 'strength' | 'cardio' | 'flexibility' | 'balance' | 'plyometric' | 'other';
 
 export interface Exercise {
   id: string;
   name: string;
   description: string;
+  category: ExerciseCategory;
   instructions: string[];
   muscleGroup: MuscleGroup;
   secondaryMuscles?: MuscleGroup[];
@@ -74,7 +80,7 @@ export interface ProgramWorkout {
   id: string;
   programId: string;
   weekNumber: number;
-  dayOfWeek: number; // 1 = Monday ... 7 = Sunday
+  dayOfWeek: ProgramDayOfWeek; // 0 = Sunday ... 6 = Saturday
   title: string;
   description?: string;
   exercises: WorkoutExercise[];
@@ -131,13 +137,14 @@ export interface ProgressPhoto {
   id: string;
   checkInId: string;
   clientId: string;
-  photoType: 'front' | 'side' | 'back';
+  photoType: 'front' | 'side' | 'back' | 'other';
   url: string;
   uploadedAt: string;
 }
 
 export interface CheckIn {
   id: string;
+  scheduleId?: string;
   clientId: string;
   coachId: string;
   checkInDate: string; // YYYY-MM-DD
@@ -157,7 +164,7 @@ export interface CheckIn {
   clientNotes: string;
   questions?: string;
   photos: ProgressPhoto[];
-  status: 'submitted' | 'reviewed';
+  status: CheckInStatus;
   reviewedAt?: string;
   coachFeedback?: string;
   submittedAt: string;

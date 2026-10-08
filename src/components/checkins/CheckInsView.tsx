@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
+import { CheckInFrequency, CheckInStatus, ProgramDayOfWeek } from '../../types';
 import {
   ClipboardCheck,
   Plus,
@@ -18,13 +19,49 @@ export const CheckInsView: React.FC = () => {
     currentUser,
     allProfiles,
     setActiveCheckInReviewId,
-    setIsCheckInModalOpen
+    setIsCheckInModalOpen,
+    createCheckInSchedule
   } = useApp();
 
-  const [statusFilter, setStatusFilter] = useState<'all' | 'submitted' | 'reviewed'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | CheckInStatus>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [scheduleClientId, setScheduleClientId] = useState('');
+  const [scheduleFrequency, setScheduleFrequency] = useState<CheckInFrequency>('weekly');
+  const [scheduleDay, setScheduleDay] = useState('');
+  const [customIntervalDays, setCustomIntervalDays] = useState(7);
+  const [scheduleError, setScheduleError] = useState<string | null>(null);
+  const [scheduleSaved, setScheduleSaved] = useState(false);
+  const [isSavingSchedule, setIsSavingSchedule] = useState(false);
 
   const isClient = currentUser.role === 'client';
+  const coachClients = allProfiles.filter(p =>
+    p.role === 'client' && p.status === 'active' && p.assignedCoachId === currentUser.id
+  );
+
+  const handleCreateSchedule = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!scheduleClientId || isSavingSchedule) return;
+    setIsSavingSchedule(true);
+    setScheduleError(null);
+    setScheduleSaved(false);
+    try {
+      const result = await createCheckInSchedule({
+        clientId: scheduleClientId,
+        frequency: scheduleFrequency,
+        customIntervalDays: scheduleFrequency === 'custom' ? customIntervalDays : undefined,
+        dayOfWeek: scheduleDay === '' ? undefined : Number(scheduleDay) as ProgramDayOfWeek
+      });
+      if (!result.success) {
+        setScheduleError(result.error || 'Check-in schedule was not saved.');
+        return;
+      }
+      setScheduleSaved(true);
+    } catch (error) {
+      setScheduleError(error instanceof Error ? error.message : 'Check-in schedule was not saved.');
+    } finally {
+      setIsSavingSchedule(false);
+    }
+  };
 
   const filteredCheckIns = checkIns.filter(ci => {
     if (isClient && ci.clientId !== currentUser.id) return false;
@@ -48,12 +85,12 @@ export const CheckInsView: React.FC = () => {
             <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
               <ClipboardCheck className="w-4 h-4" />
             </div>
-            <h1 className="text-2xl font-extrabold text-white">Athlete Weekly Check-Ins</h1>
+            <h1 className="text-2xl font-extrabold text-white">Athlete Check-Ins</h1>
           </div>
           <p className="text-xs text-slate-400 mt-1">
             {isClient
-              ? 'Submit weekly weight, measurements, biofeedback, and progress photos to your coach.'
-              : 'Review athlete weekly logs, monitor weight and circumference deltas, and deliver audio/text feedback.'}
+              ? 'Submit weight, measurements, biofeedback, and progress photos to your coach.'
+              : 'Review athlete check-ins, monitor weight and circumference changes, and provide feedback.'}
           </p>
         </div>
 
@@ -62,23 +99,102 @@ export const CheckInsView: React.FC = () => {
             onClick={() => setIsCheckInModalOpen(true)}
             className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition-colors flex items-center gap-2 shadow-lg shadow-amber-500/20"
           >
-            <Plus className="w-4 h-4" /> Submit Weekly Check-In
+            <Plus className="w-4 h-4" /> Submit Check-In
           </button>
         ) : (
           <div className="flex items-center gap-2">
             <span className="text-xs text-slate-400">Filter:</span>
             <select
               value={statusFilter}
-              onChange={e => setStatusFilter(e.target.value as any)}
+              onChange={e => setStatusFilter(e.target.value as 'all' | CheckInStatus)}
               className="px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-amber-500"
             >
               <option value="all">All Check-Ins</option>
+              <option value="pending">Pending</option>
               <option value="submitted">Needs Coach Review</option>
+              <option value="missed">Missed</option>
               <option value="reviewed">Reviewed</option>
             </select>
           </div>
         )}
       </div>
+
+      {currentUser.role === 'coach' && (
+        <form onSubmit={handleCreateSchedule} className="rounded-2xl border border-slate-800 bg-slate-900 p-4 space-y-3">
+          <div>
+            <h2 className="text-sm font-bold text-white">Create Check-In Schedule</h2>
+            <p className="text-xs text-slate-400 mt-1">Clients need an active schedule before they can submit check-ins.</p>
+          </div>
+          {scheduleError && <p role="alert" className="text-xs text-rose-300">{scheduleError}</p>}
+          {scheduleSaved && <p role="status" className="text-xs text-emerald-300">Schedule created. The client can now submit check-ins.</p>}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <label className="text-xs text-slate-400">
+              Client
+              <select
+                required
+                value={scheduleClientId}
+                onChange={event => setScheduleClientId(event.target.value)}
+                disabled={coachClients.length === 0}
+                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white"
+              >
+                <option value="">Select an assigned client</option>
+                {coachClients.map(client => <option key={client.id} value={client.id}>{client.fullName}</option>)}
+              </select>
+            </label>
+            <label className="text-xs text-slate-400">
+              Frequency
+              <select
+                value={scheduleFrequency}
+                onChange={event => setScheduleFrequency(event.target.value as CheckInFrequency)}
+                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white"
+              >
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="biweekly">Every two weeks</option>
+                <option value="monthly">Monthly</option>
+                <option value="custom">Custom interval</option>
+              </select>
+            </label>
+            <label className="text-xs text-slate-400">
+              Day of week (optional)
+              <select
+                value={scheduleDay}
+                onChange={event => setScheduleDay(event.target.value)}
+                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white"
+              >
+                <option value="">No specific day</option>
+                <option value="0">Sunday</option>
+                <option value="1">Monday</option>
+                <option value="2">Tuesday</option>
+                <option value="3">Wednesday</option>
+                <option value="4">Thursday</option>
+                <option value="5">Friday</option>
+                <option value="6">Saturday</option>
+              </select>
+            </label>
+            {scheduleFrequency === 'custom' && (
+              <label className="text-xs text-slate-400">
+                Interval (days)
+                <input
+                  type="number"
+                  min={1}
+                  required
+                  value={customIntervalDays}
+                  onChange={event => setCustomIntervalDays(Number(event.target.value))}
+                  className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white"
+                />
+              </label>
+            )}
+          </div>
+          <button
+            type="submit"
+            disabled={isSavingSchedule || coachClients.length === 0}
+            className="rounded-xl bg-amber-500 px-4 py-2 text-xs font-bold text-slate-950 disabled:opacity-50"
+          >
+            {isSavingSchedule ? 'Saving…' : 'Create Schedule'}
+          </button>
+        </form>
+      )}
 
       {/* CheckIns List */}
       <div className="space-y-3">
@@ -111,9 +227,15 @@ export const CheckInsView: React.FC = () => {
                       <span className="font-bold text-white text-base">{client?.fullName || 'Athlete'}</span>
                       <span className="text-xs text-slate-400 font-mono">({ci.checkInDate})</span>
                       <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                        ci.status === 'reviewed' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400 animate-pulse'
+                        ci.status === 'reviewed'
+                          ? 'bg-emerald-500/20 text-emerald-400'
+                          : ci.status === 'missed'
+                            ? 'bg-rose-500/20 text-rose-400'
+                            : ci.status === 'submitted'
+                              ? 'bg-amber-500/20 text-amber-400 animate-pulse'
+                              : 'bg-slate-700 text-slate-300'
                       }`}>
-                        {ci.status === 'reviewed' ? '✓ Reviewed' : 'Pending Review'}
+                        {ci.status === 'reviewed' ? '✓ Reviewed' : ci.status === 'submitted' ? 'Needs Review' : ci.status}
                       </span>
                     </div>
 

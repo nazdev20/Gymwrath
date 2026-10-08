@@ -372,14 +372,14 @@ export const ClientDashboard: React.FC = () => {
             </form>
           </div>
 
-          {/* Weekly Check-In Card */}
+          {/* Check-In Card */}
           <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
             <div className="flex items-center gap-2.5 mb-4">
               <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
                 <ClipboardCheck className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-base font-bold text-white">Weekly Check-In</h2>
+                <h2 className="text-base font-bold text-white">Check-In</h2>
                 <p className="text-xs text-slate-400">Weight, measurements & photos</p>
               </div>
             </div>
@@ -409,7 +409,7 @@ export const ClientDashboard: React.FC = () => {
               onClick={() => setIsCheckInModalOpen(true)}
               className="w-full py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition-colors flex items-center justify-center gap-2"
             >
-              <ClipboardCheck className="w-4 h-4" /> Submit Weekly Check-In
+              <ClipboardCheck className="w-4 h-4" /> Submit Check-In
             </button>
           </div>
         </div>

@@ -101,7 +101,7 @@ export const CheckInReviewModal: React.FC = () => {
           {/* Comparison Cards */}
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
-              Metrics & Weekly Delta
+              Metrics & Change Since Previous Check-In
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="p-3 bg-slate-850 rounded-xl border border-slate-750">

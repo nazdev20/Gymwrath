@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Exercise, MuscleGroup, EquipmentType } from '../../types';
+import { Exercise, ExerciseCategory, MuscleGroup, EquipmentType } from '../../types';
 import {
   Dumbbell,
   Search,
@@ -36,6 +36,15 @@ const EQUIPMENT_TYPES: (EquipmentType | 'All')[] = [
   'Bodyweight'
 ];
 
+const EXERCISE_CATEGORIES: ExerciseCategory[] = [
+  'strength',
+  'cardio',
+  'flexibility',
+  'balance',
+  'plyometric',
+  'other'
+];
+
 export const ExerciseLibrary: React.FC = () => {
   const { exercises, addExercise, currentUser } = useApp();
 
@@ -50,6 +59,7 @@ export const ExerciseLibrary: React.FC = () => {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [newExName, setNewExName] = useState('');
   const [newExDesc, setNewExDesc] = useState('');
+  const [newExCategory, setNewExCategory] = useState<ExerciseCategory>('strength');
   const [newExMuscle, setNewExMuscle] = useState<MuscleGroup>('Chest');
   const [newExEquipment, setNewExEquipment] = useState<EquipmentType>('Barbell');
   const [newExInstructions, setNewExInstructions] = useState('');
@@ -72,6 +82,7 @@ export const ExerciseLibrary: React.FC = () => {
       const saveResult = await addExercise({
         name: newExName.trim(),
         description: newExDesc.trim() || 'Custom coach exercise',
+        category: newExCategory,
         instructions: newExInstructions.split('\n').filter(i => i.trim().length > 0),
         muscleGroup: newExMuscle,
         equipment: newExEquipment,
@@ -268,7 +279,19 @@ export const ExerciseLibrary: React.FC = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold uppercase text-slate-300 mb-1">Category</label>
+                  <select
+                    value={newExCategory}
+                    onChange={e => setNewExCategory(e.target.value as ExerciseCategory)}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-emerald-500"
+                  >
+                    {EXERCISE_CATEGORIES.map(category => (
+                      <option key={category} value={category}>{category}</option>
+                    ))}
+                  </select>
+                </div>
                 <div>
                   <label className="block text-xs font-semibold uppercase text-slate-300 mb-1">Primary Muscle</label>
                   <select

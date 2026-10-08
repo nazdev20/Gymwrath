@@ -33,8 +33,8 @@ export const SCHEMA_TABLES: SchemaTableDefinition[] = [
       { name: 'avatar_url', type: 'TEXT', nullable: true },
       { name: 'phone', type: 'VARCHAR(50)', nullable: true },
       { name: 'date_of_birth', type: 'DATE', nullable: true },
-      { name: 'gender', type: 'VARCHAR(50)', nullable: true },
-      { name: 'approval_status', type: 'VARCHAR(30)', description: 'pending | active | suspended' },
+      { name: 'gender', type: 'TEXT', nullable: true, description: 'male | female | other | prefer_not_to_say' },
+      { name: 'approval_status', type: 'TEXT', description: 'not_applicable | pending | approved | rejected' },
       { name: 'specializations', type: 'TEXT[]', nullable: true },
       { name: 'bio', type: 'TEXT', nullable: true },
       { name: 'certifications', type: 'TEXT[]', nullable: true },
@@ -58,7 +58,7 @@ export const SCHEMA_TABLES: SchemaTableDefinition[] = [
       { name: 'id', type: 'UUID', isPk: true },
       { name: 'coach_id', type: 'UUID', isFk: true, fkTarget: 'profiles.id' },
       { name: 'client_id', type: 'UUID', isFk: true, fkTarget: 'profiles.id' },
-      { name: 'status', type: 'VARCHAR(30)', description: 'active | inactive | requested | declined' },
+      { name: 'status', type: 'TEXT', description: 'pending | active | rejected | inactive | suspended | archived' },
       { name: 'requested_at', type: 'TIMESTAMPTZ' },
       { name: 'responded_at', type: 'TIMESTAMPTZ', nullable: true },
       { name: 'deactivated_at', type: 'TIMESTAMPTZ', nullable: true },
@@ -78,11 +78,11 @@ export const SCHEMA_TABLES: SchemaTableDefinition[] = [
       { name: 'coach_id', type: 'UUID', isFk: true, fkTarget: 'profiles.id', nullable: true },
       { name: 'name', type: 'VARCHAR(255)' },
       { name: 'description', type: 'TEXT' },
-      { name: 'category', type: 'VARCHAR(100)' },
+      { name: 'category', type: 'TEXT', nullable: true, description: 'strength | cardio | flexibility | balance | plyometric | other' },
       { name: 'muscle_groups', type: 'TEXT[]' },
       { name: 'equipment', type: 'VARCHAR(100)' },
       { name: 'instructions', type: 'TEXT' },
-      { name: 'difficulty_level', type: 'VARCHAR(50)' },
+      { name: 'difficulty_level', type: 'TEXT', nullable: true, description: 'beginner | intermediate | advanced' },
       { name: 'is_global', type: 'BOOLEAN' },
       { name: 'created_at', type: 'TIMESTAMPTZ' },
       { name: 'updated_at', type: 'TIMESTAMPTZ' }
@@ -97,9 +97,9 @@ export const SCHEMA_TABLES: SchemaTableDefinition[] = [
       { name: 'coach_id', type: 'UUID', isFk: true, fkTarget: 'profiles.id' },
       { name: 'name', type: 'VARCHAR(255)' },
       { name: 'description', type: 'TEXT', nullable: true },
-      { name: 'type', type: 'VARCHAR(50)' },
+      { name: 'type', type: 'TEXT', nullable: true, description: 'strength | cardio | flexibility | hiit | mixed | other' },
       { name: 'estimated_duration_min', type: 'INTEGER' },
-      { name: 'difficulty_level', type: 'VARCHAR(50)' },
+      { name: 'difficulty_level', type: 'TEXT', nullable: true, description: 'beginner | intermediate | advanced' },
       { name: 'created_at', type: 'TIMESTAMPTZ' },
       { name: 'updated_at', type: 'TIMESTAMPTZ' }
     ]
@@ -125,9 +125,9 @@ export const SCHEMA_TABLES: SchemaTableDefinition[] = [
       { name: 'id', type: 'UUID', isPk: true },
       { name: 'workout_exercise_id', type: 'UUID', isFk: true, fkTarget: 'workout_exercises.id' },
       { name: 'set_number', type: 'INTEGER' },
-      { name: 'target_reps', type: 'VARCHAR(50)' },
+      { name: 'target_reps', type: 'INTEGER', nullable: true },
       { name: 'target_weight', type: 'NUMERIC', nullable: true },
-      { name: 'weight_unit', type: 'VARCHAR(10)' },
+      { name: 'weight_unit', type: 'TEXT', nullable: true, description: 'kg | lbs' },
       { name: 'target_duration_sec', type: 'INTEGER', nullable: true },
       { name: 'rest_period_sec', type: 'INTEGER', nullable: true },
       { name: 'instructions', type: 'TEXT', nullable: true },
@@ -144,7 +144,7 @@ export const SCHEMA_TABLES: SchemaTableDefinition[] = [
       { name: 'name', type: 'VARCHAR(255)' },
       { name: 'description', type: 'TEXT', nullable: true },
       { name: 'duration_weeks', type: 'INTEGER' },
-      { name: 'difficulty_level', type: 'VARCHAR(50)' },
+      { name: 'difficulty_level', type: 'TEXT', nullable: true, description: 'beginner | intermediate | advanced' },
       { name: 'created_at', type: 'TIMESTAMPTZ' },
       { name: 'updated_at', type: 'TIMESTAMPTZ' }
     ]
@@ -158,7 +158,7 @@ export const SCHEMA_TABLES: SchemaTableDefinition[] = [
       { name: 'program_id', type: 'UUID', isFk: true, fkTarget: 'training_programs.id' },
       { name: 'workout_id', type: 'UUID', isFk: true, fkTarget: 'workouts.id' },
       { name: 'week_number', type: 'INTEGER' },
-      { name: 'day_of_week', type: 'INTEGER' },
+      { name: 'day_of_week', type: 'INTEGER', description: '0 = Sunday through 6 = Saturday' },
       { name: 'order_index', type: 'INTEGER' },
       { name: 'created_at', type: 'TIMESTAMPTZ' }
     ]
@@ -173,8 +173,8 @@ export const SCHEMA_TABLES: SchemaTableDefinition[] = [
       { name: 'client_id', type: 'UUID', isFk: true, fkTarget: 'profiles.id' },
       { name: 'coach_id', type: 'UUID', isFk: true, fkTarget: 'profiles.id' },
       { name: 'start_date', type: 'DATE' },
-      { name: 'end_date', type: 'DATE' },
-      { name: 'status', type: 'VARCHAR(30)' },
+      { name: 'end_date', type: 'DATE', nullable: true },
+      { name: 'status', type: 'TEXT', description: 'active | paused | completed | cancelled' },
       { name: 'created_at', type: 'TIMESTAMPTZ' },
       { name: 'updated_at', type: 'TIMESTAMPTZ' }
     ]
@@ -190,7 +190,7 @@ export const SCHEMA_TABLES: SchemaTableDefinition[] = [
       { name: 'workout_id', type: 'UUID', isFk: true, fkTarget: 'workouts.id' },
       { name: 'program_assignment_id', type: 'UUID', isFk: true, fkTarget: 'program_assignments.id', nullable: true },
       { name: 'scheduled_date', type: 'DATE' },
-      { name: 'status', type: 'VARCHAR(30)' },
+      { name: 'status', type: 'TEXT', description: 'scheduled | due | completed | missed | skipped' },
       { name: 'notes', type: 'TEXT', nullable: true },
       { name: 'created_at', type: 'TIMESTAMPTZ' },
       { name: 'updated_at', type: 'TIMESTAMPTZ' }
@@ -206,7 +206,7 @@ export const SCHEMA_TABLES: SchemaTableDefinition[] = [
       { name: 'client_id', type: 'UUID', isFk: true, fkTarget: 'profiles.id' },
       { name: 'completed_at', type: 'TIMESTAMPTZ' },
       { name: 'duration_min', type: 'INTEGER' },
-      { name: 'perceived_difficulty', type: 'NUMERIC' },
+      { name: 'perceived_difficulty', type: 'INTEGER', nullable: true, description: '1 through 10' },
       { name: 'notes', type: 'TEXT', nullable: true },
       { name: 'coach_feedback', type: 'TEXT', nullable: true },
       { name: 'coach_feedback_at', type: 'TIMESTAMPTZ', nullable: true },
@@ -224,7 +224,7 @@ export const SCHEMA_TABLES: SchemaTableDefinition[] = [
       { name: 'set_number', type: 'INTEGER' },
       { name: 'actual_reps', type: 'INTEGER' },
       { name: 'actual_weight', type: 'NUMERIC' },
-      { name: 'weight_unit', type: 'VARCHAR(10)' },
+      { name: 'weight_unit', type: 'TEXT', nullable: true, description: 'kg | lbs' },
       { name: 'actual_duration_sec', type: 'INTEGER', nullable: true },
       { name: 'completed', type: 'BOOLEAN' },
       { name: 'notes', type: 'TEXT', nullable: true },
@@ -364,9 +364,9 @@ export const SCHEMA_TABLES: SchemaTableDefinition[] = [
       { name: 'id', type: 'UUID', isPk: true },
       { name: 'coach_id', type: 'UUID', isFk: true, fkTarget: 'profiles.id' },
       { name: 'client_id', type: 'UUID', isFk: true, fkTarget: 'profiles.id' },
-      { name: 'frequency', type: 'VARCHAR(50)' },
+      { name: 'frequency', type: 'TEXT', description: 'daily | weekly | biweekly | monthly | custom' },
       { name: 'custom_interval_days', type: 'INTEGER', nullable: true },
-      { name: 'day_of_week', type: 'VARCHAR(50)', nullable: true },
+      { name: 'day_of_week', type: 'INTEGER', nullable: true, description: '0 = Sunday through 6 = Saturday' },
       { name: 'time_of_day', type: 'TIME', nullable: true },
       { name: 'is_active', type: 'BOOLEAN' },
       { name: 'questions', type: 'JSONB', nullable: true },
@@ -380,11 +380,11 @@ export const SCHEMA_TABLES: SchemaTableDefinition[] = [
     description: 'Submitted athlete check-in entries with coach review & feedback',
     columns: [
       { name: 'id', type: 'UUID', isPk: true },
-      { name: 'schedule_id', type: 'UUID', isFk: true, fkTarget: 'check_in_schedules.id', nullable: true },
+      { name: 'schedule_id', type: 'UUID', isFk: true, fkTarget: 'check_in_schedules.id' },
       { name: 'client_id', type: 'UUID', isFk: true, fkTarget: 'profiles.id' },
       { name: 'coach_id', type: 'UUID', isFk: true, fkTarget: 'profiles.id' },
       { name: 'due_date', type: 'DATE' },
-      { name: 'status', type: 'VARCHAR(30)', description: 'pending | submitted | reviewed' },
+      { name: 'status', type: 'TEXT', description: 'pending | submitted | missed | reviewed' },
       { name: 'submitted_at', type: 'TIMESTAMPTZ', nullable: true },
       { name: 'responses', type: 'JSONB', nullable: true },
       { name: 'weight_kg', type: 'NUMERIC', nullable: true },
@@ -405,7 +405,7 @@ export const SCHEMA_TABLES: SchemaTableDefinition[] = [
       { name: 'id', type: 'UUID', isPk: true },
       { name: 'client_id', type: 'UUID', isFk: true, fkTarget: 'profiles.id' },
       { name: 'recorded_at', type: 'TIMESTAMPTZ' },
-      { name: 'record_type', type: 'VARCHAR(50)' },
+      { name: 'record_type', type: 'TEXT', description: 'weight | measurement | steps | photo | general' },
       { name: 'weight_kg', type: 'NUMERIC', nullable: true },
       { name: 'chest_cm', type: 'NUMERIC', nullable: true },
       { name: 'waist_cm', type: 'NUMERIC', nullable: true },
@@ -431,7 +431,7 @@ export const SCHEMA_TABLES: SchemaTableDefinition[] = [
       { name: 'client_id', type: 'UUID', isFk: true, fkTarget: 'profiles.id' },
       { name: 'progress_record_id', type: 'UUID', isFk: true, fkTarget: 'progress_records.id', nullable: true },
       { name: 'storage_path', type: 'TEXT' },
-      { name: 'photo_type', type: 'VARCHAR(50)' },
+      { name: 'photo_type', type: 'TEXT', nullable: true, description: 'front | side | back | other' },
       { name: 'caption', type: 'TEXT', nullable: true },
       { name: 'uploaded_at', type: 'TIMESTAMPTZ' }
     ]
@@ -522,13 +522,13 @@ CREATE TABLE IF NOT EXISTS fitness.profiles (
   avatar_url TEXT,
   phone VARCHAR(50),
   date_of_birth DATE,
-  gender VARCHAR(50),
-  approval_status VARCHAR(30) NOT NULL DEFAULT 'active' CHECK (approval_status IN ('pending', 'active', 'suspended', 'archived')),
+  gender TEXT CHECK (gender IN ('male', 'female', 'other', 'prefer_not_to_say')),
+  approval_status TEXT NOT NULL DEFAULT 'not_applicable' CHECK (approval_status IN ('not_applicable', 'pending', 'approved', 'rejected')),
   specializations TEXT[],
   bio TEXT,
   certifications TEXT[],
   years_of_experience NUMERIC,
-  onboarding_completed BOOLEAN NOT NULL DEFAULT true,
+  onboarding_completed BOOLEAN NOT NULL DEFAULT false,
   fitness_goals TEXT[],
   medical_conditions TEXT,
   height_cm NUMERIC,
@@ -558,7 +558,7 @@ CREATE TABLE IF NOT EXISTS fitness.coach_client_assignments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
-  status VARCHAR(30) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'requested', 'declined')),
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'active', 'rejected', 'inactive', 'suspended', 'archived')),
   requested_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   responded_at TIMESTAMPTZ,
   deactivated_at TIMESTAMPTZ,
@@ -574,13 +574,13 @@ CREATE TABLE IF NOT EXISTS fitness.exercises (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   coach_id UUID REFERENCES fitness.profiles(id) ON DELETE SET NULL,
   name VARCHAR(255) NOT NULL,
-  description TEXT NOT NULL,
-  category VARCHAR(100) NOT NULL,
-  muscle_groups TEXT[] NOT NULL DEFAULT '{}',
-  equipment VARCHAR(100) NOT NULL,
-  instructions TEXT NOT NULL,
-  difficulty_level VARCHAR(50) NOT NULL DEFAULT 'Intermediate',
-  is_global BOOLEAN NOT NULL DEFAULT true,
+  description TEXT,
+  category TEXT CHECK (category IN ('strength', 'cardio', 'flexibility', 'balance', 'plyometric', 'other')),
+  muscle_groups TEXT[],
+  equipment TEXT,
+  instructions TEXT,
+  difficulty_level TEXT CHECK (difficulty_level IN ('beginner', 'intermediate', 'advanced')),
+  is_global BOOLEAN NOT NULL DEFAULT false,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -590,9 +590,9 @@ CREATE TABLE IF NOT EXISTS fitness.workouts (
   coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   name VARCHAR(255) NOT NULL,
   description TEXT,
-  type VARCHAR(50) NOT NULL DEFAULT 'hypertrophy',
-  estimated_duration_min INTEGER NOT NULL DEFAULT 60,
-  difficulty_level VARCHAR(50) NOT NULL DEFAULT 'intermediate',
+  type TEXT CHECK (type IN ('strength', 'cardio', 'flexibility', 'hiit', 'mixed', 'other')),
+  estimated_duration_min INTEGER,
+  difficulty_level TEXT CHECK (difficulty_level IN ('beginner', 'intermediate', 'advanced')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -601,7 +601,7 @@ CREATE TABLE IF NOT EXISTS fitness.workout_exercises (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   workout_id UUID NOT NULL REFERENCES fitness.workouts(id) ON DELETE CASCADE,
   exercise_id UUID NOT NULL REFERENCES fitness.exercises(id) ON DELETE RESTRICT,
-  order_index INTEGER NOT NULL DEFAULT 1,
+  order_index INTEGER NOT NULL DEFAULT 0,
   notes TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -610,11 +610,11 @@ CREATE TABLE IF NOT EXISTS fitness.exercise_set_templates (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   workout_exercise_id UUID NOT NULL REFERENCES fitness.workout_exercises(id) ON DELETE CASCADE,
   set_number INTEGER NOT NULL,
-  target_reps VARCHAR(50) NOT NULL DEFAULT '10',
-  target_weight NUMERIC DEFAULT 0,
-  weight_unit VARCHAR(10) NOT NULL DEFAULT 'kg',
+  target_reps INTEGER,
+  target_weight NUMERIC,
+  weight_unit TEXT DEFAULT 'kg' CHECK (weight_unit IN ('kg', 'lbs')),
   target_duration_sec INTEGER,
-  rest_period_sec INTEGER NOT NULL DEFAULT 90,
+  rest_period_sec INTEGER,
   instructions TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -624,8 +624,8 @@ CREATE TABLE IF NOT EXISTS fitness.training_programs (
   coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   name VARCHAR(255) NOT NULL,
   description TEXT,
-  duration_weeks INTEGER NOT NULL DEFAULT 8,
-  difficulty_level VARCHAR(50) NOT NULL DEFAULT 'intermediate',
+  duration_weeks INTEGER NOT NULL DEFAULT 1,
+  difficulty_level TEXT CHECK (difficulty_level IN ('beginner', 'intermediate', 'advanced')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -635,8 +635,8 @@ CREATE TABLE IF NOT EXISTS fitness.program_workouts (
   program_id UUID NOT NULL REFERENCES fitness.training_programs(id) ON DELETE CASCADE,
   workout_id UUID NOT NULL REFERENCES fitness.workouts(id) ON DELETE CASCADE,
   week_number INTEGER NOT NULL DEFAULT 1,
-  day_of_week INTEGER NOT NULL DEFAULT 1,
-  order_index INTEGER NOT NULL DEFAULT 1,
+  day_of_week INTEGER NOT NULL CHECK (day_of_week >= 0 AND day_of_week <= 6),
+  order_index INTEGER NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -646,7 +646,7 @@ CREATE TABLE IF NOT EXISTS fitness.program_assignments (
   client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   start_date DATE NOT NULL,
-  end_date DATE NOT NULL,
+  end_date DATE,
   status VARCHAR(30) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'completed', 'paused', 'cancelled')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -659,7 +659,7 @@ CREATE TABLE IF NOT EXISTS fitness.workout_assignments (
   workout_id UUID NOT NULL REFERENCES fitness.workouts(id) ON DELETE CASCADE,
   program_assignment_id UUID REFERENCES fitness.program_assignments(id) ON DELETE SET NULL,
   scheduled_date DATE NOT NULL,
-  status VARCHAR(30) NOT NULL DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'in_progress', 'completed', 'missed')),
+  status TEXT NOT NULL DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'due', 'completed', 'missed', 'skipped')),
   notes TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -670,8 +670,8 @@ CREATE TABLE IF NOT EXISTS fitness.workout_completions (
   assignment_id UUID NOT NULL REFERENCES fitness.workout_assignments(id) ON DELETE CASCADE,
   client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   completed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  duration_min INTEGER NOT NULL DEFAULT 45,
-  perceived_difficulty NUMERIC NOT NULL DEFAULT 8,
+  duration_min INTEGER,
+  perceived_difficulty INTEGER CHECK (perceived_difficulty >= 1 AND perceived_difficulty <= 10),
   notes TEXT,
   coach_feedback TEXT,
   coach_feedback_at TIMESTAMPTZ,
@@ -683,9 +683,9 @@ CREATE TABLE IF NOT EXISTS fitness.completed_exercise_sets (
   completion_id UUID NOT NULL REFERENCES fitness.workout_completions(id) ON DELETE CASCADE,
   exercise_id UUID NOT NULL REFERENCES fitness.exercises(id) ON DELETE RESTRICT,
   set_number INTEGER NOT NULL,
-  actual_reps INTEGER NOT NULL,
-  actual_weight NUMERIC NOT NULL DEFAULT 0,
-  weight_unit VARCHAR(10) NOT NULL DEFAULT 'kg',
+  actual_reps INTEGER,
+  actual_weight NUMERIC,
+  weight_unit TEXT DEFAULT 'kg' CHECK (weight_unit IN ('kg', 'lbs')),
   actual_duration_sec INTEGER,
   completed BOOLEAN NOT NULL DEFAULT true,
   notes TEXT,
@@ -743,7 +743,7 @@ CREATE TABLE IF NOT EXISTS fitness.nutrition_plan_assignments (
   coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   start_date DATE NOT NULL,
   end_date DATE,
-  status VARCHAR(30) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'completed', 'paused')),
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'paused', 'completed', 'cancelled')),
   custom_target_calories NUMERIC,
   custom_target_protein_g NUMERIC,
   custom_target_carbs_g NUMERIC,
@@ -760,7 +760,7 @@ CREATE TABLE IF NOT EXISTS fitness.daily_nutrition_logs (
   total_protein_g NUMERIC NOT NULL DEFAULT 0,
   total_carbs_g NUMERIC NOT NULL DEFAULT 0,
   total_fat_g NUMERIC NOT NULL DEFAULT 0,
-  adherence_rating INTEGER,
+  adherence_rating INTEGER CHECK (adherence_rating >= 1 AND adherence_rating <= 10),
   adherence_notes TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -770,8 +770,8 @@ CREATE TABLE IF NOT EXISTS fitness.daily_nutrition_logs (
 CREATE TABLE IF NOT EXISTS fitness.nutrition_log_meals (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   daily_log_id UUID NOT NULL REFERENCES fitness.daily_nutrition_logs(id) ON DELETE CASCADE,
-  meal_name VARCHAR(100) NOT NULL,
-  meal_order INTEGER NOT NULL DEFAULT 1,
+  meal_name TEXT NOT NULL,
+  meal_order INTEGER NOT NULL DEFAULT 0,
   consumed_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -779,13 +779,13 @@ CREATE TABLE IF NOT EXISTS fitness.nutrition_log_meals (
 CREATE TABLE IF NOT EXISTS fitness.nutrition_log_foods (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   log_meal_id UUID NOT NULL REFERENCES fitness.nutrition_log_meals(id) ON DELETE CASCADE,
-  food_name VARCHAR(255) NOT NULL,
-  quantity NUMERIC NOT NULL,
-  unit VARCHAR(50) NOT NULL DEFAULT 'g',
-  calories NUMERIC NOT NULL,
-  protein_g NUMERIC NOT NULL,
-  carbs_g NUMERIC NOT NULL,
-  fat_g NUMERIC NOT NULL,
+  food_name TEXT NOT NULL,
+  quantity NUMERIC,
+  unit TEXT,
+  calories INTEGER,
+  protein_g NUMERIC,
+  carbs_g NUMERIC,
+  fat_g NUMERIC,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -796,10 +796,10 @@ CREATE TABLE IF NOT EXISTS fitness.check_in_schedules (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
-  frequency VARCHAR(50) NOT NULL DEFAULT 'weekly',
+  frequency TEXT NOT NULL CHECK (frequency IN ('daily', 'weekly', 'biweekly', 'monthly', 'custom')),
   custom_interval_days INTEGER,
-  day_of_week VARCHAR(50) DEFAULT 'Sunday',
-  time_of_day TIME DEFAULT '09:00:00',
+  day_of_week INTEGER CHECK (day_of_week >= 0 AND day_of_week <= 6),
+  time_of_day TIME,
   is_active BOOLEAN NOT NULL DEFAULT true,
   questions JSONB DEFAULT '[]'::jsonb,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -808,11 +808,11 @@ CREATE TABLE IF NOT EXISTS fitness.check_in_schedules (
 
 CREATE TABLE IF NOT EXISTS fitness.check_ins (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  schedule_id UUID REFERENCES fitness.check_in_schedules(id) ON DELETE SET NULL,
+  schedule_id UUID NOT NULL REFERENCES fitness.check_in_schedules(id),
   client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   due_date DATE NOT NULL,
-  status VARCHAR(30) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'submitted', 'reviewed')),
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'submitted', 'missed', 'reviewed')),
   submitted_at TIMESTAMPTZ,
   responses JSONB DEFAULT '{}'::jsonb,
   weight_kg NUMERIC,
@@ -830,7 +830,7 @@ CREATE TABLE IF NOT EXISTS fitness.progress_records (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   recorded_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  record_type VARCHAR(50) NOT NULL DEFAULT 'daily_metrics',
+  record_type TEXT NOT NULL CHECK (record_type IN ('weight', 'measurement', 'steps', 'photo', 'general')),
   weight_kg NUMERIC,
   chest_cm NUMERIC,
   waist_cm NUMERIC,
@@ -852,7 +852,7 @@ CREATE TABLE IF NOT EXISTS fitness.progress_photos (
   client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   progress_record_id UUID REFERENCES fitness.progress_records(id) ON DELETE SET NULL,
   storage_path TEXT NOT NULL,
-  photo_type VARCHAR(50) NOT NULL DEFAULT 'front',
+  photo_type TEXT CHECK (photo_type IN ('front', 'side', 'back', 'other')),
   caption TEXT,
   uploaded_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -1053,7 +1053,9 @@ SET search_path = ''
 AS $$
   SELECT p.role::text
   FROM fitness.profiles AS p
-  WHERE p.id = auth.uid() AND p.is_active AND p.approval_status = 'active'
+  WHERE p.id = auth.uid()
+    AND p.is_active
+    AND p.approval_status IN ('active', 'approved', 'not_applicable')
 $$;
 
 CREATE OR REPLACE FUNCTION fitness.current_user_approval_status()
@@ -1184,7 +1186,7 @@ BEGIN
     coalesce(NEW.email, ''),
     first_name_value,
     coalesce(last_name_value, ''),
-    CASE WHEN requested_role = 'client' THEN 'pending' ELSE 'active' END,
+    CASE WHEN requested_role = 'client' THEN 'pending' ELSE 'not_applicable' END,
     goals_value
   );
 

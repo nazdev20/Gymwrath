@@ -6,6 +6,8 @@ import {
   Program,
   ScheduledWorkout,
   CheckIn,
+  CheckInFrequency,
+  ProgramDayOfWeek,
   StepRecord,
   Food,
   NutritionTarget,
@@ -100,6 +102,12 @@ interface AppContextType {
   // Check-In Actions
   submitCheckIn: (checkInData: Omit<CheckIn, 'id' | 'status' | 'submittedAt'>) => Promise<SupabaseWriteResult>;
   reviewCheckIn: (checkInId: string, coachFeedback: string) => Promise<SupabaseWriteResult>;
+  createCheckInSchedule: (input: {
+    clientId: string;
+    frequency: CheckInFrequency;
+    customIntervalDays?: number;
+    dayOfWeek?: ProgramDayOfWeek;
+  }) => Promise<SupabaseWriteResult>;
   
   // Step Actions
   logDailySteps: (dateStr: string, stepCount: number, notes?: string) => Promise<SupabaseWriteResult>;
@@ -464,13 +472,14 @@ export const AppProvider: React.FC<{
     const prog = programs.find(p => p.id === programId);
     if (!prog) return;
 
-    const startDate = new Date(startDateStr);
     const newWorkouts: ScheduledWorkout[] = [];
 
     (prog.workouts || []).forEach(pw => {
-      const workoutDate = new Date(startDate);
-      workoutDate.setDate(workoutDate.getDate() + ((pw.weekNumber - 1) * 7) + (pw.dayOfWeek - 1));
-      const scheduledDateStr = workoutDate.toISOString().split('T')[0];
+      const [year, month, day] = startDateStr.split('-').map(Number);
+      const weekStart = new Date(Date.UTC(year, month - 1, day + (pw.weekNumber - 1) * 7));
+      const dayOffset = (pw.dayOfWeek - weekStart.getUTCDay() + 7) % 7;
+      weekStart.setUTCDate(weekStart.getUTCDate() + dayOffset);
+      const scheduledDateStr = weekStart.toISOString().slice(0, 10);
 
       newWorkouts.push({
         id: `sch-${Date.now()}-${pw.id}`,
@@ -559,7 +568,7 @@ export const AppProvider: React.FC<{
 
     const saveResult = await SupabaseService.saveCheckIn(newCheckIn);
     if (!saveResult.success) return saveResult;
-    setCheckIns(prev => [newCheckIn, ...prev]);
+    setCheckIns(prev => [{ ...newCheckIn, scheduleId: saveResult.scheduleId }, ...prev]);
 
     if (checkInData.weightKg) {
       setAllProfiles(prev => prev.map(p => (p.id === currentUser.id ? { ...p, currentWeightKg: checkInData.weightKg } : p)));
@@ -571,7 +580,7 @@ export const AppProvider: React.FC<{
           id: `notif-chk-${Date.now()}`,
           recipientId: checkInData.coachId,
           title: 'New Check-In Submitted',
-          message: `${currentUser.fullName} submitted their weekly check-in for review.`,
+          message: `${currentUser.fullName} submitted a check-in for review.`,
           type: 'checkin_submitted',
           linkTarget: { view: 'checkins' },
           isRead: false,
@@ -593,6 +602,7 @@ export const AppProvider: React.FC<{
       coachFeedback,
       reviewedAt: new Date().toISOString()
     };
+
     const saveResult = await SupabaseService.saveCheckIn(updatedChk);
     if (!saveResult.success) return saveResult;
     setCheckIns(prev => prev.map(checkIn => checkIn.id === checkInId ? updatedChk : checkIn));
@@ -613,6 +623,13 @@ export const AppProvider: React.FC<{
     }
     return { success: true };
   };
+
+  const createCheckInSchedule = (input: {
+    clientId: string;
+    frequency: CheckInFrequency;
+    customIntervalDays?: number;
+    dayOfWeek?: ProgramDayOfWeek;
+  }): Promise<SupabaseWriteResult> => SupabaseService.createCheckInSchedule(input);
 
   const logDailySteps = async (dateStr: string, stepCount: number, notes?: string): Promise<SupabaseWriteResult> => {
     const existing = stepRecords.find(s => s.clientId === currentUser.id && s.logDate === dateStr);
@@ -819,6 +836,7 @@ export const AppProvider: React.FC<{
 
         submitCheckIn,
         reviewCheckIn,
+        createCheckInSchedule,
 
         logDailySteps,
 
