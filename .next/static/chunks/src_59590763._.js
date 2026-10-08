@@ -13,63 +13,36 @@ __turbopack_context__.s([
     ()=>getSupabaseConfig,
     "getSupabaseReachableState",
     ()=>getSupabaseReachableState,
-    "resetSupabaseConfig",
-    ()=>resetSupabaseConfig,
-    "setCustomSupabaseConfig",
-    ()=>setCustomSupabaseConfig,
     "setSupabaseReachableState",
     ()=>setSupabaseReachableState,
     "supabase",
     ()=>supabase
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = /*#__PURE__*/ __turbopack_context__.i("[project]/node_modules/next/dist/build/polyfills/process.js [app-client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/node_modules/@supabase/supabase-js/dist/index.mjs [app-client] (ecmascript) <locals>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$ssr$2f$dist$2f$module$2f$createBrowserClient$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/@supabase/ssr/dist/module/createBrowserClient.js [app-client] (ecmascript)");
+'use client';
 ;
-function getEnvironmentConfig() {
-    const url = (__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"].env.NEXT_PUBLIC_SUPABASE_URL || '').trim().replace(/\/+$/, '');
-    const anonKey = (__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"].env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '').trim();
-    return {
-        url,
-        anonKey
-    };
-}
-const OFFLINE_SUPABASE_URL = 'http://127.0.0.1:54321';
-const OFFLINE_SUPABASE_KEY = 'offline-placeholder-key';
-function createSupabaseClient(url, anonKey) {
-    return (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["createClient"])(url || OFFLINE_SUPABASE_URL, anonKey || OFFLINE_SUPABASE_KEY, {
-        auth: {
-            persistSession: true,
-            autoRefreshToken: true
-        }
-    });
-}
+const supabaseUrl = ("TURBOPACK compile-time value", "https://cbcvhmvdaujhbquryaom.supabase.co") || '';
+const supabaseAnonKey = ("TURBOPACK compile-time value", "sb_publishable_hBItT31I4RBvcksW7tMRyw_kfEnFZbB") || '';
 function getSupabaseConfig() {
-    let customUrl = '';
-    let customKey = '';
-    let offline = false;
-    try {
-        if ("object" !== 'undefined' && window.localStorage) {
-            customUrl = window.localStorage.getItem('apex_supabase_url') || '';
-            customKey = window.localStorage.getItem('apex_supabase_key') || '';
-            offline = window.localStorage.getItem('apex_supabase_offline') === 'true';
-        }
-    } catch (e) {
-    // Ignore storage issues
-    }
-    const env = getEnvironmentConfig();
-    const url = (customUrl.trim() || env.url).replace(/\/+$/, '');
-    const anonKey = customKey.trim() || env.anonKey;
     return {
-        url,
-        anonKey,
-        isCustom: !!(customUrl.trim() || customKey.trim()),
-        isOfflineMode: offline || !url || !anonKey
+        url: supabaseUrl,
+        anonKey: supabaseAnonKey,
+        isCustom: false,
+        isOfflineMode: !supabaseUrl || !supabaseAnonKey
     };
 }
-const initialConfig = getSupabaseConfig();
-let SUPABASE_URL = initialConfig.url;
-let SUPABASE_ANON_KEY = initialConfig.anonKey;
-let activeClient = createSupabaseClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_URL = supabaseUrl;
+const SUPABASE_ANON_KEY = supabaseAnonKey;
+const supabase = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$ssr$2f$dist$2f$module$2f$createBrowserClient$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["createBrowserClient"])(supabaseUrl || 'http://127.0.0.1:54321', supabaseAnonKey || 'offline-placeholder-key', {
+    db: {
+        schema: 'fitness'
+    },
+    auth: {
+        persistSession: true,
+        autoRefreshToken: true
+    }
+});
 let endpointIsReachable = null;
 function getSupabaseReachableState() {
     return endpointIsReachable;
@@ -77,78 +50,36 @@ function getSupabaseReachableState() {
 function setSupabaseReachableState(reachable) {
     endpointIsReachable = reachable;
 }
-function setCustomSupabaseConfig(url, key) {
-    let offline = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : false;
-    let cleanUrl = url.trim().replace(/\/+$/, '');
-    let cleanKey = key.trim();
-    if (!cleanUrl || !cleanKey) {
-        if (!offline) {
-            resetSupabaseConfig();
-            return;
-        }
-        cleanUrl = '';
-        cleanKey = '';
+async function checkSupabaseConnection() {
+    let overrideUrl = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : supabaseUrl, overrideKey = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : supabaseAnonKey;
+    const targetUrl = overrideUrl.trim().replace(/\/+$/, '');
+    const targetKey = overrideKey.trim();
+    if (!targetUrl || !targetKey) {
+        return {
+            connected: false,
+            endpoint: targetUrl,
+            error: 'Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.'
+        };
     }
-    try {
-        if ("object" !== 'undefined' && window.localStorage) {
-            if (cleanUrl && cleanKey) {
-                window.localStorage.setItem('apex_supabase_url', cleanUrl);
-                window.localStorage.setItem('apex_supabase_key', cleanKey);
-            } else {
-                window.localStorage.removeItem('apex_supabase_url');
-                window.localStorage.removeItem('apex_supabase_key');
-            }
-            window.localStorage.setItem('apex_supabase_offline', offline ? 'true' : 'false');
-        }
-    } catch (e) {}
-    SUPABASE_URL = cleanUrl;
-    SUPABASE_ANON_KEY = cleanKey;
-    activeClient = createSupabaseClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    endpointIsReachable = null;
-}
-function resetSupabaseConfig() {
-    try {
-        if ("object" !== 'undefined' && window.localStorage) {
-            window.localStorage.removeItem('apex_supabase_url');
-            window.localStorage.removeItem('apex_supabase_key');
-            window.localStorage.removeItem('apex_supabase_offline');
-        }
-    } catch (e) {}
-    const env = getEnvironmentConfig();
-    SUPABASE_URL = env.url;
-    SUPABASE_ANON_KEY = env.anonKey;
-    activeClient = createSupabaseClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    endpointIsReachable = null;
-}
-const supabase = new Proxy({}, {
-    get (_target, prop) {
-        return activeClient[prop];
-    }
-});
-async function checkSupabaseConnection(overrideUrl, overrideKey) {
-    const config = getSupabaseConfig();
-    const targetUrl = (overrideUrl || config.url).trim().replace(/\/+$/, '');
-    const targetKey = (overrideKey || config.anonKey).trim();
     try {
         const controller = new AbortController();
         const timeoutId = setTimeout(()=>controller.abort(), 6000);
-        const res = await fetch("".concat(targetUrl, "/rest/v1/"), {
-            method: 'GET',
-            headers: {
-                apikey: targetKey,
-                Authorization: "Bearer ".concat(targetKey)
-            },
-            signal: controller.signal
-        });
-        clearTimeout(timeoutId);
-        if (res.ok || res.status === 200 || res.status === 404) {
+        let response;
+        try {
+            response = await fetch("".concat(targetUrl, "/auth/v1/health"), {
+                headers: {
+                    apikey: targetKey
+                },
+                signal: controller.signal
+            });
+        } finally{
+            clearTimeout(timeoutId);
+        }
+        if (response.ok) {
             endpointIsReachable = true;
             return {
                 connected: true,
                 endpoint: targetUrl,
-                tablesFound: [
-                    'profiles'
-                ],
                 statusText: 'Connected & active'
             };
         }
@@ -156,17 +87,17 @@ async function checkSupabaseConnection(overrideUrl, overrideKey) {
         return {
             connected: false,
             endpoint: targetUrl,
-            error: "HTTP ".concat(res.status, ": ").concat(res.statusText)
+            error: "HTTP ".concat(response.status, ": ").concat(response.statusText)
         };
-    } catch (err) {
+    } catch (error) {
         endpointIsReachable = false;
-        const errMsg = (err === null || err === void 0 ? void 0 : err.message) || String(err);
-        const isDomain = errMsg.includes('Failed to fetch') || errMsg.includes('ERR_NAME_NOT_RESOLVED') || errMsg.includes('NetworkError') || errMsg.includes('aborted');
+        const message = error instanceof Error ? error.message : String(error);
+        const isDomainError = message.includes('Failed to fetch') || message.includes('ERR_NAME_NOT_RESOLVED') || message.includes('NetworkError') || message.includes('aborted');
         return {
             connected: false,
             endpoint: targetUrl,
-            isDomainError: isDomain,
-            error: isDomain ? 'DNS Error (ERR_NAME_NOT_RESOLVED): Host "'.concat(targetUrl, '" cannot be resolved. The Supabase project subdomain does not exist or is paused.') : errMsg
+            isDomainError,
+            error: isDomainError ? 'The Supabase endpoint "'.concat(targetUrl, '" is unreachable. Check the URL and project status.') : message
         };
     }
 }
@@ -287,7 +218,7 @@ const SupabaseService = {
                     email: p.email,
                     fullName: p.first_name ? "".concat(p.first_name, " ").concat(p.last_name || '').trim() : p.email,
                     role: p.role || 'client',
-                    status: p.approval_status || 'active',
+                    status: p.approval_status === 'pending' ? 'pending' : p.approval_status === 'rejected' || !p.is_active ? 'suspended' : 'active',
                     assignedCoachId: assignmentMap.get(p.id),
                     avatarUrl: p.avatar_url || "https://images.unsplash.com/photo-".concat(p.role === 'coach' ? '1534528741775-53994a69daeb' : '1535713875002-d1d0cf377fde', "?auto=format&fit=crop&q=80&w=256"),
                     bio: p.bio,
@@ -302,14 +233,38 @@ const SupabaseService = {
             profiles.forEach((p)=>profileMap.set(p.id, p));
             // 3. Query Exercises
             const { data: dbExercises } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from('exercises').select('*');
+            const validMuscleGroups = [
+                'Chest',
+                'Back',
+                'Shoulders',
+                'Quads',
+                'Hamstrings',
+                'Glutes',
+                'Calves',
+                'Biceps',
+                'Triceps',
+                'Core',
+                'Full Body',
+                'Cardio'
+            ];
+            const validExerciseCategories = [
+                'strength',
+                'cardio',
+                'flexibility',
+                'balance',
+                'plyometric',
+                'other'
+            ];
             const exercises = (dbExercises || []).map((e)=>{
+                var _e_muscle_groups;
                 var _e_is_global;
                 return {
                     id: e.id,
                     name: e.name,
                     description: e.description || e.name,
-                    muscleGroup: e.category || 'Chest',
-                    secondaryMuscles: e.muscle_groups || [],
+                    category: validExerciseCategories.includes(e.category) ? e.category : 'other',
+                    muscleGroup: ((_e_muscle_groups = e.muscle_groups) === null || _e_muscle_groups === void 0 ? void 0 : _e_muscle_groups.find((group)=>validMuscleGroups.includes(group))) || 'Chest',
+                    secondaryMuscles: (e.muscle_groups || []).filter((group)=>validMuscleGroups.includes(group)).slice(1),
                     equipment: e.equipment || 'Dumbbell',
                     instructions: typeof e.instructions === 'string' ? e.instructions.split('\n') : e.instructions || [],
                     isGlobal: (_e_is_global = e.is_global) !== null && _e_is_global !== void 0 ? _e_is_global : true,
@@ -350,10 +305,11 @@ const SupabaseService = {
                 const resp = c.responses || {};
                 return {
                     id: c.id,
+                    scheduleId: c.schedule_id,
                     clientId: c.client_id,
                     coachId: c.coach_id,
                     checkInDate: c.due_date,
-                    status: c.status === 'reviewed' ? 'reviewed' : 'submitted',
+                    status: c.status,
                     submittedAt: c.submitted_at || c.created_at,
                     weightKg: c.weight_kg || resp.weightKg || 70,
                     sleepRating: resp.sleepRating || 8,
@@ -413,22 +369,43 @@ const SupabaseService = {
                 };
             });
             // 10. Query Food Logs
-            const { data: dbLogs } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from('daily_nutrition_logs').select("\n        id,\n        client_id,\n        log_date,\n        total_calories,\n        total_protein_g,\n        total_carbs_g,\n        total_fat_g\n      ");
-            const foodLogs = (dbLogs || []).map((l)=>({
-                    id: l.id,
-                    clientId: l.client_id,
-                    logDate: l.log_date,
-                    mealName: 'Lunch',
-                    foodId: 'f-1',
-                    foodName: 'Daily Nutrition Log Entry',
-                    quantity: 1,
-                    unit: 'portion',
-                    calories: Number(l.total_calories) || 0,
-                    proteinG: Number(l.total_protein_g) || 0,
-                    carbsG: Number(l.total_carbs_g) || 0,
-                    fatG: Number(l.total_fat_g) || 0,
-                    loggedAt: l.log_date + 'T12:00:00.000Z'
-                }));
+            const { data: dbLogs, error: logsError } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from('daily_nutrition_logs').select("\n        id,\n        client_id,\n        log_date,\n        total_calories,\n        total_protein_g,\n        total_carbs_g,\n        total_fat_g,\n        nutrition_log_meals (\n          id,\n          meal_name,\n          nutrition_log_foods (\n            id,\n            food_name,\n            quantity,\n            unit,\n            calories,\n            protein_g,\n            carbs_g,\n            fat_g,\n            created_at\n          )\n        )\n      ");
+            if (logsError) throw logsError;
+            const foodLogs = (dbLogs || []).flatMap((l)=>{
+                const entries = (l.nutrition_log_meals || []).flatMap((meal)=>(meal.nutrition_log_foods || []).map((food)=>({
+                            id: food.id,
+                            clientId: l.client_id,
+                            logDate: l.log_date,
+                            mealName: meal.meal_name,
+                            foodId: food.id,
+                            foodName: food.food_name,
+                            quantity: Number(food.quantity),
+                            unit: food.unit,
+                            calories: Number(food.calories) || 0,
+                            proteinG: Number(food.protein_g) || 0,
+                            carbsG: Number(food.carbs_g) || 0,
+                            fatG: Number(food.fat_g) || 0,
+                            loggedAt: food.created_at
+                        })));
+                if (entries.length > 0) return entries;
+                return [
+                    {
+                        id: l.id,
+                        clientId: l.client_id,
+                        logDate: l.log_date,
+                        mealName: 'Lunch',
+                        foodId: 'legacy-daily-log',
+                        foodName: 'Daily Nutrition Log Entry',
+                        quantity: 1,
+                        unit: 'portion',
+                        calories: Number(l.total_calories) || 0,
+                        proteinG: Number(l.total_protein_g) || 0,
+                        carbsG: Number(l.total_carbs_g) || 0,
+                        fatG: Number(l.total_fat_g) || 0,
+                        loggedAt: l.log_date + 'T12:00:00.000Z'
+                    }
+                ];
+            });
             // 11. Query Conversations & Messages
             const { data: dbConvs } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from('conversations').select('*');
             const conversations = (dbConvs || []).map((c)=>{
@@ -455,6 +432,7 @@ const SupabaseService = {
                     id: m.id,
                     conversationId: m.conversation_id,
                     senderId: m.sender_id,
+                    recipientId: m.recipient_id,
                     senderName: (sender === null || sender === void 0 ? void 0 : sender.fullName) || 'User',
                     senderRole: (sender === null || sender === void 0 ? void 0 : sender.role) || 'coach',
                     content: m.content,
@@ -503,6 +481,7 @@ const SupabaseService = {
         if ((0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseConfig"])().isOfflineMode || (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseReachableState"])() === false) return false;
         try {
             var _profile_fullName, _profile_fullName1;
+            const approvalStatus = profile.status === 'pending' ? 'pending' : profile.status === 'active' ? profile.role === 'client' ? 'approved' : 'not_applicable' : 'rejected';
             const payload = {
                 id: profile.id,
                 role: profile.role,
@@ -511,7 +490,7 @@ const SupabaseService = {
                 last_name: ((_profile_fullName1 = profile.fullName) === null || _profile_fullName1 === void 0 ? void 0 : _profile_fullName1.split(' ').slice(1).join(' ')) || '',
                 avatar_url: profile.avatarUrl,
                 phone: profile.phone,
-                approval_status: profile.status,
+                approval_status: approvalStatus,
                 bio: profile.bio,
                 onboarding_completed: true,
                 height_cm: profile.heightCm,
@@ -529,28 +508,72 @@ const SupabaseService = {
     },
     // Insert or Upsert a message
     async saveMessage (msg) {
-        if ((0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseConfig"])().isOfflineMode || (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseReachableState"])() === false) return false;
+        if ((0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseConfig"])().isOfflineMode || (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseReachableState"])() === false) {
+            return {
+                success: false,
+                error: 'Supabase is not configured or is unreachable.'
+            };
+        }
         try {
             const { error } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from('messages').insert({
                 id: msg.id,
                 conversation_id: msg.conversationId,
                 sender_id: msg.senderId,
-                recipient_id: msg.senderId,
+                recipient_id: msg.recipientId,
                 content: msg.content,
                 is_read: msg.isRead,
                 created_at: msg.createdAt
             });
-            return !error;
-        } catch (e) {
-            return false;
+            if (error) {
+                console.error('Failed to save message to Supabase:', error);
+                return {
+                    success: false,
+                    error: error.message
+                };
+            }
+            return {
+                success: true
+            };
+        } catch (error) {
+            console.error('Failed to save message to Supabase:', error);
+            return {
+                success: false,
+                error: error instanceof Error ? error.message : 'Unknown Supabase error.'
+            };
         }
     },
     // Insert or Upsert a check-in
     async saveCheckIn (chk) {
-        if ((0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseConfig"])().isOfflineMode || (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseReachableState"])() === false) return false;
+        if ((0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseConfig"])().isOfflineMode || (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseReachableState"])() === false) {
+            return {
+                success: false,
+                error: 'Supabase is not configured or is unreachable.'
+            };
+        }
         try {
+            let scheduleId = chk.scheduleId;
+            if (!scheduleId) {
+                const { data: schedule, error: scheduleError } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from('check_in_schedules').select('id').eq('client_id', chk.clientId).eq('coach_id', chk.coachId).eq('is_active', true).order('created_at', {
+                    ascending: false
+                }).limit(1).maybeSingle();
+                if (scheduleError) {
+                    console.error('Failed to find an active check-in schedule:', scheduleError);
+                    return {
+                        success: false,
+                        error: scheduleError.message
+                    };
+                }
+                scheduleId = schedule === null || schedule === void 0 ? void 0 : schedule.id;
+            }
+            if (!scheduleId) {
+                return {
+                    success: false,
+                    error: 'Your coach must create an active check-in schedule before you can submit a check-in.'
+                };
+            }
             const { error } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from('check_ins').upsert({
                 id: chk.id,
+                schedule_id: scheduleId,
                 client_id: chk.clientId,
                 coach_id: chk.coachId,
                 due_date: chk.checkInDate,
@@ -574,77 +597,242 @@ const SupabaseService = {
             }, {
                 onConflict: 'id'
             });
-            return !error;
-        } catch (e) {
-            return false;
+            if (error) {
+                console.error('Failed to save check-in to Supabase:', error);
+                return {
+                    success: false,
+                    error: error.message
+                };
+            }
+            return {
+                success: true,
+                scheduleId
+            };
+        } catch (error) {
+            console.error('Failed to save check-in to Supabase:', error);
+            return {
+                success: false,
+                error: error instanceof Error ? error.message : 'Unknown Supabase error.'
+            };
+        }
+    },
+    async createCheckInSchedule (input) {
+        if ((0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseConfig"])().isOfflineMode || (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseReachableState"])() === false) {
+            return {
+                success: false,
+                error: 'Supabase is not configured or is unreachable.'
+            };
+        }
+        try {
+            const { data: { user }, error: authError } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].auth.getUser();
+            if (authError) return {
+                success: false,
+                error: "Unable to verify the signed-in user: ".concat(authError.message)
+            };
+            if (!user) return {
+                success: false,
+                error: 'Sign in as the assigned coach to create a check-in schedule.'
+            };
+            if (input.frequency === 'custom' && (!input.customIntervalDays || input.customIntervalDays < 1)) {
+                return {
+                    success: false,
+                    error: 'Custom check-in intervals must be at least 1 day.'
+                };
+            }
+            var _input_dayOfWeek;
+            const { error } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from('check_in_schedules').insert({
+                coach_id: user.id,
+                client_id: input.clientId,
+                frequency: input.frequency,
+                custom_interval_days: input.frequency === 'custom' ? input.customIntervalDays : null,
+                day_of_week: (_input_dayOfWeek = input.dayOfWeek) !== null && _input_dayOfWeek !== void 0 ? _input_dayOfWeek : null,
+                is_active: true,
+                questions: []
+            });
+            if (error) {
+                console.error('Failed to create check-in schedule:', error);
+                return {
+                    success: false,
+                    error: error.message
+                };
+            }
+            return {
+                success: true
+            };
+        } catch (error) {
+            console.error('Failed to create check-in schedule:', error);
+            return {
+                success: false,
+                error: error instanceof Error ? error.message : 'Unknown Supabase error.'
+            };
         }
     },
     // Insert or Upsert a step record
     async saveStepRecord (step) {
-        if ((0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseConfig"])().isOfflineMode || (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseReachableState"])() === false) return false;
+        if ((0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseConfig"])().isOfflineMode || (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseReachableState"])() === false) {
+            return {
+                success: false,
+                error: 'Supabase is not configured or is unreachable.'
+            };
+        }
         try {
             const { error } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from('progress_records').upsert({
                 id: step.id,
                 client_id: step.clientId,
                 recorded_at: step.loggedAt,
-                record_type: 'step_entry',
+                record_type: 'steps',
                 step_count: step.stepCount,
                 notes: step.notes
             }, {
                 onConflict: 'id'
             });
-            return !error;
-        } catch (e) {
-            return false;
+            if (error) {
+                console.error('Failed to save step record to Supabase:', error);
+                return {
+                    success: false,
+                    error: error.message
+                };
+            }
+            return {
+                success: true
+            };
+        } catch (error) {
+            console.error('Failed to save step record to Supabase:', error);
+            return {
+                success: false,
+                error: error instanceof Error ? error.message : 'Unknown Supabase error.'
+            };
         }
     },
     // Insert or Upsert a food log entry
     async saveFoodLog (log) {
-        if ((0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseConfig"])().isOfflineMode || (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseReachableState"])() === false) return false;
+        if ((0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseConfig"])().isOfflineMode || (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseReachableState"])() === false) {
+            return {
+                success: false,
+                error: 'Supabase is not configured or is unreachable.'
+            };
+        }
         try {
-            const { error } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from('daily_nutrition_logs').upsert({
-                id: log.id,
-                client_id: log.clientId,
-                log_date: log.logDate,
-                total_calories: log.calories,
-                total_protein_g: log.proteinG,
-                total_carbs_g: log.carbsG,
-                total_fat_g: log.fatG,
-                updated_at: new Date().toISOString()
-            }, {
-                onConflict: 'id'
+            const { error } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].rpc('log_food_item', {
+                p_id: log.id,
+                p_client_id: log.clientId,
+                p_log_date: log.logDate,
+                p_meal_name: log.mealName,
+                p_food_name: log.foodName,
+                p_quantity: log.quantity,
+                p_unit: log.unit,
+                p_calories: log.calories,
+                p_protein_g: log.proteinG,
+                p_carbs_g: log.carbsG,
+                p_fat_g: log.fatG
             });
-            return !error;
-        } catch (e) {
-            return false;
+            if (error) {
+                console.error('Failed to save food log to Supabase:', error);
+                return {
+                    success: false,
+                    error: error.message
+                };
+            }
+            return {
+                success: true
+            };
+        } catch (error) {
+            console.error('Failed to save food log to Supabase:', error);
+            return {
+                success: false,
+                error: error instanceof Error ? error.message : 'Unknown Supabase error.'
+            };
+        }
+    },
+    async deleteFoodLog (id) {
+        if ((0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseConfig"])().isOfflineMode || (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseReachableState"])() === false) {
+            return {
+                success: false,
+                error: 'Supabase is not configured or is unreachable.'
+            };
+        }
+        try {
+            const { error } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].rpc('delete_food_log_item', {
+                p_id: id
+            });
+            if (error) {
+                console.error('Failed to delete food log from Supabase:', error);
+                return {
+                    success: false,
+                    error: error.message
+                };
+            }
+            return {
+                success: true
+            };
+        } catch (error) {
+            console.error('Failed to delete food log from Supabase:', error);
+            return {
+                success: false,
+                error: error instanceof Error ? error.message : 'Unknown Supabase error.'
+            };
         }
     },
     // Insert or Upsert an exercise
     async saveExercise (ex) {
-        if ((0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseConfig"])().isOfflineMode || (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseReachableState"])() === false) return false;
+        if ((0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseConfig"])().isOfflineMode) {
+            return {
+                success: false,
+                error: 'Supabase is in offline mode.'
+            };
+        }
+        if ((0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getSupabaseReachableState"])() === false) {
+            return {
+                success: false,
+                error: 'The Supabase endpoint is unreachable.'
+            };
+        }
         try {
+            const { data: { user }, error: authError } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].auth.getUser();
+            if (authError) return {
+                success: false,
+                error: "Unable to verify the signed-in user: ".concat(authError.message)
+            };
+            if (!user) return {
+                success: false,
+                error: 'Sign in before saving an exercise.'
+            };
+            const coachId = user.id;
             const { error } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from('exercises').upsert({
                 id: ex.id,
-                coach_id: ex.createdBy,
+                coach_id: coachId,
                 name: ex.name,
-                description: ex.instructions.join('\n'),
-                category: ex.muscleGroup,
+                description: ex.description,
+                category: ex.category,
                 muscle_groups: [
                     ex.muscleGroup,
                     ...ex.secondaryMuscles || []
                 ],
                 equipment: ex.equipment,
                 instructions: ex.instructions.join('\n'),
-                difficulty_level: 'Intermediate',
+                difficulty_level: 'intermediate',
                 is_global: ex.isGlobal,
                 created_at: ex.createdAt,
                 updated_at: new Date().toISOString()
             }, {
                 onConflict: 'id'
             });
-            return !error;
-        } catch (e) {
-            return false;
+            if (error) {
+                console.error('Failed to save exercise to Supabase:', error);
+                return {
+                    success: false,
+                    error: error.message
+                };
+            }
+            return {
+                success: true
+            };
+        } catch (error) {
+            console.error('Failed to save exercise to Supabase:', error);
+            return {
+                success: false,
+                error: error instanceof Error ? error.message : 'Unknown Supabase error.'
+            };
         }
     }
 };
@@ -664,82 +852,30 @@ __turbopack_context__.s([
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/index.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$supabaseService$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/services/supabaseService.ts [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/lib/supabase.ts [app-client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature(), _s1 = __turbopack_context__.k.signature();
 ;
 ;
+;
 const AppContext = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["createContext"])(undefined);
-const STORAGE_PREFIX = 'fitness_db_live_v4_';
-// Auto-purge any legacy mock storage keys from older sessions
-try {
-    if ("object" !== 'undefined' && window.localStorage) {
-        const legacyPrefixes = [
-            'fitness_platform_',
-            'apex_coaching_',
-            'coaching_platform_',
-            'fitness_v2_'
-        ];
-        Object.keys(localStorage).forEach((key)=>{
-            if (legacyPrefixes.some((p)=>key.startsWith(p))) {
-                localStorage.removeItem(key);
-            }
-        });
-    }
-} catch (e) {
-    console.warn('Storage purge error:', e);
-}
-function loadFromStorage(key, fallback) {
-    try {
-        if ("object" !== 'undefined' && window.localStorage) {
-            const saved = localStorage.getItem(STORAGE_PREFIX + key);
-            if (saved) return JSON.parse(saved);
-        }
-    } catch (e) {
-        console.error('Failed to parse storage item for ' + key, e);
-    }
-    return fallback;
-}
-function saveToStorage(key, data) {
-    try {
-        if ("object" !== 'undefined' && window.localStorage) {
-            localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(data));
-        }
-    } catch (e) {
-        console.error('Failed to save storage item for ' + key, e);
-    }
-}
-// Clean bootstrap profiles: Coach and Admin (0 clients initially)
-const DEFAULT_COACH_PROFILE = {
-    id: 'coach-primary',
-    email: 'coach@apexcoaching.com',
-    fullName: 'Coach',
-    role: 'coach',
-    status: 'active',
-    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256',
+const GUEST_PROFILE = {
+    id: '',
+    email: '',
+    fullName: 'Guest',
+    role: 'client',
+    status: 'pending',
+    avatarUrl: '',
     timezone: 'UTC',
-    createdAt: new Date().toISOString(),
-    bio: 'Head Performance Coach'
+    createdAt: ''
 };
-const DEFAULT_ADMIN_PROFILE = {
-    id: 'user-admin-1',
-    email: 'admin@fitnessplatform.com',
-    fullName: 'System Administrator',
-    role: 'admin',
-    status: 'active',
-    avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256',
-    timezone: 'UTC',
-    createdAt: new Date().toISOString(),
-    bio: 'Platform Root Administrator'
-};
-const INITIAL_BASE_PROFILES = [
-    DEFAULT_COACH_PROFILE,
-    DEFAULT_ADMIN_PROFILE
-];
 const AppProvider = (param)=>{
-    let { children } = param;
+    let { children, initialUserId = null, initialProfile = null } = param;
     _s();
-    const [allProfiles, setAllProfiles] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(INITIAL_BASE_PROFILES);
-    const [currentUserId, setCurrentUserId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('coach-primary');
+    const [allProfiles, setAllProfiles] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(initialProfile ? [
+        initialProfile
+    ] : []);
+    const [currentUserId, setCurrentUserId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(initialUserId || '');
     const [exercises, setExercises] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
     const [programs, setPrograms] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
     const [scheduledWorkouts, setScheduledWorkouts] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
@@ -752,10 +888,10 @@ const AppProvider = (param)=>{
     const [conversations, setConversations] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
     const [messages, setMessages] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
     const [notifications, setNotifications] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
-    const [isStorageHydrated, setIsStorageHydrated] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     // Supabase Loading & Connectivity State
     const [isLoadingSupabase, setIsLoadingSupabase] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [isSupabaseConnected, setIsSupabaseConnected] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [supabaseAuthUserId, setSupabaseAuthUserId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
     // Navigation & Modals
     const [activeView, setActiveView] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('dashboard');
     const [selectedClientId, setSelectedClientId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
@@ -763,31 +899,15 @@ const AppProvider = (param)=>{
     const [activeCheckInReviewId, setActiveCheckInReviewId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
     const [isCheckInModalOpen, setIsCheckInModalOpen] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [isNotificationsOpen, setIsNotificationsOpen] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "AppProvider.useEffect": ()=>{
-            setAllProfiles(loadFromStorage('profiles', INITIAL_BASE_PROFILES));
-            setCurrentUserId(loadFromStorage('current_user_id', 'coach-primary'));
-            setExercises(loadFromStorage('exercises', []));
-            setPrograms(loadFromStorage('programs', []));
-            setScheduledWorkouts(loadFromStorage('workouts', []));
-            setCheckIns(loadFromStorage('checkins', []));
-            setStepRecords(loadFromStorage('steps', []));
-            setFoods(loadFromStorage('foods', []));
-            setNutritionTargets(loadFromStorage('targets', []));
-            setMealPlans(loadFromStorage('mealplans', []));
-            setFoodLogs(loadFromStorage('foodlogs', []));
-            setConversations(loadFromStorage('conversations', []));
-            setMessages(loadFromStorage('messages', []));
-            setNotifications(loadFromStorage('notifications', []));
-            setIsStorageHydrated(true);
-        }
-    }["AppProvider.useEffect"], []);
-    // Auto-fetch data from Supabase after local state has been restored
-    const loadFromSupabase = async ()=>{
+    // Load application records only after Supabase Auth identifies the current user.
+    const loadFromSupabase = async function() {
+        let authenticatedUserId = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : supabaseAuthUserId;
+        if (!authenticatedUserId) return false;
         setIsLoadingSupabase(true);
         try {
             const result = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$supabaseService$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SupabaseService"].loadAllDataFromSupabase();
-            if (result && result.profiles && result.profiles.length > 0) {
+            const authenticatedProfile = result === null || result === void 0 ? void 0 : result.profiles.find((profile)=>profile.id === authenticatedUserId);
+            if (result && authenticatedProfile) {
                 setAllProfiles(result.profiles);
                 if (result.exercises) setExercises(result.exercises);
                 if (result.programs) setPrograms(result.programs);
@@ -800,16 +920,26 @@ const AppProvider = (param)=>{
                 if (result.conversations) setConversations(result.conversations);
                 if (result.messages) setMessages(result.messages);
                 if (result.notifications) setNotifications(result.notifications);
-                // Select the first profile if current is invalid
-                if (!result.profiles.some((p)=>p.id === currentUserId)) {
-                    setCurrentUserId(result.profiles[0].id);
-                }
+                setCurrentUserId(authenticatedUserId);
                 setIsSupabaseConnected(true);
                 setIsLoadingSupabase(false);
                 return true;
             } else {
-                // Table exists or empty
-                setIsSupabaseConnected(true);
+                setAllProfiles([]);
+                setCurrentUserId('');
+                setExercises([]);
+                setPrograms([]);
+                setScheduledWorkouts([]);
+                setCheckIns([]);
+                setStepRecords([]);
+                setFoods([]);
+                setNutritionTargets([]);
+                setMealPlans([]);
+                setFoodLogs([]);
+                setConversations([]);
+                setMessages([]);
+                setNotifications([]);
+                setIsSupabaseConnected(Boolean(result));
                 setIsLoadingSupabase(false);
                 return false;
             }
@@ -822,155 +952,143 @@ const AppProvider = (param)=>{
     };
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "AppProvider.useEffect": ()=>{
-            if (isStorageHydrated) loadFromSupabase();
+            if (supabaseAuthUserId) {
+                void loadFromSupabase();
+                return;
+            }
+            setAllProfiles([]);
+            setExercises([]);
+            setPrograms([]);
+            setScheduledWorkouts([]);
+            setCheckIns([]);
+            setStepRecords([]);
+            setFoods([]);
+            setNutritionTargets([]);
+            setMealPlans([]);
+            setFoodLogs([]);
+            setConversations([]);
+            setMessages([]);
+            setNotifications([]);
+            setIsSupabaseConnected(false);
         }
     }["AppProvider.useEffect"], [
-        isStorageHydrated
+        supabaseAuthUserId
     ]);
-    // Clear all local storage data
-    const clearAllLocalData = ()=>{
-        Object.keys(localStorage).forEach((key)=>{
-            if (key.startsWith(STORAGE_PREFIX) || key.startsWith('fitness_') || key.startsWith('apex_')) {
-                localStorage.removeItem(key);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "AppProvider.useEffect": ()=>{
+            let isMounted = true;
+            const applyAuthUser = {
+                "AppProvider.useEffect.applyAuthUser": (userId)=>{
+                    if (!isMounted) return;
+                    setSupabaseAuthUserId(userId);
+                    setCurrentUserId(userId || '');
+                }
+            }["AppProvider.useEffect.applyAuthUser"];
+            void __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].auth.getSession().then({
+                "AppProvider.useEffect": (param)=>{
+                    let { data, error } = param;
+                    var _data_session;
+                    if (error) {
+                        console.error('Failed to restore Supabase session:', error);
+                        return;
+                    }
+                    applyAuthUser(((_data_session = data.session) === null || _data_session === void 0 ? void 0 : _data_session.user.id) || null);
+                }
+            }["AppProvider.useEffect"]);
+            const { data: { subscription } } = __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].auth.onAuthStateChange({
+                "AppProvider.useEffect": (_event, session)=>{
+                    applyAuthUser((session === null || session === void 0 ? void 0 : session.user.id) || null);
+                }
+            }["AppProvider.useEffect"]);
+            return ({
+                "AppProvider.useEffect": ()=>{
+                    isMounted = false;
+                    subscription.unsubscribe();
+                }
+            })["AppProvider.useEffect"];
+        }
+    }["AppProvider.useEffect"], []);
+    const signInWithSupabase = async (email, password)=>{
+        const { data, error } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].auth.signInWithPassword({
+            email,
+            password
+        });
+        if (error) return {
+            success: false,
+            error: error.message
+        };
+        if (!data.user) return {
+            success: false,
+            error: 'Supabase did not return a user for this session.'
+        };
+        setSupabaseAuthUserId(data.user.id);
+        setCurrentUserId(data.user.id);
+        const loaded = await loadFromSupabase(data.user.id);
+        if (!loaded) {
+            await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].auth.signOut();
+            setSupabaseAuthUserId(null);
+            return {
+                success: false,
+                error: 'Signed in, but no profile was found. Confirm the fitness schema setup and profile row for this account.'
+            };
+        }
+        return {
+            success: true
+        };
+    };
+    const signUpWithSupabase = async (name, email, password, goals)=>{
+        const { data, error } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].auth.signUp({
+            email,
+            password,
+            options: {
+                data: {
+                    full_name: name,
+                    fitness_goals: goals || ''
+                }
             }
         });
-        setAllProfiles(INITIAL_BASE_PROFILES);
-        setCurrentUserId(DEFAULT_COACH_PROFILE.id);
-        setExercises([]);
-        setPrograms([]);
-        setScheduledWorkouts([]);
-        setCheckIns([]);
-        setStepRecords([]);
-        setFoods([]);
-        setNutritionTargets([]);
-        setMealPlans([]);
-        setFoodLogs([]);
-        setConversations([]);
-        setMessages([]);
-        setNotifications([]);
+        if (error) return {
+            success: false,
+            error: error.message
+        };
+        if (!data.user) return {
+            success: false,
+            error: 'Supabase did not create a user.'
+        };
+        if (!data.session) {
+            return {
+                success: true,
+                requiresEmailConfirmation: true
+            };
+        }
+        setSupabaseAuthUserId(data.user.id);
+        setCurrentUserId(data.user.id);
+        const loaded = await loadFromSupabase(data.user.id);
+        if (!loaded) {
+            await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].auth.signOut();
+            setSupabaseAuthUserId(null);
+            return {
+                success: false,
+                error: 'The account was created, but its fitness profile could not be loaded. Contact an administrator.'
+            };
+        }
+        return {
+            success: true
+        };
+    };
+    const signOutFromSupabase = async ()=>{
+        const { error } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].auth.signOut();
+        if (error) return {
+            success: false,
+            error: error.message
+        };
+        setSupabaseAuthUserId(null);
+        return {
+            success: true
+        };
     };
     // Sync to storage
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "AppProvider.useEffect": ()=>{
-            if (isStorageHydrated) saveToStorage('profiles', allProfiles);
-        }
-    }["AppProvider.useEffect"], [
-        allProfiles,
-        isStorageHydrated
-    ]);
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "AppProvider.useEffect": ()=>{
-            if (isStorageHydrated) saveToStorage('current_user_id', currentUserId);
-        }
-    }["AppProvider.useEffect"], [
-        currentUserId,
-        isStorageHydrated
-    ]);
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "AppProvider.useEffect": ()=>{
-            if (isStorageHydrated) saveToStorage('exercises', exercises);
-        }
-    }["AppProvider.useEffect"], [
-        exercises,
-        isStorageHydrated
-    ]);
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "AppProvider.useEffect": ()=>{
-            if (isStorageHydrated) saveToStorage('programs', programs);
-        }
-    }["AppProvider.useEffect"], [
-        programs,
-        isStorageHydrated
-    ]);
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "AppProvider.useEffect": ()=>{
-            if (isStorageHydrated) saveToStorage('workouts', scheduledWorkouts);
-        }
-    }["AppProvider.useEffect"], [
-        scheduledWorkouts,
-        isStorageHydrated
-    ]);
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "AppProvider.useEffect": ()=>{
-            if (isStorageHydrated) saveToStorage('checkins', checkIns);
-        }
-    }["AppProvider.useEffect"], [
-        checkIns,
-        isStorageHydrated
-    ]);
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "AppProvider.useEffect": ()=>{
-            if (isStorageHydrated) saveToStorage('steps', stepRecords);
-        }
-    }["AppProvider.useEffect"], [
-        stepRecords,
-        isStorageHydrated
-    ]);
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "AppProvider.useEffect": ()=>{
-            if (isStorageHydrated) saveToStorage('foods', foods);
-        }
-    }["AppProvider.useEffect"], [
-        foods,
-        isStorageHydrated
-    ]);
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "AppProvider.useEffect": ()=>{
-            if (isStorageHydrated) saveToStorage('targets', nutritionTargets);
-        }
-    }["AppProvider.useEffect"], [
-        nutritionTargets,
-        isStorageHydrated
-    ]);
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "AppProvider.useEffect": ()=>{
-            if (isStorageHydrated) saveToStorage('mealplans', mealPlans);
-        }
-    }["AppProvider.useEffect"], [
-        mealPlans,
-        isStorageHydrated
-    ]);
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "AppProvider.useEffect": ()=>{
-            if (isStorageHydrated) saveToStorage('foodlogs', foodLogs);
-        }
-    }["AppProvider.useEffect"], [
-        foodLogs,
-        isStorageHydrated
-    ]);
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "AppProvider.useEffect": ()=>{
-            if (isStorageHydrated) saveToStorage('conversations', conversations);
-        }
-    }["AppProvider.useEffect"], [
-        conversations,
-        isStorageHydrated
-    ]);
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "AppProvider.useEffect": ()=>{
-            if (isStorageHydrated) saveToStorage('messages', messages);
-        }
-    }["AppProvider.useEffect"], [
-        messages,
-        isStorageHydrated
-    ]);
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "AppProvider.useEffect": ()=>{
-            if (isStorageHydrated) saveToStorage('notifications', notifications);
-        }
-    }["AppProvider.useEffect"], [
-        notifications,
-        isStorageHydrated
-    ]);
-    const currentUser = allProfiles.find((p)=>p.id === currentUserId) || allProfiles[0] || DEFAULT_COACH_PROFILE;
-    const switchUser = (userId)=>{
-        const target = allProfiles.find((p)=>p.id === userId);
-        if (target) {
-            setCurrentUserId(userId);
-            setActiveView('dashboard');
-            setSelectedClientId(null);
-        }
-    };
+    const currentUser = allProfiles.find((p)=>p.id === currentUserId) || GUEST_PROFILE;
     const updateProfile = (updated)=>{
         setAllProfiles((prev)=>prev.map((p)=>p.id === currentUser.id ? {
                     ...p,
@@ -980,47 +1098,6 @@ const AppProvider = (param)=>{
             ...currentUser,
             ...updated
         });
-    };
-    const registerUser = (name, email, role, goals)=>{
-        const newId = "user-".concat(role, "-").concat(Date.now());
-        const newProfile = {
-            id: newId,
-            email,
-            fullName: name,
-            role,
-            status: role === 'client' ? 'pending' : 'active',
-            avatarUrl: "https://images.unsplash.com/photo-".concat(role === 'coach' ? '1534528741775-53994a69daeb' : '1535713875002-d1d0cf377fde', "?auto=format&fit=crop&q=80&w=256"),
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
-            createdAt: new Date().toISOString(),
-            goals: goals || 'Improve overall strength and fitness'
-        };
-        setAllProfiles((prev)=>[
-                ...prev,
-                newProfile
-            ]);
-        __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$supabaseService$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SupabaseService"].saveProfile(newProfile);
-        // If client, notify admin
-        if (role === 'client') {
-            const adminUsers = allProfiles.filter((p)=>p.role === 'admin');
-            adminUsers.forEach((admin)=>{
-                setNotifications((prev)=>[
-                        {
-                            id: "notif-".concat(Date.now(), "-").concat(admin.id),
-                            recipientId: admin.id,
-                            title: 'New Client Registration',
-                            message: "".concat(name, " has registered and requires account approval and coach assignment."),
-                            type: 'account_pending',
-                            linkTarget: {
-                                view: 'admin'
-                            },
-                            isRead: false,
-                            createdAt: new Date().toISOString()
-                        },
-                        ...prev
-                    ]);
-            });
-        }
-        return newProfile;
     };
     const approveUser = (userId, assignedCoachId)=>{
         setAllProfiles((prev)=>prev.map((p)=>{
@@ -1062,6 +1139,7 @@ const AppProvider = (param)=>{
                     id: "msg-".concat(Date.now()),
                     conversationId: convId,
                     senderId: coachUser.id,
+                    recipientId: targetUser.id,
                     senderName: coachUser.fullName,
                     senderRole: 'coach',
                     content: "Welcome to the team ".concat(targetUser.fullName, "! I've been assigned as your primary coach. Take a look at your dashboard and let me know if you have any questions before we get started."),
@@ -1124,18 +1202,25 @@ const AppProvider = (param)=>{
             assignedCoachId: coachId
         });
     };
-    const addExercise = (exercise)=>{
+    const addExercise = async (exercise)=>{
+        if (!supabaseAuthUserId) {
+            return {
+                success: false,
+                error: 'Sign in before saving an exercise.'
+            };
+        }
         const newEx = {
             ...exercise,
-            id: "ex-".concat(Date.now()),
+            createdBy: supabaseAuthUserId,
+            id: crypto.randomUUID(),
             createdAt: new Date().toISOString()
         };
-        setExercises((prev)=>[
+        const result = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$supabaseService$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SupabaseService"].saveExercise(newEx);
+        if (result.success) setExercises((prev)=>[
                 newEx,
                 ...prev
             ]);
-        __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$supabaseService$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SupabaseService"].saveExercise(newEx);
-        return newEx;
+        return result;
     };
     const updateExercise = (id, updates)=>{
         setExercises((prev)=>prev.map((e)=>e.id === id ? {
@@ -1161,12 +1246,13 @@ const AppProvider = (param)=>{
     const assignProgramToClient = (programId, clientId, startDateStr)=>{
         const prog = programs.find((p)=>p.id === programId);
         if (!prog) return;
-        const startDate = new Date(startDateStr);
         const newWorkouts = [];
         (prog.workouts || []).forEach((pw)=>{
-            const workoutDate = new Date(startDate);
-            workoutDate.setDate(workoutDate.getDate() + (pw.weekNumber - 1) * 7 + (pw.dayOfWeek - 1));
-            const scheduledDateStr = workoutDate.toISOString().split('T')[0];
+            const [year, month, day] = startDateStr.split('-').map(Number);
+            const weekStart = new Date(Date.UTC(year, month - 1, day + (pw.weekNumber - 1) * 7));
+            const dayOffset = (pw.dayOfWeek - weekStart.getUTCDay() + 7) % 7;
+            weekStart.setUTCDate(weekStart.getUTCDate() + dayOffset);
+            const scheduledDateStr = weekStart.toISOString().slice(0, 10);
             newWorkouts.push({
                 id: "sch-".concat(Date.now(), "-").concat(pw.id),
                 clientId,
@@ -1191,7 +1277,7 @@ const AppProvider = (param)=>{
                     message: "Coach ".concat(currentUser.fullName, ' assigned "').concat(prog.name, '" starting ').concat(startDateStr, "."),
                     type: 'workout_assigned',
                     linkTarget: {
-                        view: 'workouts'
+                        view: 'calendar'
                     },
                     isRead: false,
                     createdAt: new Date().toISOString()
@@ -1219,7 +1305,7 @@ const AppProvider = (param)=>{
                         completedAt: new Date().toISOString(),
                         overallRpe: overallRpe || 8,
                         clientFeedback,
-                        exercises: loggedData
+                        loggedData
                     };
                 }
                 return w;
@@ -1234,7 +1320,7 @@ const AppProvider = (param)=>{
                         message: "".concat(currentUser.fullName, ' completed "').concat(workout.title, '".'),
                         type: 'workout_completed',
                         linkTarget: {
-                            view: 'workouts'
+                            view: 'calendar'
                         },
                         isRead: false,
                         createdAt: new Date().toISOString()
@@ -1243,18 +1329,22 @@ const AppProvider = (param)=>{
                 ]);
         }
     };
-    const submitCheckIn = (checkInData)=>{
+    const submitCheckIn = async (checkInData)=>{
         const newCheckIn = {
             ...checkInData,
-            id: "chk-".concat(Date.now()),
+            id: crypto.randomUUID(),
             status: 'submitted',
             submittedAt: new Date().toISOString()
         };
+        const saveResult = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$supabaseService$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SupabaseService"].saveCheckIn(newCheckIn);
+        if (!saveResult.success) return saveResult;
         setCheckIns((prev)=>[
-                newCheckIn,
+                {
+                    ...newCheckIn,
+                    scheduleId: saveResult.scheduleId
+                },
                 ...prev
             ]);
-        __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$supabaseService$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SupabaseService"].saveCheckIn(newCheckIn);
         if (checkInData.weightKg) {
             setAllProfiles((prev)=>prev.map((p)=>p.id === currentUser.id ? {
                         ...p,
@@ -1267,7 +1357,7 @@ const AppProvider = (param)=>{
                         id: "notif-chk-".concat(Date.now()),
                         recipientId: checkInData.coachId,
                         title: 'New Check-In Submitted',
-                        message: "".concat(currentUser.fullName, " submitted their weekly check-in for review."),
+                        message: "".concat(currentUser.fullName, " submitted a check-in for review."),
                         type: 'checkin_submitted',
                         linkTarget: {
                             view: 'checkins'
@@ -1278,24 +1368,26 @@ const AppProvider = (param)=>{
                     ...prev
                 ]);
         }
-        return newCheckIn;
+        return {
+            success: true
+        };
     };
-    const reviewCheckIn = (checkInId, coachFeedback)=>{
-        let updatedChk;
-        setCheckIns((prev)=>prev.map((c)=>{
-                if (c.id === checkInId) {
-                    updatedChk = {
-                        ...c,
-                        status: 'reviewed',
-                        coachFeedback,
-                        reviewedAt: new Date().toISOString()
-                    };
-                    return updatedChk;
-                }
-                return c;
-            }));
-        if (updatedChk) {
-            __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$supabaseService$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SupabaseService"].saveCheckIn(updatedChk);
+    const reviewCheckIn = async (checkInId, coachFeedback)=>{
+        const existingCheckIn = checkIns.find((checkIn)=>checkIn.id === checkInId);
+        if (!existingCheckIn) return {
+            success: false,
+            error: 'Check-in not found.'
+        };
+        const updatedChk = {
+            ...existingCheckIn,
+            status: 'reviewed',
+            coachFeedback,
+            reviewedAt: new Date().toISOString()
+        };
+        const saveResult = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$supabaseService$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SupabaseService"].saveCheckIn(updatedChk);
+        if (!saveResult.success) return saveResult;
+        setCheckIns((prev)=>prev.map((checkIn)=>checkIn.id === checkInId ? updatedChk : checkIn));
+        {
             setNotifications((prev)=>[
                     {
                         id: "notif-rev-".concat(Date.now()),
@@ -1312,8 +1404,12 @@ const AppProvider = (param)=>{
                     ...prev
                 ]);
         }
+        return {
+            success: true
+        };
     };
-    const logDailySteps = (dateStr, stepCount, notes)=>{
+    const createCheckInSchedule = (input)=>__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$supabaseService$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SupabaseService"].createCheckInSchedule(input);
+    const logDailySteps = async (dateStr, stepCount, notes)=>{
         const existing = stepRecords.find((s)=>s.clientId === currentUser.id && s.logDate === dateStr);
         let recordToSave;
         if (existing) {
@@ -1323,22 +1419,25 @@ const AppProvider = (param)=>{
                 notes,
                 loggedAt: new Date().toISOString()
             };
-            setStepRecords((prev)=>prev.map((s)=>s.id === existing.id ? recordToSave : s));
         } else {
             recordToSave = {
-                id: "step-".concat(Date.now()),
+                id: crypto.randomUUID(),
                 clientId: currentUser.id,
                 logDate: dateStr,
                 stepCount,
                 notes,
                 loggedAt: new Date().toISOString()
             };
-            setStepRecords((prev)=>[
-                    recordToSave,
-                    ...prev
-                ]);
         }
-        __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$supabaseService$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SupabaseService"].saveStepRecord(recordToSave);
+        const saveResult = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$supabaseService$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SupabaseService"].saveStepRecord(recordToSave);
+        if (!saveResult.success) return saveResult;
+        setStepRecords((prev)=>existing ? prev.map((record)=>record.id === existing.id ? recordToSave : record) : [
+                recordToSave,
+                ...prev
+            ]);
+        return {
+            success: true
+        };
     };
     const addFood = (food)=>{
         const newFood = {
@@ -1375,39 +1474,58 @@ const AppProvider = (param)=>{
             ]);
         return newPlan;
     };
-    const logFoodItem = (item)=>{
+    const logFoodItem = async (item)=>{
         const newItem = {
             ...item,
-            id: "flog-".concat(Date.now()),
+            id: crypto.randomUUID(),
             loggedAt: new Date().toISOString()
         };
+        const saved = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$supabaseService$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SupabaseService"].saveFoodLog(newItem);
+        if (!saved.success) return saved;
         setFoodLogs((prev)=>[
                 newItem,
                 ...prev
             ]);
-        __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$supabaseService$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SupabaseService"].saveFoodLog(newItem);
+        return {
+            success: true
+        };
     };
-    const deleteFoodLogItem = (id)=>{
+    const deleteFoodLogItem = async (id)=>{
+        const deleted = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$supabaseService$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SupabaseService"].deleteFoodLog(id);
+        if (!deleted.success) return deleted;
         setFoodLogs((prev)=>prev.filter((f)=>f.id !== id));
+        return {
+            success: true
+        };
     };
-    const sendMessage = (conversationId, content)=>{
+    const sendMessage = async (recipientId, content)=>{
+        const thread = conversations.find((conversation)=>conversation.coachId === currentUser.id && conversation.clientId === recipientId || conversation.clientId === currentUser.id && conversation.coachId === recipientId);
+        if (!thread) return {
+            success: false,
+            error: 'There is no active conversation with this user.'
+        };
         const newMsg = {
-            id: "msg-".concat(Date.now()),
-            conversationId,
+            id: crypto.randomUUID(),
+            conversationId: thread.id,
             senderId: currentUser.id,
+            recipientId,
             senderName: currentUser.fullName,
             senderRole: currentUser.role,
             content,
             isRead: false,
             createdAt: new Date().toISOString()
         };
+        const saved = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$supabaseService$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SupabaseService"].saveMessage(newMsg);
+        if (!saved.success) return {
+            success: false,
+            error: saved.error || 'Message was not saved to Supabase.'
+        };
         setMessages((prev)=>[
                 ...prev,
                 newMsg
             ]);
-        __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$services$2f$supabaseService$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SupabaseService"].saveMessage(newMsg);
         setConversations((prev)=>prev.map((c)=>{
-                if (c.id === conversationId) {
+                if (c.id === thread.id) {
                     const isCoach = currentUser.role === 'coach';
                     return {
                         ...c,
@@ -1419,6 +1537,9 @@ const AppProvider = (param)=>{
                 }
                 return c;
             }));
+        return {
+            success: true
+        };
     };
     const markConversationRead = (conversationId)=>{
         setMessages((prev)=>prev.map((m)=>m.conversationId === conversationId && m.senderId !== currentUser.id ? {
@@ -1496,11 +1617,12 @@ const AppProvider = (param)=>{
             setIsNotificationsOpen,
             isLoadingSupabase,
             isSupabaseConnected,
+            supabaseAuthUserId,
             loadFromSupabase,
-            clearAllLocalData,
-            switchUser,
+            signInWithSupabase,
+            signUpWithSupabase,
+            signOutFromSupabase,
             updateProfile,
-            registerUser,
             approveUser,
             suspendUser,
             activateUser,
@@ -1514,6 +1636,7 @@ const AppProvider = (param)=>{
             logWorkoutCompletion,
             submitCheckIn,
             reviewCheckIn,
+            createCheckInSchedule,
             logDailySteps,
             addFood,
             setNutritionTarget,
@@ -1531,11 +1654,11 @@ const AppProvider = (param)=>{
         children: children
     }, void 0, false, {
         fileName: "[project]/src/context/AppContext.tsx",
-        lineNumber: 776,
+        lineNumber: 784,
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0));
 };
-_s(AppProvider, "wpgYm4S/xDtU2FvP5v5dX0sFEMk=");
+_s(AppProvider, "xJXCkSdlmcN5Q9auiQHbRBQhVY4=");
 _c = AppProvider;
 const useApp = ()=>{
     _s1();
@@ -1612,13 +1735,14 @@ const SCHEMA_TABLES = [
             },
             {
                 name: 'gender',
-                type: 'VARCHAR(50)',
-                nullable: true
+                type: 'TEXT',
+                nullable: true,
+                description: 'male | female | other | prefer_not_to_say'
             },
             {
                 name: 'approval_status',
-                type: 'VARCHAR(30)',
-                description: 'pending | active | suspended'
+                type: 'TEXT',
+                description: 'not_applicable | pending | approved | rejected'
             },
             {
                 name: 'specializations',
@@ -1707,8 +1831,8 @@ const SCHEMA_TABLES = [
             },
             {
                 name: 'status',
-                type: 'VARCHAR(30)',
-                description: 'active | inactive | requested | declined'
+                type: 'TEXT',
+                description: 'pending | active | rejected | inactive | suspended | archived'
             },
             {
                 name: 'requested_at',
@@ -1767,7 +1891,9 @@ const SCHEMA_TABLES = [
             },
             {
                 name: 'category',
-                type: 'VARCHAR(100)'
+                type: 'TEXT',
+                nullable: true,
+                description: 'strength | cardio | flexibility | balance | plyometric | other'
             },
             {
                 name: 'muscle_groups',
@@ -1783,7 +1909,9 @@ const SCHEMA_TABLES = [
             },
             {
                 name: 'difficulty_level',
-                type: 'VARCHAR(50)'
+                type: 'TEXT',
+                nullable: true,
+                description: 'beginner | intermediate | advanced'
             },
             {
                 name: 'is_global',
@@ -1826,7 +1954,9 @@ const SCHEMA_TABLES = [
             },
             {
                 name: 'type',
-                type: 'VARCHAR(50)'
+                type: 'TEXT',
+                nullable: true,
+                description: 'strength | cardio | flexibility | hiit | mixed | other'
             },
             {
                 name: 'estimated_duration_min',
@@ -1834,7 +1964,9 @@ const SCHEMA_TABLES = [
             },
             {
                 name: 'difficulty_level',
-                type: 'VARCHAR(50)'
+                type: 'TEXT',
+                nullable: true,
+                description: 'beginner | intermediate | advanced'
             },
             {
                 name: 'created_at',
@@ -1905,7 +2037,8 @@ const SCHEMA_TABLES = [
             },
             {
                 name: 'target_reps',
-                type: 'VARCHAR(50)'
+                type: 'INTEGER',
+                nullable: true
             },
             {
                 name: 'target_weight',
@@ -1914,7 +2047,9 @@ const SCHEMA_TABLES = [
             },
             {
                 name: 'weight_unit',
-                type: 'VARCHAR(10)'
+                type: 'TEXT',
+                nullable: true,
+                description: 'kg | lbs'
             },
             {
                 name: 'target_duration_sec',
@@ -1968,7 +2103,9 @@ const SCHEMA_TABLES = [
             },
             {
                 name: 'difficulty_level',
-                type: 'VARCHAR(50)'
+                type: 'TEXT',
+                nullable: true,
+                description: 'beginner | intermediate | advanced'
             },
             {
                 name: 'created_at',
@@ -2008,7 +2145,8 @@ const SCHEMA_TABLES = [
             },
             {
                 name: 'day_of_week',
-                type: 'INTEGER'
+                type: 'INTEGER',
+                description: '0 = Sunday through 6 = Saturday'
             },
             {
                 name: 'order_index',
@@ -2054,11 +2192,13 @@ const SCHEMA_TABLES = [
             },
             {
                 name: 'end_date',
-                type: 'DATE'
+                type: 'DATE',
+                nullable: true
             },
             {
                 name: 'status',
-                type: 'VARCHAR(30)'
+                type: 'TEXT',
+                description: 'active | paused | completed | cancelled'
             },
             {
                 name: 'created_at',
@@ -2111,7 +2251,8 @@ const SCHEMA_TABLES = [
             },
             {
                 name: 'status',
-                type: 'VARCHAR(30)'
+                type: 'TEXT',
+                description: 'scheduled | due | completed | missed | skipped'
             },
             {
                 name: 'notes',
@@ -2160,7 +2301,9 @@ const SCHEMA_TABLES = [
             },
             {
                 name: 'perceived_difficulty',
-                type: 'NUMERIC'
+                type: 'INTEGER',
+                nullable: true,
+                description: '1 through 10'
             },
             {
                 name: 'notes',
@@ -2219,7 +2362,9 @@ const SCHEMA_TABLES = [
             },
             {
                 name: 'weight_unit',
-                type: 'VARCHAR(10)'
+                type: 'TEXT',
+                nullable: true,
+                description: 'kg | lbs'
             },
             {
                 name: 'actual_duration_sec',
@@ -2641,7 +2786,8 @@ const SCHEMA_TABLES = [
             },
             {
                 name: 'frequency',
-                type: 'VARCHAR(50)'
+                type: 'TEXT',
+                description: 'daily | weekly | biweekly | monthly | custom'
             },
             {
                 name: 'custom_interval_days',
@@ -2650,8 +2796,9 @@ const SCHEMA_TABLES = [
             },
             {
                 name: 'day_of_week',
-                type: 'VARCHAR(50)',
-                nullable: true
+                type: 'INTEGER',
+                nullable: true,
+                description: '0 = Sunday through 6 = Saturday'
             },
             {
                 name: 'time_of_day',
@@ -2691,8 +2838,7 @@ const SCHEMA_TABLES = [
                 name: 'schedule_id',
                 type: 'UUID',
                 isFk: true,
-                fkTarget: 'check_in_schedules.id',
-                nullable: true
+                fkTarget: 'check_in_schedules.id'
             },
             {
                 name: 'client_id',
@@ -2712,8 +2858,8 @@ const SCHEMA_TABLES = [
             },
             {
                 name: 'status',
-                type: 'VARCHAR(30)',
-                description: 'pending | submitted | reviewed'
+                type: 'TEXT',
+                description: 'pending | submitted | missed | reviewed'
             },
             {
                 name: 'submitted_at',
@@ -2778,7 +2924,8 @@ const SCHEMA_TABLES = [
             },
             {
                 name: 'record_type',
-                type: 'VARCHAR(50)'
+                type: 'TEXT',
+                description: 'weight | measurement | steps | photo | general'
             },
             {
                 name: 'weight_kg',
@@ -2880,7 +3027,9 @@ const SCHEMA_TABLES = [
             },
             {
                 name: 'photo_type',
-                type: 'VARCHAR(50)'
+                type: 'TEXT',
+                nullable: true,
+                description: 'front | side | back | other'
             },
             {
                 name: 'caption',
@@ -3060,7 +3209,7 @@ const SCHEMA_TABLES = [
         ]
     }
 ];
-const FITNESS_SCHEMA_DDL_SQL = "-- ====================================================================\n-- FITNESS COACHING PLATFORM - SUPABASE POSTGRESQL SCHEMA DDL\n-- Generated directly from the ER Diagram\n-- ====================================================================\n\n-- Enable UUID extension\nCREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";\nCREATE EXTENSION IF NOT EXISTS \"pgcrypto\";\n\n-- --------------------------------------------------------------------\n-- 1. USERS & ASSIGNMENTS\n-- --------------------------------------------------------------------\nCREATE TABLE IF NOT EXISTS public.profiles (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  role VARCHAR(20) NOT NULL CHECK (role IN ('admin', 'coach', 'client')),\n  email VARCHAR(255) UNIQUE NOT NULL,\n  first_name VARCHAR(100) NOT NULL,\n  last_name VARCHAR(100) NOT NULL,\n  avatar_url TEXT,\n  phone VARCHAR(50),\n  date_of_birth DATE,\n  gender VARCHAR(50),\n  approval_status VARCHAR(30) NOT NULL DEFAULT 'active' CHECK (approval_status IN ('pending', 'active', 'suspended', 'archived')),\n  specializations TEXT[],\n  bio TEXT,\n  certifications TEXT[],\n  years_of_experience NUMERIC,\n  onboarding_completed BOOLEAN NOT NULL DEFAULT true,\n  fitness_goals TEXT[],\n  medical_conditions TEXT,\n  height_cm NUMERIC,\n  current_weight_kg NUMERIC,\n  is_active BOOLEAN NOT NULL DEFAULT true,\n  last_login_at TIMESTAMPTZ,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS public.coach_client_assignments (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  coach_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,\n  client_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,\n  status VARCHAR(30) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'requested', 'declined')),\n  requested_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  responded_at TIMESTAMPTZ,\n  deactivated_at TIMESTAMPTZ,\n  notes TEXT,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\n-- --------------------------------------------------------------------\n-- 2. WORKOUT & TRAINING\n-- --------------------------------------------------------------------\nCREATE TABLE IF NOT EXISTS public.exercises (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  coach_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,\n  name VARCHAR(255) NOT NULL,\n  description TEXT NOT NULL,\n  category VARCHAR(100) NOT NULL,\n  muscle_groups TEXT[] NOT NULL DEFAULT '{}',\n  equipment VARCHAR(100) NOT NULL,\n  instructions TEXT NOT NULL,\n  difficulty_level VARCHAR(50) NOT NULL DEFAULT 'Intermediate',\n  is_global BOOLEAN NOT NULL DEFAULT true,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS public.workouts (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  coach_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,\n  name VARCHAR(255) NOT NULL,\n  description TEXT,\n  type VARCHAR(50) NOT NULL DEFAULT 'hypertrophy',\n  estimated_duration_min INTEGER NOT NULL DEFAULT 60,\n  difficulty_level VARCHAR(50) NOT NULL DEFAULT 'intermediate',\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS public.workout_exercises (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  workout_id UUID NOT NULL REFERENCES public.workouts(id) ON DELETE CASCADE,\n  exercise_id UUID NOT NULL REFERENCES public.exercises(id) ON DELETE RESTRICT,\n  order_index INTEGER NOT NULL DEFAULT 1,\n  notes TEXT,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS public.exercise_set_templates (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  workout_exercise_id UUID NOT NULL REFERENCES public.workout_exercises(id) ON DELETE CASCADE,\n  set_number INTEGER NOT NULL,\n  target_reps VARCHAR(50) NOT NULL DEFAULT '10',\n  target_weight NUMERIC DEFAULT 0,\n  weight_unit VARCHAR(10) NOT NULL DEFAULT 'kg',\n  target_duration_sec INTEGER,\n  rest_period_sec INTEGER NOT NULL DEFAULT 90,\n  instructions TEXT,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS public.training_programs (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  coach_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,\n  name VARCHAR(255) NOT NULL,\n  description TEXT,\n  duration_weeks INTEGER NOT NULL DEFAULT 8,\n  difficulty_level VARCHAR(50) NOT NULL DEFAULT 'intermediate',\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS public.program_workouts (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  program_id UUID NOT NULL REFERENCES public.training_programs(id) ON DELETE CASCADE,\n  workout_id UUID NOT NULL REFERENCES public.workouts(id) ON DELETE CASCADE,\n  week_number INTEGER NOT NULL DEFAULT 1,\n  day_of_week INTEGER NOT NULL DEFAULT 1,\n  order_index INTEGER NOT NULL DEFAULT 1,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS public.program_assignments (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  program_id UUID NOT NULL REFERENCES public.training_programs(id) ON DELETE CASCADE,\n  client_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,\n  coach_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,\n  start_date DATE NOT NULL,\n  end_date DATE NOT NULL,\n  status VARCHAR(30) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'completed', 'paused', 'cancelled')),\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS public.workout_assignments (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  client_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,\n  coach_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,\n  workout_id UUID NOT NULL REFERENCES public.workouts(id) ON DELETE CASCADE,\n  program_assignment_id UUID REFERENCES public.program_assignments(id) ON DELETE SET NULL,\n  scheduled_date DATE NOT NULL,\n  status VARCHAR(30) NOT NULL DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'in_progress', 'completed', 'missed')),\n  notes TEXT,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS public.workout_completions (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  assignment_id UUID NOT NULL REFERENCES public.workout_assignments(id) ON DELETE CASCADE,\n  client_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,\n  completed_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  duration_min INTEGER NOT NULL DEFAULT 45,\n  perceived_difficulty NUMERIC NOT NULL DEFAULT 8,\n  notes TEXT,\n  coach_feedback TEXT,\n  coach_feedback_at TIMESTAMPTZ,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS public.completed_exercise_sets (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  completion_id UUID NOT NULL REFERENCES public.workout_completions(id) ON DELETE CASCADE,\n  exercise_id UUID NOT NULL REFERENCES public.exercises(id) ON DELETE RESTRICT,\n  set_number INTEGER NOT NULL,\n  actual_reps INTEGER NOT NULL,\n  actual_weight NUMERIC NOT NULL DEFAULT 0,\n  weight_unit VARCHAR(10) NOT NULL DEFAULT 'kg',\n  actual_duration_sec INTEGER,\n  completed BOOLEAN NOT NULL DEFAULT true,\n  notes TEXT,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\n-- --------------------------------------------------------------------\n-- 3. NUTRITION\n-- --------------------------------------------------------------------\nCREATE TABLE IF NOT EXISTS public.nutrition_plans (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  coach_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,\n  name VARCHAR(255) NOT NULL,\n  description TEXT,\n  target_calories NUMERIC NOT NULL,\n  target_protein_g NUMERIC NOT NULL,\n  target_carbs_g NUMERIC NOT NULL,\n  target_fat_g NUMERIC NOT NULL,\n  notes TEXT,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS public.nutrition_plan_meals (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  plan_id UUID NOT NULL REFERENCES public.nutrition_plans(id) ON DELETE CASCADE,\n  meal_name VARCHAR(100) NOT NULL,\n  meal_order INTEGER NOT NULL DEFAULT 1,\n  description TEXT,\n  target_calories NUMERIC NOT NULL,\n  target_protein_g NUMERIC NOT NULL,\n  target_carbs_g NUMERIC NOT NULL,\n  target_fat_g NUMERIC NOT NULL,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS public.meal_foods (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  plan_meal_id UUID NOT NULL REFERENCES public.nutrition_plan_meals(id) ON DELETE CASCADE,\n  food_name VARCHAR(255) NOT NULL,\n  quantity NUMERIC NOT NULL,\n  unit VARCHAR(50) NOT NULL DEFAULT 'g',\n  calories NUMERIC NOT NULL,\n  protein_g NUMERIC NOT NULL,\n  carbs_g NUMERIC NOT NULL,\n  fat_g NUMERIC NOT NULL,\n  notes TEXT,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS public.nutrition_plan_assignments (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  plan_id UUID NOT NULL REFERENCES public.nutrition_plans(id) ON DELETE CASCADE,\n  client_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,\n  coach_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,\n  start_date DATE NOT NULL,\n  end_date DATE,\n  status VARCHAR(30) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'completed', 'paused')),\n  custom_target_calories NUMERIC,\n  custom_target_protein_g NUMERIC,\n  custom_target_carbs_g NUMERIC,\n  custom_target_fat_g NUMERIC,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS public.daily_nutrition_logs (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  client_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,\n  log_date DATE NOT NULL,\n  total_calories NUMERIC NOT NULL DEFAULT 0,\n  total_protein_g NUMERIC NOT NULL DEFAULT 0,\n  total_carbs_g NUMERIC NOT NULL DEFAULT 0,\n  total_fat_g NUMERIC NOT NULL DEFAULT 0,\n  adherence_rating INTEGER,\n  adherence_notes TEXT,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  UNIQUE(client_id, log_date)\n);\n\nCREATE TABLE IF NOT EXISTS public.nutrition_log_meals (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  daily_log_id UUID NOT NULL REFERENCES public.daily_nutrition_logs(id) ON DELETE CASCADE,\n  meal_name VARCHAR(100) NOT NULL,\n  meal_order INTEGER NOT NULL DEFAULT 1,\n  consumed_at TIMESTAMPTZ,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS public.nutrition_log_foods (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  log_meal_id UUID NOT NULL REFERENCES public.nutrition_log_meals(id) ON DELETE CASCADE,\n  food_name VARCHAR(255) NOT NULL,\n  quantity NUMERIC NOT NULL,\n  unit VARCHAR(50) NOT NULL DEFAULT 'g',\n  calories NUMERIC NOT NULL,\n  protein_g NUMERIC NOT NULL,\n  carbs_g NUMERIC NOT NULL,\n  fat_g NUMERIC NOT NULL,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\n-- --------------------------------------------------------------------\n-- 4. CHECK-INS\n-- --------------------------------------------------------------------\nCREATE TABLE IF NOT EXISTS public.check_in_schedules (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  coach_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,\n  client_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,\n  frequency VARCHAR(50) NOT NULL DEFAULT 'weekly',\n  custom_interval_days INTEGER,\n  day_of_week VARCHAR(50) DEFAULT 'Sunday',\n  time_of_day TIME DEFAULT '09:00:00',\n  is_active BOOLEAN NOT NULL DEFAULT true,\n  questions JSONB DEFAULT '[]'::jsonb,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS public.check_ins (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  schedule_id UUID REFERENCES public.check_in_schedules(id) ON DELETE SET NULL,\n  client_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,\n  coach_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,\n  due_date DATE NOT NULL,\n  status VARCHAR(30) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'submitted', 'reviewed')),\n  submitted_at TIMESTAMPTZ,\n  responses JSONB DEFAULT '{}'::jsonb,\n  weight_kg NUMERIC,\n  notes TEXT,\n  coach_feedback TEXT,\n  coach_reviewed_at TIMESTAMPTZ,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\n-- --------------------------------------------------------------------\n-- 5. PROGRESS\n-- --------------------------------------------------------------------\nCREATE TABLE IF NOT EXISTS public.progress_records (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  client_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,\n  recorded_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  record_type VARCHAR(50) NOT NULL DEFAULT 'daily_metrics',\n  weight_kg NUMERIC,\n  chest_cm NUMERIC,\n  waist_cm NUMERIC,\n  hips_cm NUMERIC,\n  bicep_left_cm NUMERIC,\n  bicep_right_cm NUMERIC,\n  thigh_left_cm NUMERIC,\n  thigh_right_cm NUMERIC,\n  calf_left_cm NUMERIC,\n  calf_right_cm NUMERIC,\n  step_count INTEGER,\n  body_fat_percentage NUMERIC,\n  notes TEXT,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS public.progress_photos (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  client_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,\n  progress_record_id UUID REFERENCES public.progress_records(id) ON DELETE SET NULL,\n  storage_path TEXT NOT NULL,\n  photo_type VARCHAR(50) NOT NULL DEFAULT 'front',\n  caption TEXT,\n  uploaded_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\n-- --------------------------------------------------------------------\n-- 6. MESSAGING\n-- --------------------------------------------------------------------\nCREATE TABLE IF NOT EXISTS public.conversations (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  coach_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,\n  client_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,\n  last_message_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  UNIQUE(coach_id, client_id)\n);\n\nCREATE TABLE IF NOT EXISTS public.messages (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  conversation_id UUID NOT NULL REFERENCES public.conversations(id) ON DELETE CASCADE,\n  sender_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,\n  recipient_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,\n  content TEXT NOT NULL,\n  is_read BOOLEAN NOT NULL DEFAULT false,\n  read_at TIMESTAMPTZ,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\n-- --------------------------------------------------------------------\n-- 7. NOTIFICATIONS & SETTINGS\n-- --------------------------------------------------------------------\nCREATE TABLE IF NOT EXISTS public.notifications (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,\n  type VARCHAR(100) NOT NULL,\n  title VARCHAR(255) NOT NULL,\n  body TEXT NOT NULL,\n  data JSONB DEFAULT '{}'::jsonb,\n  is_read BOOLEAN NOT NULL DEFAULT false,\n  read_at TIMESTAMPTZ,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS public.system_settings (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  key VARCHAR(100) UNIQUE NOT NULL,\n  value JSONB NOT NULL,\n  description TEXT,\n  updated_by UUID REFERENCES public.profiles(id) ON DELETE SET NULL,\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\n-- --------------------------------------------------------------------\n-- INDEXES FOR PERFORMANCE\n-- --------------------------------------------------------------------\nCREATE INDEX IF NOT EXISTS idx_profiles_role ON public.profiles(role);\nCREATE INDEX IF NOT EXISTS idx_workout_assignments_client_date ON public.workout_assignments(client_id, scheduled_date);\nCREATE INDEX IF NOT EXISTS idx_daily_nutrition_client_date ON public.daily_nutrition_logs(client_id, log_date);\nCREATE INDEX IF NOT EXISTS idx_progress_records_client_date ON public.progress_records(client_id, recorded_at);\nCREATE INDEX IF NOT EXISTS idx_messages_conversation ON public.messages(conversation_id, created_at);\nCREATE INDEX IF NOT EXISTS idx_notifications_user ON public.notifications(user_id, is_read);\n";
+const FITNESS_SCHEMA_DDL_SQL = "-- ====================================================================\n-- FITNESS COACHING PLATFORM - SUPABASE POSTGRESQL SCHEMA DDL\n-- Generated directly from the ER Diagram\n-- After running, add \"fitness\" to Supabase's exposed API schemas in the\n-- Supabase dashboard. This script configures schema grants and role-aware RLS.\n-- ====================================================================\n\n-- Enable UUID extension\nCREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";\nCREATE EXTENSION IF NOT EXISTS \"pgcrypto\";\nCREATE SCHEMA IF NOT EXISTS fitness;\n\n-- --------------------------------------------------------------------\n-- 1. USERS & ASSIGNMENTS\n-- --------------------------------------------------------------------\nCREATE TABLE IF NOT EXISTS fitness.profiles (\n  id UUID PRIMARY KEY,\n  role VARCHAR(20) NOT NULL CHECK (role IN ('admin', 'coach', 'client')),\n  email VARCHAR(255) UNIQUE NOT NULL,\n  first_name VARCHAR(100) NOT NULL,\n  last_name VARCHAR(100) NOT NULL,\n  avatar_url TEXT,\n  phone VARCHAR(50),\n  date_of_birth DATE,\n  gender TEXT CHECK (gender IN ('male', 'female', 'other', 'prefer_not_to_say')),\n  approval_status TEXT NOT NULL DEFAULT 'not_applicable' CHECK (approval_status IN ('not_applicable', 'pending', 'approved', 'rejected')),\n  specializations TEXT[],\n  bio TEXT,\n  certifications TEXT[],\n  years_of_experience NUMERIC,\n  onboarding_completed BOOLEAN NOT NULL DEFAULT false,\n  fitness_goals TEXT[],\n  medical_conditions TEXT,\n  height_cm NUMERIC,\n  current_weight_kg NUMERIC,\n  is_active BOOLEAN NOT NULL DEFAULT true,\n  last_login_at TIMESTAMPTZ,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nDO $$\nBEGIN\n  IF NOT EXISTS (\n    SELECT 1\n    FROM pg_constraint\n    WHERE conname = 'profiles_auth_user_id_fkey'\n      AND conrelid = 'fitness.profiles'::regclass\n  ) THEN\n    ALTER TABLE fitness.profiles\n      ADD CONSTRAINT profiles_auth_user_id_fkey\n      FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE NOT VALID;\n  END IF;\nEND;\n$$;\n\nCREATE TABLE IF NOT EXISTS fitness.coach_client_assignments (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,\n  client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,\n  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'active', 'rejected', 'inactive', 'suspended', 'archived')),\n  requested_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  responded_at TIMESTAMPTZ,\n  deactivated_at TIMESTAMPTZ,\n  notes TEXT,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\n-- --------------------------------------------------------------------\n-- 2. WORKOUT & TRAINING\n-- --------------------------------------------------------------------\nCREATE TABLE IF NOT EXISTS fitness.exercises (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  coach_id UUID REFERENCES fitness.profiles(id) ON DELETE SET NULL,\n  name VARCHAR(255) NOT NULL,\n  description TEXT,\n  category TEXT CHECK (category IN ('strength', 'cardio', 'flexibility', 'balance', 'plyometric', 'other')),\n  muscle_groups TEXT[],\n  equipment TEXT,\n  instructions TEXT,\n  difficulty_level TEXT CHECK (difficulty_level IN ('beginner', 'intermediate', 'advanced')),\n  is_global BOOLEAN NOT NULL DEFAULT false,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS fitness.workouts (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,\n  name VARCHAR(255) NOT NULL,\n  description TEXT,\n  type TEXT CHECK (type IN ('strength', 'cardio', 'flexibility', 'hiit', 'mixed', 'other')),\n  estimated_duration_min INTEGER,\n  difficulty_level TEXT CHECK (difficulty_level IN ('beginner', 'intermediate', 'advanced')),\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS fitness.workout_exercises (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  workout_id UUID NOT NULL REFERENCES fitness.workouts(id) ON DELETE CASCADE,\n  exercise_id UUID NOT NULL REFERENCES fitness.exercises(id) ON DELETE RESTRICT,\n  order_index INTEGER NOT NULL DEFAULT 0,\n  notes TEXT,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS fitness.exercise_set_templates (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  workout_exercise_id UUID NOT NULL REFERENCES fitness.workout_exercises(id) ON DELETE CASCADE,\n  set_number INTEGER NOT NULL,\n  target_reps INTEGER,\n  target_weight NUMERIC,\n  weight_unit TEXT DEFAULT 'kg' CHECK (weight_unit IN ('kg', 'lbs')),\n  target_duration_sec INTEGER,\n  rest_period_sec INTEGER,\n  instructions TEXT,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS fitness.training_programs (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,\n  name VARCHAR(255) NOT NULL,\n  description TEXT,\n  duration_weeks INTEGER NOT NULL DEFAULT 1,\n  difficulty_level TEXT CHECK (difficulty_level IN ('beginner', 'intermediate', 'advanced')),\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS fitness.program_workouts (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  program_id UUID NOT NULL REFERENCES fitness.training_programs(id) ON DELETE CASCADE,\n  workout_id UUID NOT NULL REFERENCES fitness.workouts(id) ON DELETE CASCADE,\n  week_number INTEGER NOT NULL DEFAULT 1,\n  day_of_week INTEGER NOT NULL CHECK (day_of_week >= 0 AND day_of_week <= 6),\n  order_index INTEGER NOT NULL DEFAULT 0,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS fitness.program_assignments (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  program_id UUID NOT NULL REFERENCES fitness.training_programs(id) ON DELETE CASCADE,\n  client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,\n  coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,\n  start_date DATE NOT NULL,\n  end_date DATE,\n  status VARCHAR(30) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'completed', 'paused', 'cancelled')),\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS fitness.workout_assignments (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,\n  coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,\n  workout_id UUID NOT NULL REFERENCES fitness.workouts(id) ON DELETE CASCADE,\n  program_assignment_id UUID REFERENCES fitness.program_assignments(id) ON DELETE SET NULL,\n  scheduled_date DATE NOT NULL,\n  status TEXT NOT NULL DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'due', 'completed', 'missed', 'skipped')),\n  notes TEXT,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS fitness.workout_completions (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  assignment_id UUID NOT NULL REFERENCES fitness.workout_assignments(id) ON DELETE CASCADE,\n  client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,\n  completed_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  duration_min INTEGER,\n  perceived_difficulty INTEGER CHECK (perceived_difficulty >= 1 AND perceived_difficulty <= 10),\n  notes TEXT,\n  coach_feedback TEXT,\n  coach_feedback_at TIMESTAMPTZ,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS fitness.completed_exercise_sets (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  completion_id UUID NOT NULL REFERENCES fitness.workout_completions(id) ON DELETE CASCADE,\n  exercise_id UUID NOT NULL REFERENCES fitness.exercises(id) ON DELETE RESTRICT,\n  set_number INTEGER NOT NULL,\n  actual_reps INTEGER,\n  actual_weight NUMERIC,\n  weight_unit TEXT DEFAULT 'kg' CHECK (weight_unit IN ('kg', 'lbs')),\n  actual_duration_sec INTEGER,\n  completed BOOLEAN NOT NULL DEFAULT true,\n  notes TEXT,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\n-- --------------------------------------------------------------------\n-- 3. NUTRITION\n-- --------------------------------------------------------------------\nCREATE TABLE IF NOT EXISTS fitness.nutrition_plans (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,\n  name VARCHAR(255) NOT NULL,\n  description TEXT,\n  target_calories NUMERIC NOT NULL,\n  target_protein_g NUMERIC NOT NULL,\n  target_carbs_g NUMERIC NOT NULL,\n  target_fat_g NUMERIC NOT NULL,\n  notes TEXT,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS fitness.nutrition_plan_meals (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  plan_id UUID NOT NULL REFERENCES fitness.nutrition_plans(id) ON DELETE CASCADE,\n  meal_name VARCHAR(100) NOT NULL,\n  meal_order INTEGER NOT NULL DEFAULT 1,\n  description TEXT,\n  target_calories NUMERIC NOT NULL,\n  target_protein_g NUMERIC NOT NULL,\n  target_carbs_g NUMERIC NOT NULL,\n  target_fat_g NUMERIC NOT NULL,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS fitness.meal_foods (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  plan_meal_id UUID NOT NULL REFERENCES fitness.nutrition_plan_meals(id) ON DELETE CASCADE,\n  food_name VARCHAR(255) NOT NULL,\n  quantity NUMERIC NOT NULL,\n  unit VARCHAR(50) NOT NULL DEFAULT 'g',\n  calories NUMERIC NOT NULL,\n  protein_g NUMERIC NOT NULL,\n  carbs_g NUMERIC NOT NULL,\n  fat_g NUMERIC NOT NULL,\n  notes TEXT,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS fitness.nutrition_plan_assignments (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  plan_id UUID NOT NULL REFERENCES fitness.nutrition_plans(id) ON DELETE CASCADE,\n  client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,\n  coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,\n  start_date DATE NOT NULL,\n  end_date DATE,\n  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'paused', 'completed', 'cancelled')),\n  custom_target_calories NUMERIC,\n  custom_target_protein_g NUMERIC,\n  custom_target_carbs_g NUMERIC,\n  custom_target_fat_g NUMERIC,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS fitness.daily_nutrition_logs (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,\n  log_date DATE NOT NULL,\n  total_calories NUMERIC NOT NULL DEFAULT 0,\n  total_protein_g NUMERIC NOT NULL DEFAULT 0,\n  total_carbs_g NUMERIC NOT NULL DEFAULT 0,\n  total_fat_g NUMERIC NOT NULL DEFAULT 0,\n  adherence_rating INTEGER CHECK (adherence_rating >= 1 AND adherence_rating <= 10),\n  adherence_notes TEXT,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  UNIQUE(client_id, log_date)\n);\n\nCREATE TABLE IF NOT EXISTS fitness.nutrition_log_meals (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  daily_log_id UUID NOT NULL REFERENCES fitness.daily_nutrition_logs(id) ON DELETE CASCADE,\n  meal_name TEXT NOT NULL,\n  meal_order INTEGER NOT NULL DEFAULT 0,\n  consumed_at TIMESTAMPTZ,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS fitness.nutrition_log_foods (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  log_meal_id UUID NOT NULL REFERENCES fitness.nutrition_log_meals(id) ON DELETE CASCADE,\n  food_name TEXT NOT NULL,\n  quantity NUMERIC,\n  unit TEXT,\n  calories INTEGER,\n  protein_g NUMERIC,\n  carbs_g NUMERIC,\n  fat_g NUMERIC,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\n-- --------------------------------------------------------------------\n-- 4. CHECK-INS\n-- --------------------------------------------------------------------\nCREATE TABLE IF NOT EXISTS fitness.check_in_schedules (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,\n  client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,\n  frequency TEXT NOT NULL CHECK (frequency IN ('daily', 'weekly', 'biweekly', 'monthly', 'custom')),\n  custom_interval_days INTEGER,\n  day_of_week INTEGER CHECK (day_of_week >= 0 AND day_of_week <= 6),\n  time_of_day TIME,\n  is_active BOOLEAN NOT NULL DEFAULT true,\n  questions JSONB DEFAULT '[]'::jsonb,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS fitness.check_ins (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  schedule_id UUID NOT NULL REFERENCES fitness.check_in_schedules(id),\n  client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,\n  coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,\n  due_date DATE NOT NULL,\n  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'submitted', 'missed', 'reviewed')),\n  submitted_at TIMESTAMPTZ,\n  responses JSONB DEFAULT '{}'::jsonb,\n  weight_kg NUMERIC,\n  notes TEXT,\n  coach_feedback TEXT,\n  coach_reviewed_at TIMESTAMPTZ,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\n-- --------------------------------------------------------------------\n-- 5. PROGRESS\n-- --------------------------------------------------------------------\nCREATE TABLE IF NOT EXISTS fitness.progress_records (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,\n  recorded_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  record_type TEXT NOT NULL CHECK (record_type IN ('weight', 'measurement', 'steps', 'photo', 'general')),\n  weight_kg NUMERIC,\n  chest_cm NUMERIC,\n  waist_cm NUMERIC,\n  hips_cm NUMERIC,\n  bicep_left_cm NUMERIC,\n  bicep_right_cm NUMERIC,\n  thigh_left_cm NUMERIC,\n  thigh_right_cm NUMERIC,\n  calf_left_cm NUMERIC,\n  calf_right_cm NUMERIC,\n  step_count INTEGER,\n  body_fat_percentage NUMERIC,\n  notes TEXT,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS fitness.progress_photos (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,\n  progress_record_id UUID REFERENCES fitness.progress_records(id) ON DELETE SET NULL,\n  storage_path TEXT NOT NULL,\n  photo_type TEXT CHECK (photo_type IN ('front', 'side', 'back', 'other')),\n  caption TEXT,\n  uploaded_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\n-- --------------------------------------------------------------------\n-- 6. MESSAGING\n-- --------------------------------------------------------------------\nCREATE TABLE IF NOT EXISTS fitness.conversations (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,\n  client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,\n  last_message_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),\n  UNIQUE(coach_id, client_id)\n);\n\nCREATE TABLE IF NOT EXISTS fitness.messages (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  conversation_id UUID NOT NULL REFERENCES fitness.conversations(id) ON DELETE CASCADE,\n  sender_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,\n  recipient_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,\n  content TEXT NOT NULL,\n  is_read BOOLEAN NOT NULL DEFAULT false,\n  read_at TIMESTAMPTZ,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\n-- --------------------------------------------------------------------\n-- 7. NOTIFICATIONS & SETTINGS\n-- --------------------------------------------------------------------\nCREATE TABLE IF NOT EXISTS fitness.notifications (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  user_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,\n  type VARCHAR(100) NOT NULL,\n  title VARCHAR(255) NOT NULL,\n  body TEXT NOT NULL,\n  data JSONB DEFAULT '{}'::jsonb,\n  is_read BOOLEAN NOT NULL DEFAULT false,\n  read_at TIMESTAMPTZ,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE IF NOT EXISTS fitness.system_settings (\n  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n  key VARCHAR(100) UNIQUE NOT NULL,\n  value JSONB NOT NULL,\n  description TEXT,\n  updated_by UUID REFERENCES fitness.profiles(id) ON DELETE SET NULL,\n  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE OR REPLACE FUNCTION fitness.log_food_item(\n  p_id UUID,\n  p_client_id UUID,\n  p_log_date DATE,\n  p_meal_name TEXT,\n  p_food_name TEXT,\n  p_quantity NUMERIC,\n  p_unit TEXT,\n  p_calories NUMERIC,\n  p_protein_g NUMERIC,\n  p_carbs_g NUMERIC,\n  p_fat_g NUMERIC\n)\nRETURNS VOID\nLANGUAGE plpgsql\nSECURITY DEFINER\nSET search_path = ''\nAS $$\nDECLARE\n  v_daily_log_id UUID;\n  v_meal_id UUID;\n  caller_role TEXT;\nBEGIN\n  caller_role := fitness.current_user_role();\n  IF auth.uid() IS NULL OR caller_role IS NULL OR NOT (\n    caller_role = 'admin'\n    OR (caller_role = 'client' AND p_client_id = auth.uid())\n  ) THEN\n    RAISE EXCEPTION 'You are not authorized to log food for this client';\n  END IF;\n  IF p_quantity <= 0 OR p_calories < 0 OR p_protein_g < 0 OR p_carbs_g < 0 OR p_fat_g < 0\n     OR nullif(trim(p_food_name), '') IS NULL OR nullif(trim(p_meal_name), '') IS NULL THEN\n    RAISE EXCEPTION 'Food log values are invalid';\n  END IF;\n\n  INSERT INTO fitness.daily_nutrition_logs (\n    client_id, log_date, total_calories, total_protein_g, total_carbs_g, total_fat_g\n  )\n  VALUES (p_client_id, p_log_date, p_calories, p_protein_g, p_carbs_g, p_fat_g)\n  ON CONFLICT (client_id, log_date) DO UPDATE SET\n    total_calories = fitness.daily_nutrition_logs.total_calories + EXCLUDED.total_calories,\n    total_protein_g = fitness.daily_nutrition_logs.total_protein_g + EXCLUDED.total_protein_g,\n    total_carbs_g = fitness.daily_nutrition_logs.total_carbs_g + EXCLUDED.total_carbs_g,\n    total_fat_g = fitness.daily_nutrition_logs.total_fat_g + EXCLUDED.total_fat_g,\n    updated_at = now()\n  RETURNING id INTO v_daily_log_id;\n\n  INSERT INTO fitness.nutrition_log_meals (daily_log_id, meal_name)\n  VALUES (v_daily_log_id, p_meal_name)\n  RETURNING id INTO v_meal_id;\n\n  INSERT INTO fitness.nutrition_log_foods (\n    id, log_meal_id, food_name, quantity, unit, calories, protein_g, carbs_g, fat_g\n  )\n  VALUES (\n    p_id, v_meal_id, trim(p_food_name), p_quantity, p_unit,\n    p_calories, p_protein_g, p_carbs_g, p_fat_g\n  );\nEND;\n$$;\n\nCREATE OR REPLACE FUNCTION fitness.delete_food_log_item(p_id UUID)\nRETURNS VOID\nLANGUAGE plpgsql\nSECURITY DEFINER\nSET search_path = ''\nAS $$\nDECLARE\n  owner_id UUID;\n  v_daily_log_id UUID;\n  caller_role TEXT;\nBEGIN\n  SELECT dl.client_id, dl.id\n  INTO owner_id, v_daily_log_id\n  FROM fitness.nutrition_log_foods AS f\n  JOIN fitness.nutrition_log_meals AS m ON m.id = f.log_meal_id\n  JOIN fitness.daily_nutrition_logs AS dl ON dl.id = m.daily_log_id\n  WHERE f.id = p_id\n  FOR UPDATE OF dl;\n  IF NOT FOUND THEN\n    RAISE EXCEPTION 'Food log entry was not found';\n  END IF;\n\n  caller_role := fitness.current_user_role();\n  IF auth.uid() IS NULL OR caller_role IS NULL OR NOT (\n    caller_role = 'admin'\n    OR (caller_role = 'client' AND owner_id = auth.uid())\n  ) THEN\n    RAISE EXCEPTION 'You are not authorized to delete this food log entry';\n  END IF;\n\n  DELETE FROM fitness.nutrition_log_foods WHERE id = p_id;\n  DELETE FROM fitness.nutrition_log_meals AS m\n  WHERE m.daily_log_id = v_daily_log_id\n    AND NOT EXISTS (\n      SELECT 1 FROM fitness.nutrition_log_foods AS f WHERE f.log_meal_id = m.id\n    );\n  UPDATE fitness.daily_nutrition_logs AS dl SET\n    total_calories = COALESCE((\n      SELECT sum(f.calories)\n      FROM fitness.nutrition_log_meals AS m\n      JOIN fitness.nutrition_log_foods AS f ON f.log_meal_id = m.id\n      WHERE m.daily_log_id = v_daily_log_id\n    ), 0),\n    total_protein_g = COALESCE((\n      SELECT sum(f.protein_g)\n      FROM fitness.nutrition_log_meals AS m\n      JOIN fitness.nutrition_log_foods AS f ON f.log_meal_id = m.id\n      WHERE m.daily_log_id = v_daily_log_id\n    ), 0),\n    total_carbs_g = COALESCE((\n      SELECT sum(f.carbs_g)\n      FROM fitness.nutrition_log_meals AS m\n      JOIN fitness.nutrition_log_foods AS f ON f.log_meal_id = m.id\n      WHERE m.daily_log_id = v_daily_log_id\n    ), 0),\n    total_fat_g = COALESCE((\n      SELECT sum(f.fat_g)\n      FROM fitness.nutrition_log_meals AS m\n      JOIN fitness.nutrition_log_foods AS f ON f.log_meal_id = m.id\n      WHERE m.daily_log_id = v_daily_log_id\n    ), 0),\n    updated_at = now()\n  WHERE dl.id = v_daily_log_id;\nEND;\n$$;\n\n-- --------------------------------------------------------------------\n-- INDEXES FOR PERFORMANCE\n-- --------------------------------------------------------------------\nCREATE INDEX IF NOT EXISTS idx_profiles_role ON fitness.profiles(role);\nCREATE INDEX IF NOT EXISTS idx_workout_assignments_client_date ON fitness.workout_assignments(client_id, scheduled_date);\nCREATE INDEX IF NOT EXISTS idx_daily_nutrition_client_date ON fitness.daily_nutrition_logs(client_id, log_date);\nCREATE INDEX IF NOT EXISTS idx_progress_records_client_date ON fitness.progress_records(client_id, recorded_at);\nCREATE INDEX IF NOT EXISTS idx_messages_conversation ON fitness.messages(conversation_id, created_at);\nCREATE INDEX IF NOT EXISTS idx_notifications_user ON fitness.notifications(user_id, is_read);\n\n-- --------------------------------------------------------------------\n-- AUTH IDENTITY, ROLE HELPERS & ROW-LEVEL SECURITY\n-- --------------------------------------------------------------------\nCREATE OR REPLACE FUNCTION fitness.current_user_role()\nRETURNS TEXT\nLANGUAGE SQL\nSTABLE\nSECURITY DEFINER\nSET search_path = ''\nAS $$\n  SELECT p.role::text\n  FROM fitness.profiles AS p\n  WHERE p.id = auth.uid()\n    AND p.is_active\n    AND p.approval_status IN ('active', 'approved', 'not_applicable')\n$$;\n\nCREATE OR REPLACE FUNCTION fitness.current_user_approval_status()\nRETURNS TEXT\nLANGUAGE SQL\nSTABLE\nSECURITY DEFINER\nSET search_path = ''\nAS $$\n  SELECT p.approval_status::text\n  FROM fitness.profiles AS p\n  WHERE p.id = auth.uid()\n$$;\n\nCREATE OR REPLACE FUNCTION fitness.is_admin()\nRETURNS BOOLEAN\nLANGUAGE SQL\nSTABLE\nSECURITY DEFINER\nSET search_path = ''\nAS $$\n  SELECT coalesce(fitness.current_user_role() = 'admin', false)\n$$;\n\nCREATE OR REPLACE FUNCTION fitness.is_coach_for_client(target_client_id UUID)\nRETURNS BOOLEAN\nLANGUAGE SQL\nSTABLE\nSECURITY DEFINER\nSET search_path = ''\nAS $$\n  SELECT coalesce(fitness.current_user_role() = 'coach', false)\n    AND EXISTS (\n      SELECT 1\n      FROM fitness.coach_client_assignments AS a\n      WHERE a.coach_id = auth.uid()\n        AND a.client_id = target_client_id\n        AND a.status = 'active'\n    )\n$$;\n\nCREATE OR REPLACE FUNCTION fitness.can_access_workout(target_workout_id UUID)\nRETURNS BOOLEAN\nLANGUAGE SQL\nSTABLE\nSECURITY DEFINER\nSET search_path = ''\nAS $$\n  SELECT fitness.is_admin()\n    OR EXISTS (\n      SELECT 1 FROM fitness.workouts AS w\n      WHERE w.id = target_workout_id\n        AND w.coach_id = auth.uid()\n        AND fitness.current_user_role() = 'coach'\n    )\n    OR EXISTS (\n      SELECT 1 FROM fitness.workout_assignments AS wa\n      WHERE wa.workout_id = target_workout_id\n        AND wa.client_id = auth.uid()\n        AND wa.status <> 'missed'\n        AND fitness.current_user_role() = 'client'\n    )\n$$;\n\nCREATE OR REPLACE FUNCTION fitness.create_profile_for_auth_user()\nRETURNS TRIGGER\nLANGUAGE plpgsql\nSECURITY DEFINER\nSET search_path = ''\nAS $$\nDECLARE\n  requested_role TEXT;\n  full_name TEXT;\n  first_name_value TEXT;\n  last_name_value TEXT;\n  goals_value TEXT[];\nBEGIN\n  requested_role := CASE\n    WHEN NEW.raw_app_meta_data ->> 'role' IN ('admin', 'coach')\n      THEN NEW.raw_app_meta_data ->> 'role'\n    ELSE 'client'\n  END;\n\n  IF requested_role = 'admin' THEN\n    PERFORM pg_advisory_xact_lock(8162025, 1);\n    IF EXISTS (\n       SELECT 1\n       FROM fitness.system_settings\n       WHERE key = 'gymwrath_initial_admin_initialized'\n    ) OR EXISTS (\n       SELECT 1\n       FROM fitness.profiles AS p\n       JOIN auth.users AS u ON u.id = p.id\n       WHERE p.role = 'admin'\n    ) THEN\n      RAISE EXCEPTION 'An administrator already exists; initial administrator setup is closed';\n    END IF;\n  END IF;\n\n  full_name := nullif(trim(coalesce(\n    NEW.raw_user_meta_data ->> 'full_name',\n    NEW.raw_user_meta_data ->> 'name',\n    ''\n  )), '');\n  IF full_name IS NULL THEN\n    full_name := split_part(coalesce(NEW.email, ''), '@', 1);\n  END IF;\n  first_name_value := coalesce(nullif(split_part(full_name, ' ', 1), ''), 'User');\n  last_name_value := nullif(trim(substr(full_name, length(first_name_value) + 1)), '');\n\n  goals_value := CASE jsonb_typeof(NEW.raw_user_meta_data -> 'fitness_goals')\n    WHEN 'array' THEN ARRAY(\n      SELECT jsonb_array_elements_text(NEW.raw_user_meta_data -> 'fitness_goals')\n    )\n    WHEN 'string' THEN CASE\n      WHEN nullif(trim(NEW.raw_user_meta_data ->> 'fitness_goals'), '') IS NULL THEN '{}'::TEXT[]\n      ELSE ARRAY[NEW.raw_user_meta_data ->> 'fitness_goals']\n    END\n    ELSE '{}'::TEXT[]\n  END;\n\n  INSERT INTO fitness.profiles (\n    id, role, email, first_name, last_name, approval_status, fitness_goals\n  )\n  VALUES (\n    NEW.id,\n    requested_role,\n    coalesce(NEW.email, ''),\n    first_name_value,\n    coalesce(last_name_value, ''),\n    CASE WHEN requested_role = 'client' THEN 'pending' ELSE 'not_applicable' END,\n    goals_value\n  );\n\n  IF requested_role = 'admin' THEN\n    INSERT INTO fitness.system_settings (key, value, description, updated_by)\n    VALUES (\n      'gymwrath_initial_admin_initialized',\n      jsonb_build_object('user_id', NEW.id),\n      'One-time initial administrator setup marker',\n      NEW.id\n    )\n    ON CONFLICT (key) DO NOTHING;\n    IF NOT FOUND THEN\n      RAISE EXCEPTION 'Initial administrator setup has already been completed';\n    END IF;\n  END IF;\n  RETURN NEW;\nEND;\n$$;\n\nDROP TRIGGER IF EXISTS gymwrath_create_profile ON auth.users;\nCREATE TRIGGER gymwrath_create_profile\nAFTER INSERT ON auth.users\nFOR EACH ROW EXECUTE FUNCTION fitness.create_profile_for_auth_user();\n\nREVOKE ALL ON FUNCTION fitness.create_profile_for_auth_user() FROM PUBLIC, anon, authenticated;\nGRANT EXECUTE ON FUNCTION fitness.create_profile_for_auth_user() TO supabase_auth_admin;\nREVOKE ALL ON FUNCTION fitness.current_user_role() FROM PUBLIC, anon;\nREVOKE ALL ON FUNCTION fitness.current_user_approval_status() FROM PUBLIC, anon;\nREVOKE ALL ON FUNCTION fitness.is_admin() FROM PUBLIC, anon;\nREVOKE ALL ON FUNCTION fitness.is_coach_for_client(UUID) FROM PUBLIC, anon;\nREVOKE ALL ON FUNCTION fitness.can_access_workout(UUID) FROM PUBLIC, anon;\nGRANT EXECUTE ON FUNCTION fitness.current_user_role() TO authenticated;\nGRANT EXECUTE ON FUNCTION fitness.current_user_approval_status() TO authenticated;\nGRANT EXECUTE ON FUNCTION fitness.is_admin() TO authenticated;\nGRANT EXECUTE ON FUNCTION fitness.is_coach_for_client(UUID) TO authenticated;\nGRANT EXECUTE ON FUNCTION fitness.can_access_workout(UUID) TO authenticated;\nREVOKE ALL ON FUNCTION fitness.log_food_item(UUID, UUID, DATE, TEXT, TEXT, NUMERIC, TEXT, NUMERIC, NUMERIC, NUMERIC, NUMERIC) FROM PUBLIC, anon;\nREVOKE ALL ON FUNCTION fitness.delete_food_log_item(UUID) FROM PUBLIC, anon;\nGRANT EXECUTE ON FUNCTION fitness.log_food_item(UUID, UUID, DATE, TEXT, TEXT, NUMERIC, TEXT, NUMERIC, NUMERIC, NUMERIC, NUMERIC) TO authenticated;\nGRANT EXECUTE ON FUNCTION fitness.delete_food_log_item(UUID) TO authenticated;\n\nREVOKE ALL ON SCHEMA fitness FROM PUBLIC, anon;\nGRANT USAGE ON SCHEMA fitness TO authenticated;\nGRANT USAGE ON SCHEMA fitness TO service_role;\nREVOKE ALL ON ALL TABLES IN SCHEMA fitness FROM PUBLIC, anon;\nGRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA fitness TO authenticated;\nGRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA fitness TO service_role;\nALTER DEFAULT PRIVILEGES IN SCHEMA fitness REVOKE ALL ON TABLES FROM PUBLIC, anon;\nALTER DEFAULT PRIVILEGES IN SCHEMA fitness GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO authenticated;\nALTER DEFAULT PRIVILEGES IN SCHEMA fitness GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO service_role;\n\nDO $$\nDECLARE\n  table_name TEXT;\nBEGIN\n  FOREACH table_name IN ARRAY ARRAY[\n    'profiles', 'coach_client_assignments', 'exercises', 'workouts',\n    'workout_exercises', 'exercise_set_templates', 'training_programs',\n    'program_workouts', 'program_assignments', 'workout_assignments',\n    'workout_completions', 'completed_exercise_sets', 'nutrition_plans',\n    'nutrition_plan_meals', 'meal_foods', 'nutrition_plan_assignments',\n    'daily_nutrition_logs', 'nutrition_log_meals', 'nutrition_log_foods',\n    'check_in_schedules', 'check_ins', 'progress_records', 'progress_photos',\n    'conversations', 'messages', 'notifications', 'system_settings'\n  ]\n  LOOP\n    EXECUTE format('ALTER TABLE fitness.%I ENABLE ROW LEVEL SECURITY', table_name);\n    EXECUTE format('DROP POLICY IF EXISTS admins_manage_%I ON fitness.%I', table_name, table_name);\n    EXECUTE format(\n      'CREATE POLICY admins_manage_%I ON fitness.%I FOR ALL TO authenticated USING (fitness.is_admin()) WITH CHECK (fitness.is_admin())',\n      table_name, table_name\n    );\n  END LOOP;\nEND;\n$$;\n\nDO $$\nDECLARE\n  policy_spec TEXT;\nBEGIN\n  FOREACH policy_spec IN ARRAY ARRAY[\n    'profiles:profiles_read_authorized', 'profiles:profiles_update_self',\n    'coach_client_assignments:assignments_read_participants',\n    'coach_client_assignments:assignments_coach_insert',\n    'coach_client_assignments:assignments_coach_update',\n    'exercises:exercises_read_authenticated', 'exercises:exercises_coach_insert',\n    'exercises:exercises_coach_update', 'exercises:exercises_coach_delete',\n    'workouts:workouts_read_assigned', 'workouts:workouts_coach_write',\n    'workouts:workouts_coach_update', 'workouts:workouts_coach_delete',\n    'training_programs:programs_read_owner', 'training_programs:programs_coach_insert',\n    'training_programs:programs_coach_update', 'training_programs:programs_coach_delete',\n    'workout_exercises:workout_exercises_read_authorized',\n    'workout_exercises:workout_exercises_coach_insert',\n    'workout_exercises:workout_exercises_coach_update',\n    'workout_exercises:workout_exercises_coach_delete',\n    'exercise_set_templates:set_templates_read_authorized',\n    'exercise_set_templates:set_templates_coach_insert',\n    'exercise_set_templates:set_templates_coach_update',\n    'exercise_set_templates:set_templates_coach_delete',\n    'program_workouts:program_workouts_read_authorized',\n    'program_workouts:program_workouts_coach_write',\n    'program_assignments:program_assignments_read_participants',\n    'program_assignments:program_assignments_coach_write',\n    'workout_assignments:workout_assignments_read_participants',\n    'workout_assignments:workout_assignments_coach_insert',\n    'workout_assignments:workout_assignments_coach_update',\n    'workout_completions:completions_read_participants',\n    'workout_completions:completions_client_insert',\n    'workout_completions:completions_coach_update',\n    'completed_exercise_sets:completed_sets_read_participants',\n    'completed_exercise_sets:completed_sets_client_write',\n    'nutrition_plans:nutrition_plans_read_authorized',\n    'nutrition_plans:nutrition_plans_coach_write',\n    'nutrition_plan_meals:nutrition_meals_read_authorized',\n    'nutrition_plan_meals:nutrition_meals_coach_write',\n    'meal_foods:meal_foods_read_authorized',\n    'meal_foods:meal_foods_coach_write',\n    'nutrition_plan_assignments:nutrition_assignments_read_participants',\n    'nutrition_plan_assignments:nutrition_assignments_coach_write',\n    'nutrition_log_meals:nutrition_log_meals_read_authorized',\n    'nutrition_log_meals:nutrition_log_meals_client_write',\n    'nutrition_log_foods:nutrition_log_foods_read_authorized',\n    'nutrition_log_foods:nutrition_log_foods_client_write',\n    'check_in_schedules:check_schedules_read_participants',\n    'check_in_schedules:check_schedules_coach_write',\n    'check_ins:check_ins_read_participants', 'check_ins:check_ins_client_insert',\n    'check_ins:check_ins_coach_update', 'progress_records:progress_records_read_participants',\n    'progress_records:progress_records_client_insert', 'progress_records:progress_records_client_update',\n    'progress_photos:progress_photos_read_participants',\n    'progress_photos:progress_photos_client_insert',\n    'progress_photos:progress_photos_client_delete',\n    'daily_nutrition_logs:nutrition_logs_read_participants',\n    'daily_nutrition_logs:nutrition_logs_client_write',\n    'conversations:conversations_read_participants', 'conversations:conversations_coach_create',\n    'messages:messages_read_participants', 'messages:messages_send_participant',\n    'messages:messages_update_recipient', 'notifications:notifications_read_self',\n    'notifications:notifications_update_self'\n  ]\n  LOOP\n    EXECUTE format(\n      'DROP POLICY IF EXISTS %I ON fitness.%I',\n      split_part(policy_spec, ':', 2),\n      split_part(policy_spec, ':', 1)\n    );\n  END LOOP;\nEND;\n$$;\n\nCREATE POLICY profiles_read_authorized ON fitness.profiles\n  FOR SELECT TO authenticated\n  USING (\n    id = auth.uid()\n    OR fitness.is_admin()\n    OR fitness.is_coach_for_client(id)\n    OR EXISTS (\n      SELECT 1 FROM fitness.coach_client_assignments AS a\n      WHERE a.client_id = auth.uid() AND a.coach_id = fitness.profiles.id AND a.status = 'active'\n    )\n  );\nCREATE POLICY profiles_update_self ON fitness.profiles\n  FOR UPDATE TO authenticated\n  USING (\n    id = auth.uid()\n    AND role = fitness.current_user_role()\n    AND approval_status = fitness.current_user_approval_status()\n    AND NOT fitness.is_admin()\n  )\n  WITH CHECK (\n    id = auth.uid()\n    AND role = fitness.current_user_role()\n    AND approval_status = fitness.current_user_approval_status()\n    AND NOT fitness.is_admin()\n  );\n\nCREATE POLICY assignments_read_participants ON fitness.coach_client_assignments\n  FOR SELECT TO authenticated\n  USING (\n    fitness.is_admin()\n    OR (fitness.current_user_role() IN ('coach', 'client') AND (coach_id = auth.uid() OR client_id = auth.uid()))\n  );\nCREATE POLICY assignments_coach_insert ON fitness.coach_client_assignments\n  FOR INSERT TO authenticated\n  WITH CHECK (\n    fitness.current_user_role() = 'coach'\n    AND coach_id = auth.uid()\n    AND EXISTS (SELECT 1 FROM fitness.profiles p WHERE p.id = client_id AND p.role = 'client')\n  );\nCREATE POLICY assignments_coach_update ON fitness.coach_client_assignments\n  FOR UPDATE TO authenticated\n  USING (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())\n  WITH CHECK (fitness.current_user_role() = 'coach' AND coach_id = auth.uid());\n\nCREATE POLICY exercises_read_authenticated ON fitness.exercises\n  FOR SELECT TO authenticated\n  USING (\n    fitness.is_admin()\n    OR (fitness.current_user_role() IN ('coach', 'client') AND (is_global OR coach_id = auth.uid()))\n  );\nCREATE POLICY exercises_coach_insert ON fitness.exercises\n  FOR INSERT TO authenticated\n  WITH CHECK (\n    fitness.is_admin()\n    OR (fitness.current_user_role() = 'coach' AND coach_id = auth.uid() AND NOT is_global)\n  );\nCREATE POLICY exercises_coach_update ON fitness.exercises\n  FOR UPDATE TO authenticated\n  USING (fitness.is_admin() OR (fitness.current_user_role() = 'coach' AND coach_id = auth.uid() AND NOT is_global))\n  WITH CHECK (fitness.is_admin() OR (fitness.current_user_role() = 'coach' AND coach_id = auth.uid() AND NOT is_global));\nCREATE POLICY exercises_coach_delete ON fitness.exercises\n  FOR DELETE TO authenticated\n  USING (fitness.is_admin() OR (fitness.current_user_role() = 'coach' AND coach_id = auth.uid() AND NOT is_global));\n\nCREATE POLICY workouts_read_assigned ON fitness.workouts\n  FOR SELECT TO authenticated\n  USING (\n    fitness.is_admin()\n    OR (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())\n    OR EXISTS (\n      SELECT 1 FROM fitness.workout_assignments wa\n      WHERE wa.workout_id = fitness.workouts.id AND wa.client_id = auth.uid()\n        AND fitness.current_user_role() = 'client'\n    )\n  );\nCREATE POLICY workouts_coach_write ON fitness.workouts\n  FOR INSERT TO authenticated\n  WITH CHECK (fitness.current_user_role() = 'coach' AND coach_id = auth.uid());\nCREATE POLICY workouts_coach_update ON fitness.workouts\n  FOR UPDATE TO authenticated\n  USING (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())\n  WITH CHECK (fitness.current_user_role() = 'coach' AND coach_id = auth.uid());\nCREATE POLICY workouts_coach_delete ON fitness.workouts\n  FOR DELETE TO authenticated\n  USING (fitness.current_user_role() = 'coach' AND coach_id = auth.uid());\n\nCREATE POLICY programs_read_owner ON fitness.training_programs\n  FOR SELECT TO authenticated\n  USING (\n    (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())\n    OR EXISTS (\n      SELECT 1 FROM fitness.program_assignments pa\n      WHERE pa.program_id = fitness.training_programs.id\n        AND pa.client_id = auth.uid()\n        AND pa.status = 'active'\n        AND fitness.current_user_role() = 'client'\n    )\n  );\nCREATE POLICY programs_coach_insert ON fitness.training_programs\n  FOR INSERT TO authenticated\n  WITH CHECK (fitness.current_user_role() = 'coach' AND coach_id = auth.uid());\nCREATE POLICY programs_coach_update ON fitness.training_programs\n  FOR UPDATE TO authenticated\n  USING (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())\n  WITH CHECK (fitness.current_user_role() = 'coach' AND coach_id = auth.uid());\nCREATE POLICY programs_coach_delete ON fitness.training_programs\n  FOR DELETE TO authenticated\n  USING (fitness.current_user_role() = 'coach' AND coach_id = auth.uid());\n\nCREATE POLICY workout_assignments_read_participants ON fitness.workout_assignments\n  FOR SELECT TO authenticated\n  USING (\n    fitness.is_admin()\n    OR (fitness.current_user_role() IN ('coach', 'client') AND (client_id = auth.uid() OR coach_id = auth.uid()))\n  );\nCREATE POLICY workout_assignments_coach_insert ON fitness.workout_assignments\n  FOR INSERT TO authenticated\n  WITH CHECK (fitness.current_user_role() = 'coach' AND coach_id = auth.uid() AND fitness.is_coach_for_client(client_id));\nCREATE POLICY workout_assignments_coach_update ON fitness.workout_assignments\n  FOR UPDATE TO authenticated\n  USING (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())\n  WITH CHECK (fitness.current_user_role() = 'coach' AND coach_id = auth.uid());\n\nCREATE POLICY workout_exercises_read_authorized ON fitness.workout_exercises\n  FOR SELECT TO authenticated\n  USING (fitness.can_access_workout(workout_id));\nCREATE POLICY workout_exercises_coach_insert ON fitness.workout_exercises\n  FOR INSERT TO authenticated\n  WITH CHECK (\n    fitness.current_user_role() = 'coach'\n    AND EXISTS (SELECT 1 FROM fitness.workouts w WHERE w.id = workout_id AND w.coach_id = auth.uid())\n  );\nCREATE POLICY workout_exercises_coach_update ON fitness.workout_exercises\n  FOR UPDATE TO authenticated\n  USING (\n    fitness.current_user_role() = 'coach'\n    AND EXISTS (SELECT 1 FROM fitness.workouts w WHERE w.id = workout_id AND w.coach_id = auth.uid())\n  )\n  WITH CHECK (\n    fitness.current_user_role() = 'coach'\n    AND EXISTS (SELECT 1 FROM fitness.workouts w WHERE w.id = workout_id AND w.coach_id = auth.uid())\n  );\nCREATE POLICY workout_exercises_coach_delete ON fitness.workout_exercises\n  FOR DELETE TO authenticated\n  USING (\n    fitness.current_user_role() = 'coach'\n    AND EXISTS (SELECT 1 FROM fitness.workouts w WHERE w.id = workout_id AND w.coach_id = auth.uid())\n  );\n\nCREATE POLICY set_templates_read_authorized ON fitness.exercise_set_templates\n  FOR SELECT TO authenticated\n  USING (\n    EXISTS (\n      SELECT 1 FROM fitness.workout_exercises we\n      WHERE we.id = workout_exercise_id AND fitness.can_access_workout(we.workout_id)\n    )\n  );\nCREATE POLICY set_templates_coach_insert ON fitness.exercise_set_templates\n  FOR INSERT TO authenticated\n  WITH CHECK (\n    fitness.current_user_role() = 'coach'\n    AND EXISTS (\n      SELECT 1 FROM fitness.workout_exercises we\n      JOIN fitness.workouts w ON w.id = we.workout_id\n      WHERE we.id = workout_exercise_id AND w.coach_id = auth.uid()\n    )\n  );\nCREATE POLICY set_templates_coach_update ON fitness.exercise_set_templates\n  FOR UPDATE TO authenticated\n  USING (\n    fitness.current_user_role() = 'coach'\n    AND EXISTS (\n      SELECT 1 FROM fitness.workout_exercises we\n      JOIN fitness.workouts w ON w.id = we.workout_id\n      WHERE we.id = workout_exercise_id AND w.coach_id = auth.uid()\n    )\n  )\n  WITH CHECK (\n    fitness.current_user_role() = 'coach'\n    AND EXISTS (\n      SELECT 1 FROM fitness.workout_exercises we\n      JOIN fitness.workouts w ON w.id = we.workout_id\n      WHERE we.id = workout_exercise_id AND w.coach_id = auth.uid()\n    )\n  );\nCREATE POLICY set_templates_coach_delete ON fitness.exercise_set_templates\n  FOR DELETE TO authenticated\n  USING (\n    fitness.current_user_role() = 'coach'\n    AND EXISTS (\n      SELECT 1 FROM fitness.workout_exercises we\n      JOIN fitness.workouts w ON w.id = we.workout_id\n      WHERE we.id = workout_exercise_id AND w.coach_id = auth.uid()\n    )\n  );\n\nCREATE POLICY program_assignments_read_participants ON fitness.program_assignments\n  FOR SELECT TO authenticated\n  USING (\n    fitness.is_admin()\n    OR (fitness.current_user_role() IN ('coach', 'client') AND (client_id = auth.uid() OR coach_id = auth.uid()))\n  );\nCREATE POLICY program_assignments_coach_write ON fitness.program_assignments\n  FOR ALL TO authenticated\n  USING (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())\n  WITH CHECK (\n    fitness.current_user_role() = 'coach'\n    AND coach_id = auth.uid()\n    AND fitness.is_coach_for_client(client_id)\n  );\nCREATE POLICY program_workouts_read_authorized ON fitness.program_workouts\n  FOR SELECT TO authenticated\n  USING (\n    EXISTS (\n      SELECT 1 FROM fitness.training_programs p\n      WHERE p.id = program_id\n        AND (\n          p.coach_id = auth.uid()\n          OR EXISTS (\n            SELECT 1 FROM fitness.program_assignments pa\n            WHERE pa.program_id = p.id AND pa.client_id = auth.uid() AND pa.status = 'active'\n          )\n        )\n    )\n  );\nCREATE POLICY program_workouts_coach_write ON fitness.program_workouts\n  FOR ALL TO authenticated\n  USING (\n    fitness.current_user_role() = 'coach'\n    AND EXISTS (SELECT 1 FROM fitness.training_programs p WHERE p.id = program_id AND p.coach_id = auth.uid())\n  )\n  WITH CHECK (\n    fitness.current_user_role() = 'coach'\n    AND EXISTS (SELECT 1 FROM fitness.training_programs p WHERE p.id = program_id AND p.coach_id = auth.uid())\n  );\n\nCREATE POLICY completions_read_participants ON fitness.workout_completions\n  FOR SELECT TO authenticated\n  USING (\n    (fitness.current_user_role() = 'client' AND client_id = auth.uid())\n    OR fitness.is_coach_for_client(client_id)\n  );\nCREATE POLICY completions_client_insert ON fitness.workout_completions\n  FOR INSERT TO authenticated\n  WITH CHECK (\n    client_id = auth.uid()\n    AND fitness.current_user_role() = 'client'\n    AND EXISTS (\n      SELECT 1 FROM fitness.workout_assignments wa\n      WHERE wa.id = assignment_id AND wa.client_id = auth.uid()\n    )\n  );\nCREATE POLICY completions_coach_update ON fitness.workout_completions\n  FOR UPDATE TO authenticated\n  USING (fitness.is_coach_for_client(client_id))\n  WITH CHECK (fitness.is_coach_for_client(client_id));\nCREATE POLICY completed_sets_read_participants ON fitness.completed_exercise_sets\n  FOR SELECT TO authenticated\n  USING (\n    EXISTS (\n      SELECT 1 FROM fitness.workout_completions wc\n      WHERE wc.id = completion_id\n        AND (wc.client_id = auth.uid() OR fitness.is_coach_for_client(wc.client_id))\n    )\n  );\nCREATE POLICY completed_sets_client_write ON fitness.completed_exercise_sets\n  FOR INSERT TO authenticated\n  WITH CHECK (\n    EXISTS (\n      SELECT 1 FROM fitness.workout_completions wc\n      WHERE wc.id = completion_id AND wc.client_id = auth.uid()\n    )\n  );\n\nCREATE POLICY nutrition_plans_read_authorized ON fitness.nutrition_plans\n  FOR SELECT TO authenticated\n  USING (\n    (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())\n    OR EXISTS (\n      SELECT 1 FROM fitness.nutrition_plan_assignments na\n      WHERE na.plan_id = fitness.nutrition_plans.id AND na.client_id = auth.uid()\n        AND na.status = 'active' AND fitness.current_user_role() = 'client'\n    )\n  );\nCREATE POLICY nutrition_plans_coach_write ON fitness.nutrition_plans\n  FOR ALL TO authenticated\n  USING (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())\n  WITH CHECK (fitness.current_user_role() = 'coach' AND coach_id = auth.uid());\nCREATE POLICY nutrition_meals_read_authorized ON fitness.nutrition_plan_meals\n  FOR SELECT TO authenticated\n  USING (\n    EXISTS (\n      SELECT 1 FROM fitness.nutrition_plans p\n      WHERE p.id = plan_id AND (p.coach_id = auth.uid()\n        OR EXISTS (\n          SELECT 1 FROM fitness.nutrition_plan_assignments na\n          WHERE na.plan_id = p.id AND na.client_id = auth.uid() AND na.status = 'active'\n        ))\n    )\n  );\nCREATE POLICY nutrition_meals_coach_write ON fitness.nutrition_plan_meals\n  FOR ALL TO authenticated\n  USING (\n    fitness.current_user_role() = 'coach'\n    AND EXISTS (SELECT 1 FROM fitness.nutrition_plans p WHERE p.id = plan_id AND p.coach_id = auth.uid())\n  )\n  WITH CHECK (\n    fitness.current_user_role() = 'coach'\n    AND EXISTS (SELECT 1 FROM fitness.nutrition_plans p WHERE p.id = plan_id AND p.coach_id = auth.uid())\n  );\nCREATE POLICY meal_foods_read_authorized ON fitness.meal_foods\n  FOR SELECT TO authenticated\n  USING (\n    EXISTS (\n      SELECT 1 FROM fitness.nutrition_plan_meals pm\n      JOIN fitness.nutrition_plans p ON p.id = pm.plan_id\n      WHERE pm.id = plan_meal_id AND (p.coach_id = auth.uid()\n        OR EXISTS (\n          SELECT 1 FROM fitness.nutrition_plan_assignments na\n          WHERE na.plan_id = p.id AND na.client_id = auth.uid() AND na.status = 'active'\n        ))\n    )\n  );\nCREATE POLICY meal_foods_coach_write ON fitness.meal_foods\n  FOR ALL TO authenticated\n  USING (\n    fitness.current_user_role() = 'coach'\n    AND EXISTS (\n      SELECT 1 FROM fitness.nutrition_plan_meals pm\n      JOIN fitness.nutrition_plans p ON p.id = pm.plan_id\n      WHERE pm.id = plan_meal_id AND p.coach_id = auth.uid()\n    )\n  )\n  WITH CHECK (\n    fitness.current_user_role() = 'coach'\n    AND EXISTS (\n      SELECT 1 FROM fitness.nutrition_plan_meals pm\n      JOIN fitness.nutrition_plans p ON p.id = pm.plan_id\n      WHERE pm.id = plan_meal_id AND p.coach_id = auth.uid()\n    )\n  );\nCREATE POLICY nutrition_assignments_read_participants ON fitness.nutrition_plan_assignments\n  FOR SELECT TO authenticated\n  USING (client_id = auth.uid() OR coach_id = auth.uid() OR fitness.is_admin());\nCREATE POLICY nutrition_assignments_coach_write ON fitness.nutrition_plan_assignments\n  FOR ALL TO authenticated\n  USING (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())\n  WITH CHECK (\n    fitness.current_user_role() = 'coach'\n    AND coach_id = auth.uid()\n    AND fitness.is_coach_for_client(client_id)\n  );\n\nCREATE POLICY check_ins_read_participants ON fitness.check_ins\n  FOR SELECT TO authenticated\n  USING (\n    (fitness.current_user_role() = 'client' AND client_id = auth.uid())\n    OR fitness.is_coach_for_client(client_id)\n  );\nCREATE POLICY check_ins_client_insert ON fitness.check_ins\n  FOR INSERT TO authenticated\n  WITH CHECK (client_id = auth.uid() AND fitness.current_user_role() = 'client');\nCREATE POLICY check_ins_coach_update ON fitness.check_ins\n  FOR UPDATE TO authenticated\n  USING (fitness.is_coach_for_client(client_id))\n  WITH CHECK (fitness.is_coach_for_client(client_id));\n\nCREATE POLICY progress_records_read_participants ON fitness.progress_records\n  FOR SELECT TO authenticated\n  USING (\n    (fitness.current_user_role() = 'client' AND client_id = auth.uid())\n    OR fitness.is_coach_for_client(client_id)\n  );\nCREATE POLICY progress_records_client_insert ON fitness.progress_records\n  FOR INSERT TO authenticated\n  WITH CHECK (client_id = auth.uid() AND fitness.current_user_role() = 'client');\nCREATE POLICY progress_records_client_update ON fitness.progress_records\n  FOR UPDATE TO authenticated\n  USING (client_id = auth.uid() OR fitness.is_coach_for_client(client_id))\n  WITH CHECK (client_id = auth.uid() OR fitness.is_coach_for_client(client_id));\n\nCREATE POLICY nutrition_logs_read_participants ON fitness.daily_nutrition_logs\n  FOR SELECT TO authenticated\n  USING (\n    (fitness.current_user_role() = 'client' AND client_id = auth.uid())\n    OR fitness.is_coach_for_client(client_id)\n  );\nCREATE POLICY nutrition_logs_client_write ON fitness.daily_nutrition_logs\n  FOR ALL TO authenticated\n  USING (client_id = auth.uid() AND fitness.current_user_role() = 'client')\n  WITH CHECK (client_id = auth.uid() AND fitness.current_user_role() = 'client');\nCREATE POLICY nutrition_log_meals_read_authorized ON fitness.nutrition_log_meals\n  FOR SELECT TO authenticated\n  USING (\n    EXISTS (\n      SELECT 1 FROM fitness.daily_nutrition_logs dl\n      WHERE dl.id = daily_log_id\n        AND (dl.client_id = auth.uid() OR fitness.is_coach_for_client(dl.client_id))\n    )\n  );\nCREATE POLICY nutrition_log_meals_client_write ON fitness.nutrition_log_meals\n  FOR ALL TO authenticated\n  USING (\n    fitness.current_user_role() = 'client'\n    AND EXISTS (SELECT 1 FROM fitness.daily_nutrition_logs dl WHERE dl.id = daily_log_id AND dl.client_id = auth.uid())\n  )\n  WITH CHECK (\n    fitness.current_user_role() = 'client'\n    AND EXISTS (SELECT 1 FROM fitness.daily_nutrition_logs dl WHERE dl.id = daily_log_id AND dl.client_id = auth.uid())\n  );\nCREATE POLICY nutrition_log_foods_read_authorized ON fitness.nutrition_log_foods\n  FOR SELECT TO authenticated\n  USING (\n    EXISTS (\n      SELECT 1 FROM fitness.nutrition_log_meals lm\n      JOIN fitness.daily_nutrition_logs dl ON dl.id = lm.daily_log_id\n      WHERE lm.id = log_meal_id\n        AND (dl.client_id = auth.uid() OR fitness.is_coach_for_client(dl.client_id))\n    )\n  );\nCREATE POLICY nutrition_log_foods_client_write ON fitness.nutrition_log_foods\n  FOR ALL TO authenticated\n  USING (\n    fitness.current_user_role() = 'client'\n    AND EXISTS (\n      SELECT 1 FROM fitness.nutrition_log_meals lm\n      JOIN fitness.daily_nutrition_logs dl ON dl.id = lm.daily_log_id\n      WHERE lm.id = log_meal_id AND dl.client_id = auth.uid()\n    )\n  )\n  WITH CHECK (\n    fitness.current_user_role() = 'client'\n    AND EXISTS (\n      SELECT 1 FROM fitness.nutrition_log_meals lm\n      JOIN fitness.daily_nutrition_logs dl ON dl.id = lm.daily_log_id\n      WHERE lm.id = log_meal_id AND dl.client_id = auth.uid()\n    )\n  );\n\nCREATE POLICY check_schedules_read_participants ON fitness.check_in_schedules\n  FOR SELECT TO authenticated\n  USING (\n    (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())\n    OR (fitness.current_user_role() = 'client' AND client_id = auth.uid())\n    OR fitness.is_coach_for_client(client_id)\n  );\nCREATE POLICY check_schedules_coach_write ON fitness.check_in_schedules\n  FOR ALL TO authenticated\n  USING (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())\n  WITH CHECK (\n    fitness.current_user_role() = 'coach'\n    AND coach_id = auth.uid()\n    AND fitness.is_coach_for_client(client_id)\n  );\n\nCREATE POLICY conversations_read_participants ON fitness.conversations\n  FOR SELECT TO authenticated\n  USING (\n    fitness.is_admin()\n    OR (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())\n    OR (fitness.current_user_role() = 'client' AND client_id = auth.uid())\n  );\nCREATE POLICY conversations_coach_create ON fitness.conversations\n  FOR INSERT TO authenticated\n  WITH CHECK (coach_id = auth.uid() AND fitness.is_coach_for_client(client_id));\nCREATE POLICY messages_read_participants ON fitness.messages\n  FOR SELECT TO authenticated\n  USING (\n    fitness.current_user_role() IN ('admin', 'coach', 'client')\n    AND (sender_id = auth.uid() OR recipient_id = auth.uid()\n    OR EXISTS (\n      SELECT 1 FROM fitness.conversations c\n      WHERE c.id = conversation_id AND (c.coach_id = auth.uid() OR c.client_id = auth.uid())\n    )\n    )\n  );\nCREATE POLICY messages_send_participant ON fitness.messages\n  FOR INSERT TO authenticated\n  WITH CHECK (\n    sender_id = auth.uid()\n    AND EXISTS (\n      SELECT 1 FROM fitness.conversations c\n      WHERE c.id = conversation_id\n        AND (c.coach_id = auth.uid() OR c.client_id = auth.uid())\n        AND recipient_id IN (c.coach_id, c.client_id)\n    )\n  );\nCREATE POLICY messages_update_recipient ON fitness.messages\n  FOR UPDATE TO authenticated\n  USING (recipient_id = auth.uid())\n  WITH CHECK (recipient_id = auth.uid());\n\nCREATE POLICY notifications_read_self ON fitness.notifications\n  FOR SELECT TO authenticated\n  USING (user_id = auth.uid() AND fitness.current_user_role() IN ('admin', 'coach', 'client'));\nCREATE POLICY notifications_update_self ON fitness.notifications\n  FOR UPDATE TO authenticated\n  USING (user_id = auth.uid())\n  WITH CHECK (user_id = auth.uid());\nCREATE POLICY progress_photos_read_participants ON fitness.progress_photos\n  FOR SELECT TO authenticated\n  USING (\n    (fitness.current_user_role() = 'client' AND client_id = auth.uid())\n    OR fitness.is_coach_for_client(client_id)\n  );\nCREATE POLICY progress_photos_client_insert ON fitness.progress_photos\n  FOR INSERT TO authenticated\n  WITH CHECK (client_id = auth.uid() AND fitness.current_user_role() = 'client');\nCREATE POLICY progress_photos_client_delete ON fitness.progress_photos\n  FOR DELETE TO authenticated\n  USING (client_id = auth.uid() AND fitness.current_user_role() = 'client');\n";
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
@@ -3130,7 +3279,7 @@ const MainLayout = ()=>{
         if (selectedClientId && (currentUser.role === 'coach' || currentUser.role === 'admin') && (activeView === 'clients' || activeView === 'dashboard')) {
             return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$clients$2f$ClientProfileView$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ClientProfileView"], {}, void 0, false, {
                 fileName: "[project]/src/App.tsx",
-                lineNumber: 34,
+                lineNumber: 35,
                 columnNumber: 14
             }, ("TURBOPACK compile-time value", void 0));
         }
@@ -3138,83 +3287,83 @@ const MainLayout = ()=>{
             case 'dashboard':
                 if (currentUser.role === 'client') return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$dashboard$2f$ClientDashboard$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ClientDashboard"], {}, void 0, false, {
                     fileName: "[project]/src/App.tsx",
-                    lineNumber: 39,
+                    lineNumber: 40,
                     columnNumber: 51
                 }, ("TURBOPACK compile-time value", void 0));
                 if (currentUser.role === 'admin') return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$dashboard$2f$AdminDashboard$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AdminDashboard"], {}, void 0, false, {
                     fileName: "[project]/src/App.tsx",
-                    lineNumber: 40,
+                    lineNumber: 41,
                     columnNumber: 50
                 }, ("TURBOPACK compile-time value", void 0));
                 return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$dashboard$2f$CoachDashboard$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CoachDashboard"], {}, void 0, false, {
                     fileName: "[project]/src/App.tsx",
-                    lineNumber: 41,
+                    lineNumber: 42,
                     columnNumber: 16
                 }, ("TURBOPACK compile-time value", void 0));
             case 'clients':
                 return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$dashboard$2f$CoachDashboard$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CoachDashboard"], {}, void 0, false, {
                     fileName: "[project]/src/App.tsx",
-                    lineNumber: 44,
+                    lineNumber: 45,
                     columnNumber: 16
                 }, ("TURBOPACK compile-time value", void 0));
             case 'exercises':
                 return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$workouts$2f$ExerciseLibrary$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ExerciseLibrary"], {}, void 0, false, {
                     fileName: "[project]/src/App.tsx",
-                    lineNumber: 47,
+                    lineNumber: 48,
                     columnNumber: 16
                 }, ("TURBOPACK compile-time value", void 0));
             case 'programs':
                 return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$workouts$2f$ProgramBuilder$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ProgramBuilder"], {}, void 0, false, {
                     fileName: "[project]/src/App.tsx",
-                    lineNumber: 50,
+                    lineNumber: 51,
                     columnNumber: 16
                 }, ("TURBOPACK compile-time value", void 0));
             case 'calendar':
                 return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$workouts$2f$WorkoutCalendarView$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["WorkoutCalendarView"], {}, void 0, false, {
                     fileName: "[project]/src/App.tsx",
-                    lineNumber: 53,
+                    lineNumber: 54,
                     columnNumber: 16
                 }, ("TURBOPACK compile-time value", void 0));
             case 'checkins':
                 return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$checkins$2f$CheckInsView$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CheckInsView"], {}, void 0, false, {
                     fileName: "[project]/src/App.tsx",
-                    lineNumber: 56,
+                    lineNumber: 57,
                     columnNumber: 16
                 }, ("TURBOPACK compile-time value", void 0));
             case 'nutrition':
                 return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$nutrition$2f$NutritionView$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["NutritionView"], {}, void 0, false, {
                     fileName: "[project]/src/App.tsx",
-                    lineNumber: 59,
+                    lineNumber: 60,
                     columnNumber: 16
                 }, ("TURBOPACK compile-time value", void 0));
             case 'steps':
                 return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$activity$2f$StepsTrackerView$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["StepsTrackerView"], {}, void 0, false, {
                     fileName: "[project]/src/App.tsx",
-                    lineNumber: 62,
+                    lineNumber: 63,
                     columnNumber: 16
                 }, ("TURBOPACK compile-time value", void 0));
             case 'messages':
                 return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$messages$2f$MessagesView$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["MessagesView"], {}, void 0, false, {
                     fileName: "[project]/src/App.tsx",
-                    lineNumber: 65,
+                    lineNumber: 66,
                     columnNumber: 16
                 }, ("TURBOPACK compile-time value", void 0));
             case 'database':
                 return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$database$2f$DatabaseSchemaView$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DatabaseSchemaView"], {}, void 0, false, {
                     fileName: "[project]/src/App.tsx",
-                    lineNumber: 68,
+                    lineNumber: 69,
                     columnNumber: 16
                 }, ("TURBOPACK compile-time value", void 0));
             case 'admin':
                 return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$dashboard$2f$AdminDashboard$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AdminDashboard"], {}, void 0, false, {
                     fileName: "[project]/src/App.tsx",
-                    lineNumber: 71,
+                    lineNumber: 72,
                     columnNumber: 16
                 }, ("TURBOPACK compile-time value", void 0));
             default:
                 return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$dashboard$2f$CoachDashboard$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CoachDashboard"], {}, void 0, false, {
                     fileName: "[project]/src/App.tsx",
-                    lineNumber: 74,
+                    lineNumber: 75,
                     columnNumber: 16
                 }, ("TURBOPACK compile-time value", void 0));
         }
@@ -3228,7 +3377,7 @@ const MainLayout = ()=>{
                 onOpenAuth: ()=>setIsAuthModalOpen(true)
             }, void 0, false, {
                 fileName: "[project]/src/App.tsx",
-                lineNumber: 81,
+                lineNumber: 82,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3239,7 +3388,7 @@ const MainLayout = ()=>{
                         onCloseMobile: ()=>setIsMobileMenuOpen(false)
                     }, void 0, false, {
                         fileName: "[project]/src/App.tsx",
-                        lineNumber: 89,
+                        lineNumber: 90,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
@@ -3247,40 +3396,40 @@ const MainLayout = ()=>{
                         children: renderCurrentView()
                     }, void 0, false, {
                         fileName: "[project]/src/App.tsx",
-                        lineNumber: 95,
+                        lineNumber: 96,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/App.tsx",
-                lineNumber: 87,
+                lineNumber: 88,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$layout$2f$MobileBottomNav$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["MobileBottomNav"], {
                 onOpenMobileMenu: ()=>setIsMobileMenuOpen(true)
             }, void 0, false, {
                 fileName: "[project]/src/App.tsx",
-                lineNumber: 101,
+                lineNumber: 102,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$workouts$2f$ActiveWorkoutModal$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ActiveWorkoutModal"], {}, void 0, false, {
                 fileName: "[project]/src/App.tsx",
-                lineNumber: 104,
+                lineNumber: 105,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$checkins$2f$CheckInSubmitModal$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CheckInSubmitModal"], {}, void 0, false, {
                 fileName: "[project]/src/App.tsx",
-                lineNumber: 105,
+                lineNumber: 106,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$checkins$2f$CheckInReviewModal$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CheckInReviewModal"], {}, void 0, false, {
                 fileName: "[project]/src/App.tsx",
-                lineNumber: 106,
+                lineNumber: 107,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$notifications$2f$NotificationDrawer$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["NotificationDrawer"], {}, void 0, false, {
                 fileName: "[project]/src/App.tsx",
-                lineNumber: 107,
+                lineNumber: 108,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$auth$2f$AuthModal$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AuthModal"], {
@@ -3288,13 +3437,13 @@ const MainLayout = ()=>{
                 onClose: ()=>setIsAuthModalOpen(false)
             }, void 0, false, {
                 fileName: "[project]/src/App.tsx",
-                lineNumber: 108,
+                lineNumber: 109,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0))
         ]
     }, void 0, true, {
         fileName: "[project]/src/App.tsx",
-        lineNumber: 79,
+        lineNumber: 80,
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0));
 };
@@ -3304,16 +3453,19 @@ _s(MainLayout, "8lmcCUDKPSnPbpS4f+/yhmcZgOo=", false, function() {
     ];
 });
 _c = MainLayout;
-function App() {
+function App(param) {
+    let { initialUserId, initialProfile } = param;
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AppProvider"], {
+        initialUserId: initialUserId,
+        initialProfile: initialProfile,
         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(MainLayout, {}, void 0, false, {
             fileName: "[project]/src/App.tsx",
-            lineNumber: 116,
+            lineNumber: 117,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/App.tsx",
-        lineNumber: 115,
+        lineNumber: 116,
         columnNumber: 5
     }, this);
 }

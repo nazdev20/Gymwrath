@@ -38,6 +38,9 @@ const NutritionView = ()=>{
     const [selectedMeal, setSelectedMeal] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('Breakfast');
     const [selectedFoodId, setSelectedFoodId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(foods[0]?.id || '');
     const [foodQuantity, setFoodQuantity] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(100);
+    const [foodLogError, setFoodLogError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [isSavingFoodLog, setIsSavingFoodLog] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [deletingFoodLogId, setDeletingFoodLogId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
     // Macro Target inputs
     const currentTarget = nutritionTargets.find((t)=>t.clientId === selectedClientId) || {
         caloriesKcal: 2000,
@@ -57,31 +60,57 @@ const NutritionView = ()=>{
     const [newFoodFat, setNewFoodFat] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(3);
     const [newFoodCategory, setNewFoodCategory] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('Protein');
     const clients = allProfiles.filter((p)=>p.role === 'client');
+    const canManageFoodLogs = currentUser.role === 'admin' || currentUser.role === 'client';
     // Logs for selected date and client
     const clientLogs = foodLogs.filter((l)=>l.clientId === selectedClientId && l.logDate === selectedDate);
     const totalCalories = clientLogs.reduce((sum, l)=>sum + l.calories, 0);
     const totalProtein = clientLogs.reduce((sum, l)=>sum + l.proteinG, 0);
     const totalCarbs = clientLogs.reduce((sum, l)=>sum + l.carbsG, 0);
     const totalFat = clientLogs.reduce((sum, l)=>sum + l.fatG, 0);
-    const handleSaveFoodLog = (e)=>{
+    const handleSaveFoodLog = async (e)=>{
         e.preventDefault();
+        if (isSavingFoodLog) return;
         const food = foods.find((f)=>f.id === selectedFoodId);
         if (!food) return;
         const multiplier = foodQuantity / (food.servingSize || 100);
-        logFoodItem({
-            clientId: selectedClientId,
-            foodId: food.id,
-            foodName: food.name,
-            mealName: selectedMeal,
-            logDate: selectedDate,
-            quantity: foodQuantity,
-            unit: food.servingUnit || 'g',
-            calories: Math.round(food.calories * multiplier),
-            proteinG: Math.round(food.proteinG * multiplier * 10) / 10,
-            carbsG: Math.round(food.carbsG * multiplier * 10) / 10,
-            fatG: Math.round(food.fatG * multiplier * 10) / 10
-        });
-        setIsLogFoodOpen(false);
+        setFoodLogError(null);
+        setIsSavingFoodLog(true);
+        try {
+            const result = await logFoodItem({
+                clientId: selectedClientId,
+                foodId: food.id,
+                foodName: food.name,
+                mealName: selectedMeal,
+                logDate: selectedDate,
+                quantity: foodQuantity,
+                unit: food.servingUnit || 'g',
+                calories: Math.round(food.calories * multiplier),
+                proteinG: Math.round(food.proteinG * multiplier * 10) / 10,
+                carbsG: Math.round(food.carbsG * multiplier * 10) / 10,
+                fatG: Math.round(food.fatG * multiplier * 10) / 10
+            });
+            if (!result.success) {
+                setFoodLogError(result.error || 'Food entry was not saved.');
+                return;
+            }
+            setIsLogFoodOpen(false);
+        } catch (error) {
+            setFoodLogError(error instanceof Error ? error.message : 'Food entry was not saved.');
+        } finally{
+            setIsSavingFoodLog(false);
+        }
+    };
+    const handleDeleteFoodLog = async (id)=>{
+        setFoodLogError(null);
+        setDeletingFoodLogId(id);
+        try {
+            const result = await deleteFoodLogItem(id);
+            if (!result.success) setFoodLogError(result.error || 'Food entry was not deleted.');
+        } catch (error) {
+            setFoodLogError(error instanceof Error ? error.message : 'Food entry was not deleted.');
+        } finally{
+            setDeletingFoodLogId(null);
+        }
     };
     const handleSaveTarget = (e)=>{
         e.preventDefault();
@@ -134,12 +163,12 @@ const NutritionView = ()=>{
                                             className: "w-4 h-4"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 151,
+                                            lineNumber: 180,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                        lineNumber: 150,
+                                        lineNumber: 179,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -147,13 +176,13 @@ const NutritionView = ()=>{
                                         children: "Nutrition & Macro Coaching"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                        lineNumber: 153,
+                                        lineNumber: 182,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                lineNumber: 149,
+                                lineNumber: 178,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -161,13 +190,13 @@ const NutritionView = ()=>{
                                 children: "Track daily macronutrient intake, build tailored meal plans, and monitor nutrition compliance."
                             }, void 0, false, {
                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                lineNumber: 155,
+                                lineNumber: 184,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                        lineNumber: 148,
+                        lineNumber: 177,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -183,7 +212,7 @@ const NutritionView = ()=>{
                                                 children: "Athlete:"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                lineNumber: 164,
+                                                lineNumber: 193,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -195,18 +224,18 @@ const NutritionView = ()=>{
                                                         children: c.fullName
                                                     }, c.id, false, {
                                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                        lineNumber: 171,
+                                                        lineNumber: 200,
                                                         columnNumber: 21
                                                     }, ("TURBOPACK compile-time value", void 0)))
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                lineNumber: 165,
+                                                lineNumber: 194,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                        lineNumber: 163,
+                                        lineNumber: 192,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -217,19 +246,19 @@ const NutritionView = ()=>{
                                                 className: "w-4 h-4 text-blue-400"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                lineNumber: 180,
+                                                lineNumber: 209,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             " Prescribe Targets"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                        lineNumber: 176,
+                                        lineNumber: 205,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                            canManageFoodLogs && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                 onClick: ()=>setIsLogFoodOpen(true),
                                 className: "px-4 py-2 rounded-xl bg-blue-500 hover:bg-blue-400 text-slate-950 font-bold text-xs transition-colors flex items-center gap-1.5 shadow-lg shadow-blue-500/20",
                                 children: [
@@ -237,26 +266,26 @@ const NutritionView = ()=>{
                                         className: "w-4 h-4"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                        lineNumber: 189,
-                                        columnNumber: 13
+                                        lineNumber: 218,
+                                        columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     " Log Food / Meal"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                lineNumber: 185,
-                                columnNumber: 11
+                                lineNumber: 214,
+                                columnNumber: 33
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                        lineNumber: 160,
+                        lineNumber: 189,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                lineNumber: 147,
+                lineNumber: 176,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -273,7 +302,7 @@ const NutritionView = ()=>{
                                         children: "Log Date:"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                        lineNumber: 198,
+                                        lineNumber: 227,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -283,13 +312,13 @@ const NutritionView = ()=>{
                                         className: "px-3 py-1 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white focus:outline-none focus:border-blue-500"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                        lineNumber: 199,
+                                        lineNumber: 228,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                lineNumber: 197,
+                                lineNumber: 226,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -304,7 +333,7 @@ const NutritionView = ()=>{
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                        lineNumber: 208,
+                                        lineNumber: 237,
                                         columnNumber: 28
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     " (P: ",
@@ -317,13 +346,13 @@ const NutritionView = ()=>{
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                lineNumber: 207,
+                                lineNumber: 236,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                        lineNumber: 196,
+                        lineNumber: 225,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -340,20 +369,20 @@ const NutritionView = ()=>{
                                                 children: "Calories"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                lineNumber: 217,
+                                                lineNumber: 246,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$flame$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Flame$3e$__["Flame"], {
                                                 className: "w-4 h-4 text-emerald-400"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                lineNumber: 218,
+                                                lineNumber: 247,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                        lineNumber: 216,
+                                        lineNumber: 245,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -369,13 +398,13 @@ const NutritionView = ()=>{
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                lineNumber: 221,
+                                                lineNumber: 250,
                                                 columnNumber: 31
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                        lineNumber: 220,
+                                        lineNumber: 249,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -387,18 +416,18 @@ const NutritionView = ()=>{
                                             }
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 224,
+                                            lineNumber: 253,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                        lineNumber: 223,
+                                        lineNumber: 252,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                lineNumber: 215,
+                                lineNumber: 244,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -412,7 +441,7 @@ const NutritionView = ()=>{
                                                 children: "Protein"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                lineNumber: 234,
+                                                lineNumber: 263,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -420,13 +449,13 @@ const NutritionView = ()=>{
                                                 children: "4 kcal/g"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                lineNumber: 235,
+                                                lineNumber: 264,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                        lineNumber: 233,
+                                        lineNumber: 262,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -443,13 +472,13 @@ const NutritionView = ()=>{
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                lineNumber: 238,
+                                                lineNumber: 267,
                                                 columnNumber: 43
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                        lineNumber: 237,
+                                        lineNumber: 266,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -461,18 +490,18 @@ const NutritionView = ()=>{
                                             }
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 241,
+                                            lineNumber: 270,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                        lineNumber: 240,
+                                        lineNumber: 269,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                lineNumber: 232,
+                                lineNumber: 261,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -486,7 +515,7 @@ const NutritionView = ()=>{
                                                 children: "Carbohydrates"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                lineNumber: 251,
+                                                lineNumber: 280,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -494,13 +523,13 @@ const NutritionView = ()=>{
                                                 children: "4 kcal/g"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                lineNumber: 252,
+                                                lineNumber: 281,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                        lineNumber: 250,
+                                        lineNumber: 279,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -517,13 +546,13 @@ const NutritionView = ()=>{
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                lineNumber: 255,
+                                                lineNumber: 284,
                                                 columnNumber: 41
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                        lineNumber: 254,
+                                        lineNumber: 283,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -535,18 +564,18 @@ const NutritionView = ()=>{
                                             }
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 258,
+                                            lineNumber: 287,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                        lineNumber: 257,
+                                        lineNumber: 286,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                lineNumber: 249,
+                                lineNumber: 278,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -560,7 +589,7 @@ const NutritionView = ()=>{
                                                 children: "Dietary Fats"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                lineNumber: 268,
+                                                lineNumber: 297,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -568,13 +597,13 @@ const NutritionView = ()=>{
                                                 children: "9 kcal/g"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                lineNumber: 269,
+                                                lineNumber: 298,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                        lineNumber: 267,
+                                        lineNumber: 296,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -591,13 +620,13 @@ const NutritionView = ()=>{
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                lineNumber: 272,
+                                                lineNumber: 301,
                                                 columnNumber: 39
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                        lineNumber: 271,
+                                        lineNumber: 300,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -609,35 +638,44 @@ const NutritionView = ()=>{
                                             }
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 275,
+                                            lineNumber: 304,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                        lineNumber: 274,
+                                        lineNumber: 303,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                lineNumber: 266,
+                                lineNumber: 295,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                        lineNumber: 213,
+                        lineNumber: 242,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                lineNumber: 195,
+                lineNumber: 224,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4",
                 children: [
+                    foodLogError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                        role: "alert",
+                        className: "rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300",
+                        children: foodLogError
+                    }, void 0, false, {
+                        fileName: "[project]/src/components/nutrition/NutritionView.tsx",
+                        lineNumber: 315,
+                        columnNumber: 26
+                    }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "flex items-center justify-between",
                         children: [
@@ -650,10 +688,10 @@ const NutritionView = ()=>{
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                lineNumber: 287,
+                                lineNumber: 317,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                            canManageFoodLogs && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                 onClick: ()=>setIsLogFoodOpen(true),
                                 className: "text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1",
                                 children: [
@@ -661,20 +699,20 @@ const NutritionView = ()=>{
                                         className: "w-3.5 h-3.5"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                        lineNumber: 292,
-                                        columnNumber: 13
+                                        lineNumber: 322,
+                                        columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     " Log Another Item"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                lineNumber: 288,
-                                columnNumber: 11
+                                lineNumber: 318,
+                                columnNumber: 33
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                        lineNumber: 286,
+                        lineNumber: 316,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     clientLogs.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -684,7 +722,7 @@ const NutritionView = ()=>{
                                 className: "w-8 h-8 mx-auto mb-2 text-slate-600"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                lineNumber: 298,
+                                lineNumber: 328,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -692,13 +730,13 @@ const NutritionView = ()=>{
                                 children: "No food entries logged for this date."
                             }, void 0, false, {
                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                lineNumber: 299,
+                                lineNumber: 329,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                        lineNumber: 297,
+                        lineNumber: 327,
                         columnNumber: 11
                     }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "space-y-4",
@@ -717,7 +755,7 @@ const NutritionView = ()=>{
                                                 children: meal
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                lineNumber: 312,
+                                                lineNumber: 342,
                                                 columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -728,13 +766,13 @@ const NutritionView = ()=>{
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                lineNumber: 313,
+                                                lineNumber: 343,
                                                 columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                        lineNumber: 311,
+                                        lineNumber: 341,
                                         columnNumber: 19
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -749,7 +787,7 @@ const NutritionView = ()=>{
                                                                 children: item.foodName
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                                lineNumber: 320,
+                                                                lineNumber: 350,
                                                                 columnNumber: 27
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -767,13 +805,13 @@ const NutritionView = ()=>{
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                                lineNumber: 321,
+                                                                lineNumber: 351,
                                                                 columnNumber: 27
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                        lineNumber: 319,
+                                                        lineNumber: 349,
                                                         columnNumber: 25
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -787,60 +825,62 @@ const NutritionView = ()=>{
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                                lineNumber: 327,
+                                                                lineNumber: 357,
                                                                 columnNumber: 27
                                                             }, ("TURBOPACK compile-time value", void 0)),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                onClick: ()=>deleteFoodLogItem(item.id),
-                                                                className: "text-slate-500 hover:text-rose-400 transition-colors p-1",
+                                                            canManageFoodLogs && item.foodId !== 'legacy-daily-log' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                                onClick: ()=>void handleDeleteFoodLog(item.id),
+                                                                disabled: deletingFoodLogId === item.id,
+                                                                className: "text-slate-500 hover:text-rose-400 transition-colors p-1 disabled:opacity-50",
+                                                                "aria-label": `Delete ${item.foodName}`,
                                                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$trash$2d$2$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Trash2$3e$__["Trash2"], {
                                                                     className: "w-3.5 h-3.5"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                                    lineNumber: 332,
+                                                                    lineNumber: 364,
                                                                     columnNumber: 29
                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                                lineNumber: 328,
-                                                                columnNumber: 27
+                                                                lineNumber: 358,
+                                                                columnNumber: 87
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                        lineNumber: 326,
+                                                        lineNumber: 356,
                                                         columnNumber: 25
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, item.id, true, {
                                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                lineNumber: 318,
+                                                lineNumber: 348,
                                                 columnNumber: 23
                                             }, ("TURBOPACK compile-time value", void 0)))
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                        lineNumber: 316,
+                                        lineNumber: 346,
                                         columnNumber: 19
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, meal, true, {
                                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                lineNumber: 310,
+                                lineNumber: 340,
                                 columnNumber: 17
                             }, ("TURBOPACK compile-time value", void 0));
                         })
                     }, void 0, false, {
                         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                        lineNumber: 302,
+                        lineNumber: 332,
                         columnNumber: 11
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                lineNumber: 285,
+                lineNumber: 314,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
-            isLogFoodOpen && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+            isLogFoodOpen && canManageFoodLogs && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs",
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 text-white shadow-2xl space-y-4",
@@ -850,13 +890,22 @@ const NutritionView = ()=>{
                             children: "Log Food to Meal Diary"
                         }, void 0, false, {
                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                            lineNumber: 349,
+                            lineNumber: 381,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
                             onSubmit: handleSaveFoodLog,
                             className: "space-y-4",
                             children: [
+                                foodLogError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                    role: "alert",
+                                    className: "rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300",
+                                    children: foodLogError
+                                }, void 0, false, {
+                                    fileName: "[project]/src/components/nutrition/NutritionView.tsx",
+                                    lineNumber: 384,
+                                    columnNumber: 32
+                                }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
@@ -864,7 +913,7 @@ const NutritionView = ()=>{
                                             children: "Meal Period"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 353,
+                                            lineNumber: 386,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -876,18 +925,18 @@ const NutritionView = ()=>{
                                                     children: m
                                                 }, m, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 360,
+                                                    lineNumber: 393,
                                                     columnNumber: 21
                                                 }, ("TURBOPACK compile-time value", void 0)))
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 354,
+                                            lineNumber: 387,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                    lineNumber: 352,
+                                    lineNumber: 385,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -900,7 +949,7 @@ const NutritionView = ()=>{
                                                     children: "Food Item"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 367,
+                                                    lineNumber: 400,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -913,13 +962,13 @@ const NutritionView = ()=>{
                                                     children: "+ Create Custom Food"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 368,
+                                                    lineNumber: 401,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 366,
+                                            lineNumber: 399,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -936,18 +985,18 @@ const NutritionView = ()=>{
                                                     ]
                                                 }, f.id, true, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 385,
+                                                    lineNumber: 418,
                                                     columnNumber: 21
                                                 }, ("TURBOPACK compile-time value", void 0)))
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 379,
+                                            lineNumber: 412,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                    lineNumber: 365,
+                                    lineNumber: 398,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -957,7 +1006,7 @@ const NutritionView = ()=>{
                                             children: "Portion (Grams)"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 393,
+                                            lineNumber: 426,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -969,13 +1018,13 @@ const NutritionView = ()=>{
                                             className: "w-full px-3.5 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-mono focus:outline-none focus:border-blue-500"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 394,
+                                            lineNumber: 427,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                    lineNumber: 392,
+                                    lineNumber: 425,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -988,39 +1037,40 @@ const NutritionView = ()=>{
                                             children: "Cancel"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 405,
+                                            lineNumber: 438,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                             type: "submit",
-                                            className: "flex-1 py-2 px-4 rounded-xl bg-blue-500 hover:bg-blue-400 text-slate-950 font-bold text-xs",
-                                            children: "Save to Log"
+                                            disabled: isSavingFoodLog,
+                                            className: "flex-1 py-2 px-4 rounded-xl bg-blue-500 hover:bg-blue-400 text-slate-950 font-bold text-xs disabled:opacity-60",
+                                            children: isSavingFoodLog ? 'Saving…' : 'Save to Log'
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 412,
+                                            lineNumber: 445,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                    lineNumber: 404,
+                                    lineNumber: 437,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                            lineNumber: 351,
+                            lineNumber: 383,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                    lineNumber: 348,
+                    lineNumber: 380,
                     columnNumber: 11
                 }, ("TURBOPACK compile-time value", void 0))
             }, void 0, false, {
                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                lineNumber: 347,
+                lineNumber: 379,
                 columnNumber: 9
             }, ("TURBOPACK compile-time value", void 0)),
             isSetTargetOpen && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1033,7 +1083,7 @@ const NutritionView = ()=>{
                             children: "Prescribe Daily Macro Targets"
                         }, void 0, false, {
                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                            lineNumber: 428,
+                            lineNumber: 462,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
@@ -1047,7 +1097,7 @@ const NutritionView = ()=>{
                                             children: "Total Calories (kcal)"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 432,
+                                            lineNumber: 466,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1058,13 +1108,13 @@ const NutritionView = ()=>{
                                             className: "w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white text-sm font-mono focus:outline-none focus:border-blue-500"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 433,
+                                            lineNumber: 467,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                    lineNumber: 431,
+                                    lineNumber: 465,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1077,7 +1127,7 @@ const NutritionView = ()=>{
                                                     children: "Protein (g)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 444,
+                                                    lineNumber: 478,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1088,13 +1138,13 @@ const NutritionView = ()=>{
                                                     className: "w-full px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-mono focus:outline-none focus:border-blue-500"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 445,
+                                                    lineNumber: 479,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 443,
+                                            lineNumber: 477,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1104,7 +1154,7 @@ const NutritionView = ()=>{
                                                     children: "Carbs (g)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 454,
+                                                    lineNumber: 488,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1115,13 +1165,13 @@ const NutritionView = ()=>{
                                                     className: "w-full px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-mono focus:outline-none focus:border-blue-500"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 455,
+                                                    lineNumber: 489,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 453,
+                                            lineNumber: 487,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1131,7 +1181,7 @@ const NutritionView = ()=>{
                                                     children: "Fat (g)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 464,
+                                                    lineNumber: 498,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1142,19 +1192,19 @@ const NutritionView = ()=>{
                                                     className: "w-full px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-mono focus:outline-none focus:border-blue-500"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 465,
+                                                    lineNumber: 499,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 463,
+                                            lineNumber: 497,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                    lineNumber: 442,
+                                    lineNumber: 476,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1167,7 +1217,7 @@ const NutritionView = ()=>{
                                             children: "Cancel"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 476,
+                                            lineNumber: 510,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1176,30 +1226,30 @@ const NutritionView = ()=>{
                                             children: "Update Targets"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 483,
+                                            lineNumber: 517,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                    lineNumber: 475,
+                                    lineNumber: 509,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                            lineNumber: 430,
+                            lineNumber: 464,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                    lineNumber: 427,
+                    lineNumber: 461,
                     columnNumber: 11
                 }, ("TURBOPACK compile-time value", void 0))
             }, void 0, false, {
                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                lineNumber: 426,
+                lineNumber: 460,
                 columnNumber: 9
             }, ("TURBOPACK compile-time value", void 0)),
             isAddCustomFoodOpen && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1212,7 +1262,7 @@ const NutritionView = ()=>{
                             children: "Create Food Item (per 100g)"
                         }, void 0, false, {
                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                            lineNumber: 499,
+                            lineNumber: 533,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
@@ -1226,7 +1276,7 @@ const NutritionView = ()=>{
                                             children: "Food Name"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 503,
+                                            lineNumber: 537,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1238,13 +1288,13 @@ const NutritionView = ()=>{
                                             className: "w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-blue-500"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 504,
+                                            lineNumber: 538,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                    lineNumber: 502,
+                                    lineNumber: 536,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1254,7 +1304,7 @@ const NutritionView = ()=>{
                                             children: "Category"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 515,
+                                            lineNumber: 549,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -1267,7 +1317,7 @@ const NutritionView = ()=>{
                                                     children: "Protein"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 521,
+                                                    lineNumber: 555,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1275,7 +1325,7 @@ const NutritionView = ()=>{
                                                     children: "Carbohydrates"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 522,
+                                                    lineNumber: 556,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1283,7 +1333,7 @@ const NutritionView = ()=>{
                                                     children: "Fats"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 523,
+                                                    lineNumber: 557,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1291,7 +1341,7 @@ const NutritionView = ()=>{
                                                     children: "Dairy"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 524,
+                                                    lineNumber: 558,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1299,7 +1349,7 @@ const NutritionView = ()=>{
                                                     children: "Fruits"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 525,
+                                                    lineNumber: 559,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1307,7 +1357,7 @@ const NutritionView = ()=>{
                                                     children: "Vegetables"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 526,
+                                                    lineNumber: 560,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1315,7 +1365,7 @@ const NutritionView = ()=>{
                                                     children: "Snacks"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 527,
+                                                    lineNumber: 561,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1323,7 +1373,7 @@ const NutritionView = ()=>{
                                                     children: "Beverages"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 528,
+                                                    lineNumber: 562,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -1331,19 +1381,19 @@ const NutritionView = ()=>{
                                                     children: "Other"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 529,
+                                                    lineNumber: 563,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 516,
+                                            lineNumber: 550,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                    lineNumber: 514,
+                                    lineNumber: 548,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1356,7 +1406,7 @@ const NutritionView = ()=>{
                                                     children: "Calories (kcal)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 535,
+                                                    lineNumber: 569,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1367,13 +1417,13 @@ const NutritionView = ()=>{
                                                     className: "w-full px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-mono"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 536,
+                                                    lineNumber: 570,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 534,
+                                            lineNumber: 568,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1383,7 +1433,7 @@ const NutritionView = ()=>{
                                                     children: "Protein (g)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 545,
+                                                    lineNumber: 579,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1394,13 +1444,13 @@ const NutritionView = ()=>{
                                                     className: "w-full px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-mono"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 546,
+                                                    lineNumber: 580,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 544,
+                                            lineNumber: 578,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1410,7 +1460,7 @@ const NutritionView = ()=>{
                                                     children: "Carbs (g)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 555,
+                                                    lineNumber: 589,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1421,13 +1471,13 @@ const NutritionView = ()=>{
                                                     className: "w-full px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-mono"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 556,
+                                                    lineNumber: 590,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 554,
+                                            lineNumber: 588,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1437,7 +1487,7 @@ const NutritionView = ()=>{
                                                     children: "Fat (g)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 565,
+                                                    lineNumber: 599,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1448,19 +1498,19 @@ const NutritionView = ()=>{
                                                     className: "w-full px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-mono"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                                    lineNumber: 566,
+                                                    lineNumber: 600,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 564,
+                                            lineNumber: 598,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                    lineNumber: 533,
+                                    lineNumber: 567,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1473,7 +1523,7 @@ const NutritionView = ()=>{
                                             children: "Cancel"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 577,
+                                            lineNumber: 611,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1482,36 +1532,36 @@ const NutritionView = ()=>{
                                             children: "Save Food"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                            lineNumber: 584,
+                                            lineNumber: 618,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                                    lineNumber: 576,
+                                    lineNumber: 610,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                            lineNumber: 501,
+                            lineNumber: 535,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                    lineNumber: 498,
+                    lineNumber: 532,
                     columnNumber: 11
                 }, ("TURBOPACK compile-time value", void 0))
             }, void 0, false, {
                 fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-                lineNumber: 497,
+                lineNumber: 531,
                 columnNumber: 9
             }, ("TURBOPACK compile-time value", void 0))
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/nutrition/NutritionView.tsx",
-        lineNumber: 145,
+        lineNumber: 174,
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0));
 };

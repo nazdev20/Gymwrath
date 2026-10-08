@@ -12,555 +12,307 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/context/AppContext.tsx [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$x$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__X$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/x.js [app-ssr] (ecmascript) <export default as X>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$server$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Server$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/server.js [app-ssr] (ecmascript) <export default as Server>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$refresh$2d$cw$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__RefreshCw$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/refresh-cw.js [app-ssr] (ecmascript) <export default as RefreshCw>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$check$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__CheckCircle2$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/circle-check.js [app-ssr] (ecmascript) <export default as CheckCircle2>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$triangle$2d$alert$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertTriangle$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/triangle-alert.js [app-ssr] (ecmascript) <export default as AlertTriangle>");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$refresh$2d$cw$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__RefreshCw$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/refresh-cw.js [app-ssr] (ecmascript) <export default as RefreshCw>");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$external$2d$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ExternalLink$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/external-link.js [app-ssr] (ecmascript) <export default as ExternalLink>");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$shield$2d$check$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ShieldCheck$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/shield-check.js [app-ssr] (ecmascript) <export default as ShieldCheck>");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$rotate$2d$ccw$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__RotateCcw$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/rotate-ccw.js [app-ssr] (ecmascript) <export default as RotateCcw>");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$check$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Check$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/check.js [app-ssr] (ecmascript) <export default as Check>");
+'use client';
 ;
 ;
 ;
 ;
 ;
 const SupabaseConfigModal = ({ isOpen, onClose })=>{
-    const { loadFromSupabase } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useApp"])();
-    const [url, setUrl] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('');
-    const [anonKey, setAnonKey] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('');
-    const [isOffline, setIsOffline] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
+    const { loadFromSupabase, supabaseAuthUserId } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useApp"])();
     const [isTesting, setIsTesting] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
-    const [testResult, setTestResult] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])({
-        tested: false,
-        success: false,
-        message: ''
-    });
-    const [isSaved, setIsSaved] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [result, setResult] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
+    const config = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getSupabaseConfig"])();
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
-        if (isOpen) {
-            const config = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getSupabaseConfig"])();
-            setUrl(config.url);
-            setAnonKey(config.anonKey);
-            setIsOffline(config.isOfflineMode);
-            setTestResult({
-                tested: false,
-                success: false,
-                message: ''
-            });
-            setIsSaved(false);
-        }
+        if (isOpen) setResult(null);
     }, [
         isOpen
     ]);
     if (!isOpen) return null;
-    const handleTest = async (testUrl = url, testKey = anonKey)=>{
+    const testConnection = async ()=>{
         setIsTesting(true);
-        setTestResult({
-            tested: false,
-            success: false,
-            message: ''
+        setResult(null);
+        const connection = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["checkSupabaseConnection"])();
+        setResult({
+            success: connection.connected,
+            message: connection.connected ? `Connected to ${connection.endpoint}.` : connection.error || 'Connection failed.'
         });
-        const res = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["checkSupabaseConnection"])(testUrl, testKey);
+        if (connection.connected && supabaseAuthUserId) await loadFromSupabase(supabaseAuthUserId);
         setIsTesting(false);
-        setTestResult({
-            tested: true,
-            success: res.connected,
-            message: res.connected ? `Successfully connected to Supabase REST API at ${res.endpoint}!` : res.error || 'Failed to connect to Supabase endpoint.',
-            isDomainError: res.isDomainError
-        });
-    };
-    const handleSave = async ()=>{
-        (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["setCustomSupabaseConfig"])(url, anonKey, isOffline);
-        setIsSaved(true);
-        setTimeout(()=>setIsSaved(false), 2000);
-        if (!isOffline) {
-            await loadFromSupabase();
-        }
-        onClose();
-    };
-    const handleReset = ()=>{
-        (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["resetSupabaseConfig"])();
-        const config = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getSupabaseConfig"])();
-        setUrl(config.url);
-        setAnonKey(config.anonKey);
-        setIsOffline(false);
-        setTestResult({
-            tested: false,
-            success: false,
-            message: ''
-        });
-    };
-    const handleSetOffline = async ()=>{
-        setIsOffline(true);
-        (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["setCustomSupabaseConfig"])(url, anonKey, true);
-        setIsSaved(true);
-        setTimeout(()=>{
-            setIsSaved(false);
-            onClose();
-        }, 800);
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xs",
-        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-            className: "relative w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-7 text-white shadow-2xl animate-in zoom-in-95 duration-150 space-y-6",
+        className: "fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4",
+        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
+            role: "dialog",
+            "aria-modal": "true",
+            "aria-labelledby": "supabase-config-title",
+            className: "w-full max-w-xl space-y-5 rounded-3xl border border-slate-800 bg-slate-900 p-6 text-white shadow-2xl",
             children: [
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "flex items-start justify-between gap-4 pb-4 border-b border-slate-800",
+                    className: "flex items-start justify-between gap-4 border-b border-slate-800 pb-4",
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "flex items-center gap-3",
                             children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0",
-                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$server$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Server$3e$__["Server"], {
-                                        className: "w-5 h-5"
-                                    }, void 0, false, {
-                                        fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                        lineNumber: 115,
-                                        columnNumber: 15
-                                    }, ("TURBOPACK compile-time value", void 0))
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$server$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Server$3e$__["Server"], {
+                                    className: "h-6 w-6 text-emerald-400"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                    lineNumber: 114,
+                                    lineNumber: 42,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                            className: "text-lg font-bold text-white flex items-center gap-2",
-                                            children: "Supabase Credentials & Connection"
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                            id: "supabase-config-title",
+                                            className: "font-bold",
+                                            children: "Supabase Environment"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                            lineNumber: 118,
+                                            lineNumber: 44,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                             className: "text-xs text-slate-400",
-                                            children: "Configure your active Supabase PostgreSQL project URL and API key"
+                                            children: "Credentials are supplied by the server environment, not stored in browser storage."
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                            lineNumber: 121,
+                                            lineNumber: 45,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                    lineNumber: 117,
+                                    lineNumber: 43,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                            lineNumber: 113,
+                            lineNumber: 41,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                            type: "button",
                             onClick: onClose,
-                            className: "text-slate-400 hover:text-white p-1.5 rounded-xl hover:bg-slate-800 transition-colors",
+                            "aria-label": "Close",
+                            className: "text-slate-400 hover:text-white",
                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$x$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__X$3e$__["X"], {
-                                className: "w-5 h-5"
+                                className: "h-5 w-5"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                lineNumber: 130,
-                                columnNumber: 13
+                                lineNumber: 48,
+                                columnNumber: 114
                             }, ("TURBOPACK compile-time value", void 0))
                         }, void 0, false, {
                             fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                            lineNumber: 126,
+                            lineNumber: 48,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                    lineNumber: 112,
+                    lineNumber: 40,
                     columnNumber: 9
                 }, ("TURBOPACK compile-time value", void 0)),
-                testResult.tested && !testResult.success && testResult.isDomainError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs space-y-2",
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "space-y-3 rounded-2xl border border-slate-800 bg-slate-950/60 p-4 text-sm",
                     children: [
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "flex items-center gap-2 font-bold text-sm text-amber-200",
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$triangle$2d$alert$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertTriangle$3e$__["AlertTriangle"], {
-                                    className: "w-4 h-4 shrink-0"
-                                }, void 0, false, {
-                                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                    lineNumber: 138,
-                                    columnNumber: 15
-                                }, ("TURBOPACK compile-time value", void 0)),
-                                "Domain Not Resolved (ERR_NAME_NOT_RESOLVED)"
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                            lineNumber: 137,
-                            columnNumber: 13
-                        }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                            className: "text-slate-300 leading-relaxed",
                             children: [
-                                "The Supabase project domain ",
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "text-slate-400",
+                                    children: "Project URL:"
+                                }, void 0, false, {
+                                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
+                                    lineNumber: 52,
+                                    columnNumber: 14
+                                }, ("TURBOPACK compile-time value", void 0)),
+                                " ",
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("code", {
-                                    className: "bg-slate-950 px-1.5 py-0.5 rounded text-amber-300 font-mono",
-                                    children: url
+                                    className: "break-all text-emerald-300",
+                                    children: config.url || 'Not configured'
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                    lineNumber: 142,
-                                    columnNumber: 43
-                                }, ("TURBOPACK compile-time value", void 0)),
-                                " does not exist on the public Internet."
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                            lineNumber: 141,
-                            columnNumber: 13
-                        }, ("TURBOPACK compile-time value", void 0)),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "bg-slate-950/60 p-3 rounded-xl border border-amber-500/20 text-[11px] text-slate-300 space-y-1",
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                    className: "font-semibold text-amber-200",
-                                    children: "How to fix:"
-                                }, void 0, false, {
-                                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                    lineNumber: 145,
-                                    columnNumber: 15
-                                }, ("TURBOPACK compile-time value", void 0)),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
-                                    className: "list-disc pl-4 space-y-1",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
-                                            children: [
-                                                "Log in to your ",
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
-                                                    href: "https://supabase.com/dashboard",
-                                                    target: "_blank",
-                                                    rel: "noreferrer",
-                                                    className: "text-emerald-400 underline inline-flex items-center gap-0.5",
-                                                    children: [
-                                                        "Supabase Dashboard ",
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$external$2d$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ExternalLink$3e$__["ExternalLink"], {
-                                                            className: "w-2.5 h-2.5"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                                            lineNumber: 147,
-                                                            columnNumber: 201
-                                                        }, ("TURBOPACK compile-time value", void 0))
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                                    lineNumber: 147,
-                                                    columnNumber: 36
-                                                }, ("TURBOPACK compile-time value", void 0)),
-                                                "."
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                            lineNumber: 147,
-                                            columnNumber: 17
-                                        }, ("TURBOPACK compile-time value", void 0)),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
-                                            children: "Ensure your project is unpaused / active."
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                            lineNumber: 148,
-                                            columnNumber: 17
-                                        }, ("TURBOPACK compile-time value", void 0)),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
-                                            children: [
-                                                "Go to ",
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
-                                                    children: "Project Settings → API"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                                    lineNumber: 149,
-                                                    columnNumber: 27
-                                                }, ("TURBOPACK compile-time value", void 0)),
-                                                " and copy your exact ",
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
-                                                    children: "Project URL"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                                    lineNumber: 149,
-                                                    columnNumber: 87
-                                                }, ("TURBOPACK compile-time value", void 0)),
-                                                " and ",
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
-                                                    children: "anon public API key"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                                    lineNumber: 149,
-                                                    columnNumber: 120
-                                                }, ("TURBOPACK compile-time value", void 0)),
-                                                "."
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                            lineNumber: 149,
-                                            columnNumber: 17
-                                        }, ("TURBOPACK compile-time value", void 0))
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                    lineNumber: 146,
-                                    columnNumber: 15
+                                    lineNumber: 52,
+                                    columnNumber: 67
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                            lineNumber: 144,
-                            columnNumber: 13
+                            lineNumber: 52,
+                            columnNumber: 11
+                        }, ("TURBOPACK compile-time value", void 0)),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "text-slate-400",
+                                    children: "Public anon key:"
+                                }, void 0, false, {
+                                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
+                                    lineNumber: 53,
+                                    columnNumber: 14
+                                }, ("TURBOPACK compile-time value", void 0)),
+                                " ",
+                                config.anonKey ? 'Configured' : 'Not configured'
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
+                            lineNumber: 53,
+                            columnNumber: 11
+                        }, ("TURBOPACK compile-time value", void 0)),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "text-slate-400",
+                                    children: "Application schema:"
+                                }, void 0, false, {
+                                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
+                                    lineNumber: 54,
+                                    columnNumber: 14
+                                }, ("TURBOPACK compile-time value", void 0)),
+                                " ",
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("code", {
+                                    className: "text-emerald-300",
+                                    children: "fitness"
+                                }, void 0, false, {
+                                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
+                                    lineNumber: 54,
+                                    columnNumber: 74
+                                }, ("TURBOPACK compile-time value", void 0))
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
+                            lineNumber: 54,
+                            columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                    lineNumber: 136,
+                    lineNumber: 51,
+                    columnNumber: 9
+                }, ("TURBOPACK compile-time value", void 0)),
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 text-xs leading-relaxed text-slate-300",
+                    children: [
+                        "Set ",
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("code", {
+                            className: "text-amber-300",
+                            children: "NEXT_PUBLIC_SUPABASE_URL"
+                        }, void 0, false, {
+                            fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
+                            lineNumber: 58,
+                            columnNumber: 15
+                        }, ("TURBOPACK compile-time value", void 0)),
+                        ", ",
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("code", {
+                            className: "text-amber-300",
+                            children: "NEXT_PUBLIC_SUPABASE_ANON_KEY"
+                        }, void 0, false, {
+                            fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
+                            lineNumber: 58,
+                            columnNumber: 81
+                        }, ("TURBOPACK compile-time value", void 0)),
+                        ", and the server-only ",
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("code", {
+                            className: "text-amber-300",
+                            children: "SUPABASE_SERVICE_ROLE_KEY"
+                        }, void 0, false, {
+                            fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
+                            lineNumber: 58,
+                            columnNumber: 172
+                        }, ("TURBOPACK compile-time value", void 0)),
+                        " in the deployment environment. Expose the ",
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("code", {
+                            className: "text-amber-300",
+                            children: "fitness"
+                        }, void 0, false, {
+                            fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
+                            lineNumber: 58,
+                            columnNumber: 280
+                        }, ("TURBOPACK compile-time value", void 0)),
+                        " schema in Supabase API settings and apply the SQL shown in the Database Schema view. Never place the service-role key in a public environment variable."
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
+                    lineNumber: 57,
+                    columnNumber: 9
+                }, ("TURBOPACK compile-time value", void 0)),
+                result && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                    role: result.success ? 'status' : 'alert',
+                    className: `flex items-start gap-2 rounded-xl border p-3 text-xs ${result.success ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300' : 'border-rose-500/30 bg-rose-500/10 text-rose-300'}`,
+                    children: [
+                        result.success ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$check$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__CheckCircle2$3e$__["CheckCircle2"], {
+                            className: "h-4 w-4 shrink-0"
+                        }, void 0, false, {
+                            fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
+                            lineNumber: 63,
+                            columnNumber: 31
+                        }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$triangle$2d$alert$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertTriangle$3e$__["AlertTriangle"], {
+                            className: "h-4 w-4 shrink-0"
+                        }, void 0, false, {
+                            fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
+                            lineNumber: 63,
+                            columnNumber: 79
+                        }, ("TURBOPACK compile-time value", void 0)),
+                        result.message
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
+                    lineNumber: 62,
                     columnNumber: 11
                 }, ("TURBOPACK compile-time value", void 0)),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "space-y-4",
+                    className: "flex justify-end gap-2",
                     children: [
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                    className: "block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5",
-                                    children: "Supabase Project URL"
-                                }, void 0, false, {
-                                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                    lineNumber: 158,
-                                    columnNumber: 13
-                                }, ("TURBOPACK compile-time value", void 0)),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "relative",
-                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                        type: "text",
-                                        value: url,
-                                        onChange: (e)=>setUrl(e.target.value),
-                                        placeholder: "https://your-project-ref.supabase.co",
-                                        className: "w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-mono text-slate-200 focus:outline-none focus:border-emerald-500 transition-colors"
-                                    }, void 0, false, {
-                                        fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                        lineNumber: 162,
-                                        columnNumber: 15
-                                    }, ("TURBOPACK compile-time value", void 0))
-                                }, void 0, false, {
-                                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                    lineNumber: 161,
-                                    columnNumber: 13
-                                }, ("TURBOPACK compile-time value", void 0)),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                    className: "text-[11px] text-slate-500 mt-1",
-                                    children: [
-                                        "Standard format: ",
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("code", {
-                                            className: "text-slate-400 font-mono",
-                                            children: "https://[20-char-project-ref].supabase.co"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                            lineNumber: 171,
-                                            columnNumber: 32
-                                        }, ("TURBOPACK compile-time value", void 0))
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                    lineNumber: 170,
-                                    columnNumber: 13
-                                }, ("TURBOPACK compile-time value", void 0))
-                            ]
-                        }, void 0, true, {
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                            type: "button",
+                            onClick: onClose,
+                            className: "rounded-xl border border-slate-700 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-800",
+                            children: "Close"
+                        }, void 0, false, {
                             fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                            lineNumber: 157,
+                            lineNumber: 69,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0)),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                            type: "button",
+                            onClick: ()=>void testConnection(),
+                            disabled: isTesting,
+                            className: "flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-emerald-400 disabled:opacity-60",
                             children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                    className: "block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5",
-                                    children: "Anon / Publishable API Key"
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$refresh$2d$cw$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__RefreshCw$3e$__["RefreshCw"], {
+                                    className: `h-4 w-4 ${isTesting ? 'animate-spin' : ''}`
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                    lineNumber: 176,
+                                    lineNumber: 71,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "relative",
-                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
-                                        value: anonKey,
-                                        onChange: (e)=>setAnonKey(e.target.value),
-                                        rows: 2,
-                                        placeholder: "eyJhbGciOi... or sb_publishable_...",
-                                        className: "w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs font-mono text-slate-200 focus:outline-none focus:border-emerald-500 transition-colors resize-none"
-                                    }, void 0, false, {
-                                        fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                        lineNumber: 180,
-                                        columnNumber: 15
-                                    }, ("TURBOPACK compile-time value", void 0))
-                                }, void 0, false, {
-                                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                    lineNumber: 179,
-                                    columnNumber: 13
-                                }, ("TURBOPACK compile-time value", void 0)),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                    className: "text-[11px] text-slate-500 mt-1",
-                                    children: "Found under Supabase Dashboard → Project Settings → API → anon/public key."
-                                }, void 0, false, {
-                                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                    lineNumber: 188,
-                                    columnNumber: 13
-                                }, ("TURBOPACK compile-time value", void 0))
+                                isTesting ? 'Testing…' : 'Test connection'
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                            lineNumber: 175,
-                            columnNumber: 11
-                        }, ("TURBOPACK compile-time value", void 0)),
-                        testResult.tested && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: `p-3.5 rounded-2xl border text-xs flex items-start gap-2.5 ${testResult.success ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' : 'bg-rose-500/10 border-rose-500/30 text-rose-300'}`,
-                            children: [
-                                testResult.success ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$check$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__CheckCircle2$3e$__["CheckCircle2"], {
-                                    className: "w-4 h-4 shrink-0 mt-0.5 text-emerald-400"
-                                }, void 0, false, {
-                                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                    lineNumber: 203,
-                                    columnNumber: 17
-                                }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$triangle$2d$alert$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertTriangle$3e$__["AlertTriangle"], {
-                                    className: "w-4 h-4 shrink-0 mt-0.5 text-rose-400"
-                                }, void 0, false, {
-                                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                    lineNumber: 205,
-                                    columnNumber: 17
-                                }, ("TURBOPACK compile-time value", void 0)),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "flex-1 text-[11px] leading-relaxed break-words font-mono",
-                                    children: testResult.message
-                                }, void 0, false, {
-                                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                    lineNumber: 207,
-                                    columnNumber: 15
-                                }, ("TURBOPACK compile-time value", void 0))
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                            lineNumber: 195,
-                            columnNumber: 13
-                        }, ("TURBOPACK compile-time value", void 0))
-                    ]
-                }, void 0, true, {
-                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                    lineNumber: 156,
-                    columnNumber: 9
-                }, ("TURBOPACK compile-time value", void 0)),
-                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-slate-800",
-                    children: [
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "flex items-center gap-2",
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                    type: "button",
-                                    onClick: handleReset,
-                                    title: "Reset to default environment credentials",
-                                    className: "px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-400 hover:text-slate-200 text-xs font-medium transition-colors flex items-center gap-1.5",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$rotate$2d$ccw$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__RotateCcw$3e$__["RotateCcw"], {
-                                            className: "w-3.5 h-3.5"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                            lineNumber: 223,
-                                            columnNumber: 15
-                                        }, ("TURBOPACK compile-time value", void 0)),
-                                        "Reset"
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                    lineNumber: 217,
-                                    columnNumber: 13
-                                }, ("TURBOPACK compile-time value", void 0)),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                    type: "button",
-                                    onClick: ()=>handleTest(),
-                                    disabled: isTesting || !url.trim(),
-                                    className: "px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs font-semibold transition-colors flex items-center gap-1.5 border border-slate-700",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$refresh$2d$cw$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__RefreshCw$3e$__["RefreshCw"], {
-                                            className: `w-3.5 h-3.5 ${isTesting ? 'animate-spin text-emerald-400' : ''}`
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                            lineNumber: 233,
-                                            columnNumber: 15
-                                        }, ("TURBOPACK compile-time value", void 0)),
-                                        isTesting ? 'Testing...' : 'Test Connection'
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                    lineNumber: 227,
-                                    columnNumber: 13
-                                }, ("TURBOPACK compile-time value", void 0))
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                            lineNumber: 216,
-                            columnNumber: 11
-                        }, ("TURBOPACK compile-time value", void 0)),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "flex items-center gap-2",
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                    type: "button",
-                                    onClick: handleSetOffline,
-                                    title: "Use local persistent storage without making network calls to Supabase",
-                                    className: "px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-300 hover:text-white text-xs font-medium transition-colors",
-                                    children: "Offline Mode"
-                                }, void 0, false, {
-                                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                    lineNumber: 239,
-                                    columnNumber: 13
-                                }, ("TURBOPACK compile-time value", void 0)),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                    type: "button",
-                                    onClick: handleSave,
-                                    className: "px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition-all shadow-md flex items-center gap-1.5",
-                                    children: [
-                                        isSaved ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$check$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Check$3e$__["Check"], {
-                                            className: "w-4 h-4"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                            lineNumber: 253,
-                                            columnNumber: 26
-                                        }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$shield$2d$check$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ShieldCheck$3e$__["ShieldCheck"], {
-                                            className: "w-4 h-4"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                            lineNumber: 253,
-                                            columnNumber: 58
-                                        }, ("TURBOPACK compile-time value", void 0)),
-                                        isSaved ? 'Saved & Applied!' : 'Save & Connect'
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                                    lineNumber: 248,
-                                    columnNumber: 13
-                                }, ("TURBOPACK compile-time value", void 0))
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                            lineNumber: 238,
+                            lineNumber: 70,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-                    lineNumber: 215,
+                    lineNumber: 68,
                     columnNumber: 9
                 }, ("TURBOPACK compile-time value", void 0))
             ]
         }, void 0, true, {
             fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-            lineNumber: 110,
+            lineNumber: 39,
             columnNumber: 7
         }, ("TURBOPACK compile-time value", void 0))
     }, void 0, false, {
         fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
-        lineNumber: 109,
+        lineNumber: 38,
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0));
 };
@@ -593,7 +345,6 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$file$2d$code$2d$2$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__FileCode2$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/file-code-2.js [app-ssr] (ecmascript) <export default as FileCode2>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/chevron-down.js [app-ssr] (ecmascript) <export default as ChevronDown>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$up$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronUp$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/chevron-up.js [app-ssr] (ecmascript) <export default as ChevronUp>");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$trash$2d$2$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Trash2$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/trash-2.js [app-ssr] (ecmascript) <export default as Trash2>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$download$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Download$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/download.js [app-ssr] (ecmascript) <export default as Download>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$git$2d$branch$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__GitBranch$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/git-branch.js [app-ssr] (ecmascript) <export default as GitBranch>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$settings$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Settings$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/settings.js [app-ssr] (ecmascript) <export default as Settings>");
@@ -608,7 +359,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
 ;
 ;
 const DatabaseSchemaView = ()=>{
-    const { loadFromSupabase, clearAllLocalData, isLoadingSupabase } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useApp"])();
+    const { loadFromSupabase, isLoadingSupabase } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useApp"])();
     const [selectedModule, setSelectedModule] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('all');
     const [searchQuery, setSearchQuery] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('');
     const [copiedSql, setCopiedSql] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
@@ -718,12 +469,12 @@ const DatabaseSchemaView = ()=>{
                                         className: "w-5 h-5"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 158,
+                                        lineNumber: 157,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0))
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                    lineNumber: 157,
+                                    lineNumber: 156,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -733,7 +484,7 @@ const DatabaseSchemaView = ()=>{
                                             children: "Fitness Database & Supabase Schema"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                            lineNumber: 161,
+                                            lineNumber: 160,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -741,24 +492,24 @@ const DatabaseSchemaView = ()=>{
                                             children: "Live Supabase PostgreSQL database integration • No hardcoded mock datasets"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                            lineNumber: 162,
+                                            lineNumber: 161,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                    lineNumber: 160,
+                                    lineNumber: 159,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                            lineNumber: 156,
+                            lineNumber: 155,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0))
                     }, void 0, false, {
                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                        lineNumber: 155,
+                        lineNumber: 154,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -766,40 +517,21 @@ const DatabaseSchemaView = ()=>{
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                 onClick: ()=>setIsConfigModalOpen(true),
-                                title: "Configure Supabase Project URL & Anon Key",
+                                title: "View Supabase environment and setup requirements",
                                 className: "px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-750 hover:border-emerald-500/40 text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-1.5 shadow-xs",
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$settings$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Settings$3e$__["Settings"], {
                                         className: "w-3.5 h-3.5"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 176,
+                                        lineNumber: 175,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
-                                    "Configure Keys"
+                                    "Supabase Setup"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                lineNumber: 171,
-                                columnNumber: 11
-                            }, ("TURBOPACK compile-time value", void 0)),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                onClick: clearAllLocalData,
-                                title: "Wipe any cached local storage",
-                                className: "px-3 py-2 rounded-xl bg-slate-800 hover:bg-rose-950/40 hover:text-rose-400 border border-slate-700 hover:border-rose-500/30 text-xs font-semibold text-slate-300 transition-colors flex items-center gap-1.5",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$trash$2d$2$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Trash2$3e$__["Trash2"], {
-                                        className: "w-3.5 h-3.5"
-                                    }, void 0, false, {
-                                        fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 185,
-                                        columnNumber: 13
-                                    }, ("TURBOPACK compile-time value", void 0)),
-                                    "Clear Local Cache"
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                lineNumber: 180,
+                                lineNumber: 170,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -811,14 +543,14 @@ const DatabaseSchemaView = ()=>{
                                         className: `w-3.5 h-3.5 ${connectionStatus.loading ? 'animate-spin text-emerald-400' : ''}`
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 194,
+                                        lineNumber: 184,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     "Test Supabase"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                lineNumber: 189,
+                                lineNumber: 179,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -830,26 +562,26 @@ const DatabaseSchemaView = ()=>{
                                         className: `w-4 h-4 ${syncState.syncing || isLoadingSupabase ? 'animate-bounce' : ''}`
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 203,
+                                        lineNumber: 193,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     syncState.syncing || isLoadingSupabase ? 'Querying Database...' : 'Fetch Live DB Records'
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                lineNumber: 198,
+                                lineNumber: 188,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                        lineNumber: 170,
+                        lineNumber: 169,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                lineNumber: 154,
+                lineNumber: 153,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -871,14 +603,14 @@ const DatabaseSchemaView = ()=>{
                                                         className: "w-4 h-4 text-emerald-400"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                        lineNumber: 216,
+                                                        lineNumber: 206,
                                                         columnNumber: 17
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     " Supabase REST Endpoint"
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                lineNumber: 215,
+                                                lineNumber: 205,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -887,13 +619,13 @@ const DatabaseSchemaView = ()=>{
                                                 children: "Change"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                lineNumber: 218,
+                                                lineNumber: 208,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 214,
+                                        lineNumber: 204,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -904,7 +636,7 @@ const DatabaseSchemaView = ()=>{
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 225,
+                                        lineNumber: 215,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -917,14 +649,14 @@ const DatabaseSchemaView = ()=>{
                                                         className: "w-2.5 h-2.5 animate-spin"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                        lineNumber: 231,
+                                                        lineNumber: 221,
                                                         columnNumber: 19
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     "Testing..."
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                lineNumber: 230,
+                                                lineNumber: 220,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0)) : connectionStatus.connected ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                 className: "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30",
@@ -933,21 +665,21 @@ const DatabaseSchemaView = ()=>{
                                                         className: "w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                        lineNumber: 236,
+                                                        lineNumber: 226,
                                                         columnNumber: 19
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     "Connected & Active"
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                lineNumber: 235,
+                                                lineNumber: 225,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0)) : supabaseConfig.isOfflineMode ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                 className: "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/30",
                                                 children: "Offline Mode (Local Storage)"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                lineNumber: 240,
+                                                lineNumber: 230,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                 className: "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/30",
@@ -956,14 +688,14 @@ const DatabaseSchemaView = ()=>{
                                                         className: "w-2.5 h-2.5"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                        lineNumber: 245,
+                                                        lineNumber: 235,
                                                         columnNumber: 19
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     connectionStatus.isDomainError ? 'Domain Not Resolved' : 'Unreachable'
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                lineNumber: 244,
+                                                lineNumber: 234,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -971,19 +703,19 @@ const DatabaseSchemaView = ()=>{
                                                 children: "PostgreSQL Relational DB"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                lineNumber: 249,
+                                                lineNumber: 239,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 228,
+                                        lineNumber: 218,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                lineNumber: 213,
+                                lineNumber: 203,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -999,14 +731,14 @@ const DatabaseSchemaView = ()=>{
                                                         className: "w-4 h-4 text-teal-400"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                        lineNumber: 257,
+                                                        lineNumber: 247,
                                                         columnNumber: 17
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     " Active Anon / Publishable Key"
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                lineNumber: 256,
+                                                lineNumber: 246,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1015,13 +747,13 @@ const DatabaseSchemaView = ()=>{
                                                 children: "Edit"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                lineNumber: 259,
+                                                lineNumber: 249,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 255,
+                                        lineNumber: 245,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1033,7 +765,7 @@ const DatabaseSchemaView = ()=>{
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 266,
+                                        lineNumber: 256,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1041,13 +773,13 @@ const DatabaseSchemaView = ()=>{
                                         children: supabaseConfig.isCustom ? 'Using custom user-configured credentials' : 'Default environment credentials'
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 269,
+                                        lineNumber: 259,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                lineNumber: 254,
+                                lineNumber: 244,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1060,14 +792,14 @@ const DatabaseSchemaView = ()=>{
                                                 className: "w-4 h-4 text-purple-400"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                lineNumber: 277,
+                                                lineNumber: 267,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             " ER Schema Coverage"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 276,
+                                        lineNumber: 266,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1078,7 +810,7 @@ const DatabaseSchemaView = ()=>{
                                                 children: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$data$2f$fitnessSchemaSql$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["SCHEMA_TABLES"].length
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                lineNumber: 280,
+                                                lineNumber: 270,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1086,13 +818,13 @@ const DatabaseSchemaView = ()=>{
                                                 children: "Relational Tables in 7 Domains"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                lineNumber: 281,
+                                                lineNumber: 271,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 279,
+                                        lineNumber: 269,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1100,19 +832,19 @@ const DatabaseSchemaView = ()=>{
                                         children: "Live REST Queries • Complete PostgreSQL DDL"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 283,
+                                        lineNumber: 273,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                lineNumber: 275,
+                                lineNumber: 265,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                        lineNumber: 211,
+                        lineNumber: 201,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     connectionStatus.tested && !connectionStatus.connected && !supabaseConfig.isOfflineMode && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1128,7 +860,7 @@ const DatabaseSchemaView = ()=>{
                                                 className: "w-4 h-4 shrink-0"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                lineNumber: 294,
+                                                lineNumber: 284,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1138,13 +870,13 @@ const DatabaseSchemaView = ()=>{
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                lineNumber: 295,
+                                                lineNumber: 285,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 293,
+                                        lineNumber: 283,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1152,13 +884,13 @@ const DatabaseSchemaView = ()=>{
                                         children: connectionStatus.isDomainError ? `DNS cannot find "${supabaseUrl}". Verify your Supabase Project Reference ID at supabase.com/dashboard.` : connectionStatus.message
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 297,
+                                        lineNumber: 287,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                lineNumber: 292,
+                                lineNumber: 282,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1169,20 +901,20 @@ const DatabaseSchemaView = ()=>{
                                         className: "w-3.5 h-3.5"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 307,
+                                        lineNumber: 297,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     "Configure Working Keys"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                lineNumber: 303,
+                                lineNumber: 293,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                        lineNumber: 291,
+                        lineNumber: 281,
                         columnNumber: 11
                     }, ("TURBOPACK compile-time value", void 0)),
                     syncState.logs.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1195,7 +927,7 @@ const DatabaseSchemaView = ()=>{
                                         children: "Database Query Status"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 317,
+                                        lineNumber: 307,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1203,13 +935,13 @@ const DatabaseSchemaView = ()=>{
                                         children: syncState.syncing ? 'Querying...' : syncState.success ? 'Connected' : 'Ready'
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 318,
+                                        lineNumber: 308,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                lineNumber: 316,
+                                lineNumber: 306,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1222,37 +954,37 @@ const DatabaseSchemaView = ()=>{
                                                 children: "›"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                lineNumber: 325,
+                                                lineNumber: 315,
                                                 columnNumber: 19
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                 children: log
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                lineNumber: 326,
+                                                lineNumber: 316,
                                                 columnNumber: 19
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, idx, true, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 324,
+                                        lineNumber: 314,
                                         columnNumber: 17
                                     }, ("TURBOPACK compile-time value", void 0)))
                             }, void 0, false, {
                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                lineNumber: 322,
+                                lineNumber: 312,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                        lineNumber: 315,
+                        lineNumber: 305,
                         columnNumber: 11
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                lineNumber: 210,
+                lineNumber: 200,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1268,14 +1000,14 @@ const DatabaseSchemaView = ()=>{
                                     className: "w-3.5 h-3.5"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                    lineNumber: 345,
+                                    lineNumber: 335,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 " Role Workflow Diagram"
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                            lineNumber: 337,
+                            lineNumber: 327,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1286,7 +1018,7 @@ const DatabaseSchemaView = ()=>{
                                     className: "w-3.5 h-3.5"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                    lineNumber: 355,
+                                    lineNumber: 345,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 " Interactive ER Tables (",
@@ -1295,7 +1027,7 @@ const DatabaseSchemaView = ()=>{
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                            lineNumber: 347,
+                            lineNumber: 337,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1306,14 +1038,14 @@ const DatabaseSchemaView = ()=>{
                                     className: "w-3.5 h-3.5"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                    lineNumber: 365,
+                                    lineNumber: 355,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 " PostgreSQL DDL Script"
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                            lineNumber: 357,
+                            lineNumber: 347,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1327,30 +1059,30 @@ const DatabaseSchemaView = ()=>{
                                     className: "w-3.5 h-3.5"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                    lineNumber: 378,
+                                    lineNumber: 368,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 " Live Supabase Inspector"
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                            lineNumber: 367,
+                            lineNumber: 357,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                    lineNumber: 336,
+                    lineNumber: 326,
                     columnNumber: 9
                 }, ("TURBOPACK compile-time value", void 0))
             }, void 0, false, {
                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                lineNumber: 335,
+                lineNumber: 325,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             activeTab === 'diagram' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$workflow$2f$WorkflowVisualDiagram$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["WorkflowVisualDiagram"], {}, void 0, false, {
                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                lineNumber: 385,
+                lineNumber: 375,
                 columnNumber: 9
             }, ("TURBOPACK compile-time value", void 0)),
             activeTab === 'tables' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1367,12 +1099,12 @@ const DatabaseSchemaView = ()=>{
                                         children: mod === 'all' ? 'All Modules (7)' : mod
                                     }, mod, false, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 396,
+                                        lineNumber: 386,
                                         columnNumber: 17
                                     }, ("TURBOPACK compile-time value", void 0)))
                             }, void 0, false, {
                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                lineNumber: 394,
+                                lineNumber: 384,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1382,7 +1114,7 @@ const DatabaseSchemaView = ()=>{
                                         className: "w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 412,
+                                        lineNumber: 402,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1393,19 +1125,19 @@ const DatabaseSchemaView = ()=>{
                                         className: "w-full pl-9 pr-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-emerald-500"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 413,
+                                        lineNumber: 403,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                lineNumber: 411,
+                                lineNumber: 401,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                        lineNumber: 392,
+                        lineNumber: 382,
                         columnNumber: 11
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1428,12 +1160,12 @@ const DatabaseSchemaView = ()=>{
                                                             className: "w-4 h-4"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                            lineNumber: 440,
+                                                            lineNumber: 430,
                                                             columnNumber: 25
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                        lineNumber: 439,
+                                                        lineNumber: 429,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1446,7 +1178,7 @@ const DatabaseSchemaView = ()=>{
                                                                         children: table.name
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                                        lineNumber: 444,
+                                                                        lineNumber: 434,
                                                                         columnNumber: 27
                                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1454,13 +1186,13 @@ const DatabaseSchemaView = ()=>{
                                                                         children: table.module
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                                        lineNumber: 445,
+                                                                        lineNumber: 435,
                                                                         columnNumber: 27
                                                                     }, ("TURBOPACK compile-time value", void 0))
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                                lineNumber: 443,
+                                                                lineNumber: 433,
                                                                 columnNumber: 25
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1468,19 +1200,19 @@ const DatabaseSchemaView = ()=>{
                                                                 children: table.description
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                                lineNumber: 449,
+                                                                lineNumber: 439,
                                                                 columnNumber: 25
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                        lineNumber: 442,
+                                                        lineNumber: 432,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                lineNumber: 438,
+                                                lineNumber: 428,
                                                 columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1494,32 +1226,32 @@ const DatabaseSchemaView = ()=>{
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                        lineNumber: 454,
+                                                        lineNumber: 444,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     isExpanded ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$up$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronUp$3e$__["ChevronUp"], {
                                                         className: "w-4 h-4 text-slate-400"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                        lineNumber: 458,
+                                                        lineNumber: 448,
                                                         columnNumber: 25
                                                     }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
                                                         className: "w-4 h-4 text-slate-400"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                        lineNumber: 460,
+                                                        lineNumber: 450,
                                                         columnNumber: 25
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                lineNumber: 453,
+                                                lineNumber: 443,
                                                 columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 434,
+                                        lineNumber: 424,
                                         columnNumber: 19
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     isExpanded && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1538,7 +1270,7 @@ const DatabaseSchemaView = ()=>{
                                                                     children: "Column Name"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                                    lineNumber: 472,
+                                                                    lineNumber: 462,
                                                                     columnNumber: 31
                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1546,7 +1278,7 @@ const DatabaseSchemaView = ()=>{
                                                                     children: "Data Type"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                                    lineNumber: 473,
+                                                                    lineNumber: 463,
                                                                     columnNumber: 31
                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1554,7 +1286,7 @@ const DatabaseSchemaView = ()=>{
                                                                     children: "Key Constraint"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                                    lineNumber: 474,
+                                                                    lineNumber: 464,
                                                                     columnNumber: 31
                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1562,7 +1294,7 @@ const DatabaseSchemaView = ()=>{
                                                                     children: "Nullable"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                                    lineNumber: 475,
+                                                                    lineNumber: 465,
                                                                     columnNumber: 31
                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1570,18 +1302,18 @@ const DatabaseSchemaView = ()=>{
                                                                     children: "Description"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                                    lineNumber: 476,
+                                                                    lineNumber: 466,
                                                                     columnNumber: 31
                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                            lineNumber: 471,
+                                                            lineNumber: 461,
                                                             columnNumber: 29
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                        lineNumber: 470,
+                                                        lineNumber: 460,
                                                         columnNumber: 27
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -1594,7 +1326,7 @@ const DatabaseSchemaView = ()=>{
                                                                         children: col.name
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                                        lineNumber: 482,
+                                                                        lineNumber: 472,
                                                                         columnNumber: 33
                                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1602,7 +1334,7 @@ const DatabaseSchemaView = ()=>{
                                                                         children: col.type
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                                        lineNumber: 485,
+                                                                        lineNumber: 475,
                                                                         columnNumber: 33
                                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1615,14 +1347,14 @@ const DatabaseSchemaView = ()=>{
                                                                                         className: "w-3 h-3"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                                                        lineNumber: 491,
+                                                                                        lineNumber: 481,
                                                                                         columnNumber: 39
                                                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                                                     " PK (UUID)"
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                                                lineNumber: 490,
+                                                                                lineNumber: 480,
                                                                                 columnNumber: 37
                                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                                             col.isFk && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1633,7 +1365,7 @@ const DatabaseSchemaView = ()=>{
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                                                lineNumber: 495,
+                                                                                lineNumber: 485,
                                                                                 columnNumber: 37
                                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                                             !col.isPk && !col.isFk && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1641,13 +1373,13 @@ const DatabaseSchemaView = ()=>{
                                                                                 children: "-"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                                                lineNumber: 500,
+                                                                                lineNumber: 490,
                                                                                 columnNumber: 37
                                                                             }, ("TURBOPACK compile-time value", void 0))
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                                        lineNumber: 488,
+                                                                        lineNumber: 478,
                                                                         columnNumber: 33
                                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1655,7 +1387,7 @@ const DatabaseSchemaView = ()=>{
                                                                         children: col.nullable ? 'YES' : 'NO'
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                                        lineNumber: 503,
+                                                                        lineNumber: 493,
                                                                         columnNumber: 33
                                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1663,52 +1395,52 @@ const DatabaseSchemaView = ()=>{
                                                                         children: col.description || '-'
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                                        lineNumber: 506,
+                                                                        lineNumber: 496,
                                                                         columnNumber: 33
                                                                     }, ("TURBOPACK compile-time value", void 0))
                                                                 ]
                                                             }, col.name, true, {
                                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                                lineNumber: 481,
+                                                                lineNumber: 471,
                                                                 columnNumber: 31
                                                             }, ("TURBOPACK compile-time value", void 0)))
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                        lineNumber: 479,
+                                                        lineNumber: 469,
                                                         columnNumber: 27
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                lineNumber: 469,
+                                                lineNumber: 459,
                                                 columnNumber: 25
                                             }, ("TURBOPACK compile-time value", void 0))
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                            lineNumber: 468,
+                                            lineNumber: 458,
                                             columnNumber: 23
                                         }, ("TURBOPACK compile-time value", void 0))
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 467,
+                                        lineNumber: 457,
                                         columnNumber: 21
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, table.name, true, {
                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                lineNumber: 429,
+                                lineNumber: 419,
                                 columnNumber: 17
                             }, ("TURBOPACK compile-time value", void 0));
                         })
                     }, void 0, false, {
                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                        lineNumber: 424,
+                        lineNumber: 414,
                         columnNumber: 11
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                lineNumber: 390,
+                lineNumber: 380,
                 columnNumber: 9
             }, ("TURBOPACK compile-time value", void 0)),
             activeTab === 'sql' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1724,21 +1456,21 @@ const DatabaseSchemaView = ()=>{
                                         children: "Full PostgreSQL DDL Migration Script"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 528,
+                                        lineNumber: 518,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                         className: "text-[11px] text-slate-400",
-                                        children: "You can copy and run this in the Supabase SQL Editor to create all 20+ tables, constraints, and indexes."
+                                        children: "Run this in the Supabase SQL Editor to create the fitness schema, tables, constraints, and indexes. Then expose the fitness schema in Supabase API settings and configure access policies."
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 529,
+                                        lineNumber: 519,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                lineNumber: 527,
+                                lineNumber: 517,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1749,26 +1481,26 @@ const DatabaseSchemaView = ()=>{
                                         className: "w-4 h-4"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 537,
+                                        lineNumber: 527,
                                         columnNumber: 28
                                     }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$copy$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Copy$3e$__["Copy"], {
                                         className: "w-4 h-4"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 537,
+                                        lineNumber: 527,
                                         columnNumber: 60
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     copiedSql ? 'Copied SQL!' : 'Copy SQL Script'
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                lineNumber: 533,
+                                lineNumber: 523,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                        lineNumber: 526,
+                        lineNumber: 516,
                         columnNumber: 11
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1777,18 +1509,18 @@ const DatabaseSchemaView = ()=>{
                             children: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$data$2f$fitnessSchemaSql$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FITNESS_SCHEMA_DDL_SQL"]
                         }, void 0, false, {
                             fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                            lineNumber: 543,
+                            lineNumber: 533,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0))
                     }, void 0, false, {
                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                        lineNumber: 542,
+                        lineNumber: 532,
                         columnNumber: 11
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                lineNumber: 525,
+                lineNumber: 515,
                 columnNumber: 9
             }, ("TURBOPACK compile-time value", void 0)),
             activeTab === 'status' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1806,13 +1538,13 @@ const DatabaseSchemaView = ()=>{
                                         children: supabaseUrl
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 553,
+                                        lineNumber: 543,
                                         columnNumber: 79
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                lineNumber: 552,
+                                lineNumber: 542,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1824,20 +1556,20 @@ const DatabaseSchemaView = ()=>{
                                         className: `w-3.5 h-3.5 ${tableInspection.loading ? 'animate-spin text-emerald-400' : ''}`
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 560,
+                                        lineNumber: 550,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     "Refresh Table Scan"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                lineNumber: 555,
+                                lineNumber: 545,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                        lineNumber: 551,
+                        lineNumber: 541,
                         columnNumber: 11
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1853,7 +1585,7 @@ const DatabaseSchemaView = ()=>{
                                                 children: item.tableName
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                lineNumber: 576,
+                                                lineNumber: 566,
                                                 columnNumber: 19
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             item.exists ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1863,27 +1595,27 @@ const DatabaseSchemaView = ()=>{
                                                         className: "w-3 h-3"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                        lineNumber: 579,
+                                                        lineNumber: 569,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     " Ready"
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                lineNumber: 578,
+                                                lineNumber: 568,
                                                 columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                 className: "flex items-center gap-1 text-[10px] font-medium text-slate-500 bg-slate-800 px-2 py-0.5 rounded-full",
                                                 children: "Not Provisioned"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                                lineNumber: 582,
+                                                lineNumber: 572,
                                                 columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 575,
+                                        lineNumber: 565,
                                         columnNumber: 17
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1896,36 +1628,36 @@ const DatabaseSchemaView = ()=>{
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                            lineNumber: 589,
+                                            lineNumber: 579,
                                             columnNumber: 21
                                         }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                             className: "text-slate-500",
                                             children: "Run SQL script in Supabase to provision table"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                            lineNumber: 591,
+                                            lineNumber: 581,
                                             columnNumber: 21
                                         }, ("TURBOPACK compile-time value", void 0))
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                        lineNumber: 587,
+                                        lineNumber: 577,
                                         columnNumber: 17
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, item.tableName, true, {
                                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                                lineNumber: 567,
+                                lineNumber: 557,
                                 columnNumber: 15
                             }, ("TURBOPACK compile-time value", void 0)))
                     }, void 0, false, {
                         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                        lineNumber: 565,
+                        lineNumber: 555,
                         columnNumber: 11
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                lineNumber: 550,
+                lineNumber: 540,
                 columnNumber: 9
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$database$2f$SupabaseConfigModal$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["SupabaseConfigModal"], {
@@ -1936,13 +1668,13 @@ const DatabaseSchemaView = ()=>{
                 }
             }, void 0, false, {
                 fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-                lineNumber: 601,
+                lineNumber: 591,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0))
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/database/DatabaseSchemaView.tsx",
-        lineNumber: 152,
+        lineNumber: 151,
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0));
 };

@@ -20,10 +20,42 @@ var _s = __turbopack_context__.k.signature();
 ;
 const CheckInsView = ()=>{
     _s();
-    const { checkIns, currentUser, allProfiles, setActiveCheckInReviewId, setIsCheckInModalOpen } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useApp"])();
+    const { checkIns, currentUser, allProfiles, setActiveCheckInReviewId, setIsCheckInModalOpen, createCheckInSchedule } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useApp"])();
     const [statusFilter, setStatusFilter] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('all');
     const [searchTerm, setSearchTerm] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('');
+    const [scheduleClientId, setScheduleClientId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('');
+    const [scheduleFrequency, setScheduleFrequency] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('weekly');
+    const [scheduleDay, setScheduleDay] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('');
+    const [customIntervalDays, setCustomIntervalDays] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(7);
+    const [scheduleError, setScheduleError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [scheduleSaved, setScheduleSaved] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [isSavingSchedule, setIsSavingSchedule] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const isClient = currentUser.role === 'client';
+    const coachClients = allProfiles.filter((p)=>p.role === 'client' && p.status === 'active' && p.assignedCoachId === currentUser.id);
+    const handleCreateSchedule = async (event)=>{
+        event.preventDefault();
+        if (!scheduleClientId || isSavingSchedule) return;
+        setIsSavingSchedule(true);
+        setScheduleError(null);
+        setScheduleSaved(false);
+        try {
+            const result = await createCheckInSchedule({
+                clientId: scheduleClientId,
+                frequency: scheduleFrequency,
+                customIntervalDays: scheduleFrequency === 'custom' ? customIntervalDays : undefined,
+                dayOfWeek: scheduleDay === '' ? undefined : Number(scheduleDay)
+            });
+            if (!result.success) {
+                setScheduleError(result.error || 'Check-in schedule was not saved.');
+                return;
+            }
+            setScheduleSaved(true);
+        } catch (error) {
+            setScheduleError(error instanceof Error ? error.message : 'Check-in schedule was not saved.');
+        } finally{
+            setIsSavingSchedule(false);
+        }
+    };
     const filteredCheckIns = checkIns.filter((ci)=>{
         if (isClient && ci.clientId !== currentUser.id) return false;
         if (statusFilter !== 'all' && ci.status !== statusFilter) return false;
@@ -52,40 +84,40 @@ const CheckInsView = ()=>{
                                             className: "w-4 h-4"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                            lineNumber: 49,
+                                            lineNumber: 86,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                        lineNumber: 48,
+                                        lineNumber: 85,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
                                         className: "text-2xl font-extrabold text-white",
-                                        children: "Athlete Weekly Check-Ins"
+                                        children: "Athlete Check-Ins"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                        lineNumber: 51,
+                                        lineNumber: 88,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                lineNumber: 47,
+                                lineNumber: 84,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                 className: "text-xs text-slate-400 mt-1",
-                                children: isClient ? 'Submit weekly weight, measurements, biofeedback, and progress photos to your coach.' : 'Review athlete weekly logs, monitor weight and circumference deltas, and deliver audio/text feedback.'
+                                children: isClient ? 'Submit weight, measurements, biofeedback, and progress photos to your coach.' : 'Review athlete check-ins, monitor weight and circumference changes, and provide feedback.'
                             }, void 0, false, {
                                 fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                lineNumber: 53,
+                                lineNumber: 90,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                        lineNumber: 46,
+                        lineNumber: 83,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     isClient ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -96,14 +128,14 @@ const CheckInsView = ()=>{
                                 className: "w-4 h-4"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                lineNumber: 65,
+                                lineNumber: 102,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0)),
-                            " Submit Weekly Check-In"
+                            " Submit Check-In"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                        lineNumber: 61,
+                        lineNumber: 98,
                         columnNumber: 11
                     }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "flex items-center gap-2",
@@ -113,7 +145,7 @@ const CheckInsView = ()=>{
                                 children: "Filter:"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                lineNumber: 69,
+                                lineNumber: 106,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -126,7 +158,15 @@ const CheckInsView = ()=>{
                                         children: "All Check-Ins"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                        lineNumber: 75,
+                                        lineNumber: 112,
+                                        columnNumber: 15
+                                    }, ("TURBOPACK compile-time value", void 0)),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                        value: "pending",
+                                        children: "Pending"
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                        lineNumber: 113,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -134,7 +174,15 @@ const CheckInsView = ()=>{
                                         children: "Needs Coach Review"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                        lineNumber: 76,
+                                        lineNumber: 114,
+                                        columnNumber: 15
+                                    }, ("TURBOPACK compile-time value", void 0)),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                        value: "missed",
+                                        children: "Missed"
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                        lineNumber: 115,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -142,26 +190,304 @@ const CheckInsView = ()=>{
                                         children: "Reviewed"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                        lineNumber: 77,
+                                        lineNumber: 116,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                lineNumber: 70,
+                                lineNumber: 107,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                        lineNumber: 68,
+                        lineNumber: 105,
                         columnNumber: 11
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                lineNumber: 45,
+                lineNumber: 82,
                 columnNumber: 7
+            }, ("TURBOPACK compile-time value", void 0)),
+            currentUser.role === 'coach' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
+                onSubmit: handleCreateSchedule,
+                className: "rounded-2xl border border-slate-800 bg-slate-900 p-4 space-y-3",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                className: "text-sm font-bold text-white",
+                                children: "Create Check-In Schedule"
+                            }, void 0, false, {
+                                fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                lineNumber: 125,
+                                columnNumber: 13
+                            }, ("TURBOPACK compile-time value", void 0)),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                className: "text-xs text-slate-400 mt-1",
+                                children: "Clients need an active schedule before they can submit check-ins."
+                            }, void 0, false, {
+                                fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                lineNumber: 126,
+                                columnNumber: 13
+                            }, ("TURBOPACK compile-time value", void 0))
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                        lineNumber: 124,
+                        columnNumber: 11
+                    }, ("TURBOPACK compile-time value", void 0)),
+                    scheduleError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                        role: "alert",
+                        className: "text-xs text-rose-300",
+                        children: scheduleError
+                    }, void 0, false, {
+                        fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                        lineNumber: 128,
+                        columnNumber: 29
+                    }, ("TURBOPACK compile-time value", void 0)),
+                    scheduleSaved && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                        role: "status",
+                        className: "text-xs text-emerald-300",
+                        children: "Schedule created. The client can now submit check-ins."
+                    }, void 0, false, {
+                        fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                        lineNumber: 129,
+                        columnNumber: 29
+                    }, ("TURBOPACK compile-time value", void 0)),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                className: "text-xs text-slate-400",
+                                children: [
+                                    "Client",
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                                        required: true,
+                                        value: scheduleClientId,
+                                        onChange: (event)=>setScheduleClientId(event.target.value),
+                                        disabled: coachClients.length === 0,
+                                        className: "mt-1 w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                value: "",
+                                                children: "Select an assigned client"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                                lineNumber: 140,
+                                                columnNumber: 17
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            coachClients.map((client)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                    value: client.id,
+                                                    children: client.fullName
+                                                }, client.id, false, {
+                                                    fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                                    lineNumber: 141,
+                                                    columnNumber: 45
+                                                }, ("TURBOPACK compile-time value", void 0)))
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                        lineNumber: 133,
+                                        columnNumber: 15
+                                    }, ("TURBOPACK compile-time value", void 0))
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                lineNumber: 131,
+                                columnNumber: 13
+                            }, ("TURBOPACK compile-time value", void 0)),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                className: "text-xs text-slate-400",
+                                children: [
+                                    "Frequency",
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                                        value: scheduleFrequency,
+                                        onChange: (event)=>setScheduleFrequency(event.target.value),
+                                        className: "mt-1 w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                value: "daily",
+                                                children: "Daily"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                                lineNumber: 151,
+                                                columnNumber: 17
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                value: "weekly",
+                                                children: "Weekly"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                                lineNumber: 152,
+                                                columnNumber: 17
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                value: "biweekly",
+                                                children: "Every two weeks"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                                lineNumber: 153,
+                                                columnNumber: 17
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                value: "monthly",
+                                                children: "Monthly"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                                lineNumber: 154,
+                                                columnNumber: 17
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                value: "custom",
+                                                children: "Custom interval"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                                lineNumber: 155,
+                                                columnNumber: 17
+                                            }, ("TURBOPACK compile-time value", void 0))
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                        lineNumber: 146,
+                                        columnNumber: 15
+                                    }, ("TURBOPACK compile-time value", void 0))
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                lineNumber: 144,
+                                columnNumber: 13
+                            }, ("TURBOPACK compile-time value", void 0)),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                className: "text-xs text-slate-400",
+                                children: [
+                                    "Day of week (optional)",
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                                        value: scheduleDay,
+                                        onChange: (event)=>setScheduleDay(event.target.value),
+                                        className: "mt-1 w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                value: "",
+                                                children: "No specific day"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                                lineNumber: 165,
+                                                columnNumber: 17
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                value: "0",
+                                                children: "Sunday"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                                lineNumber: 166,
+                                                columnNumber: 17
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                value: "1",
+                                                children: "Monday"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                                lineNumber: 167,
+                                                columnNumber: 17
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                value: "2",
+                                                children: "Tuesday"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                                lineNumber: 168,
+                                                columnNumber: 17
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                value: "3",
+                                                children: "Wednesday"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                                lineNumber: 169,
+                                                columnNumber: 17
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                value: "4",
+                                                children: "Thursday"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                                lineNumber: 170,
+                                                columnNumber: 17
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                value: "5",
+                                                children: "Friday"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                                lineNumber: 171,
+                                                columnNumber: 17
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                value: "6",
+                                                children: "Saturday"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                                lineNumber: 172,
+                                                columnNumber: 17
+                                            }, ("TURBOPACK compile-time value", void 0))
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                        lineNumber: 160,
+                                        columnNumber: 15
+                                    }, ("TURBOPACK compile-time value", void 0))
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                lineNumber: 158,
+                                columnNumber: 13
+                            }, ("TURBOPACK compile-time value", void 0)),
+                            scheduleFrequency === 'custom' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                className: "text-xs text-slate-400",
+                                children: [
+                                    "Interval (days)",
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                        type: "number",
+                                        min: 1,
+                                        required: true,
+                                        value: customIntervalDays,
+                                        onChange: (event)=>setCustomIntervalDays(Number(event.target.value)),
+                                        className: "mt-1 w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-white"
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                        lineNumber: 178,
+                                        columnNumber: 17
+                                    }, ("TURBOPACK compile-time value", void 0))
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                                lineNumber: 176,
+                                columnNumber: 15
+                            }, ("TURBOPACK compile-time value", void 0))
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                        lineNumber: 130,
+                        columnNumber: 11
+                    }, ("TURBOPACK compile-time value", void 0)),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                        type: "submit",
+                        disabled: isSavingSchedule || coachClients.length === 0,
+                        className: "rounded-xl bg-amber-500 px-4 py-2 text-xs font-bold text-slate-950 disabled:opacity-50",
+                        children: isSavingSchedule ? 'Saving…' : 'Create Schedule'
+                    }, void 0, false, {
+                        fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                        lineNumber: 189,
+                        columnNumber: 11
+                    }, ("TURBOPACK compile-time value", void 0))
+                ]
+            }, void 0, true, {
+                fileName: "[project]/src/components/checkins/CheckInsView.tsx",
+                lineNumber: 123,
+                columnNumber: 9
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "space-y-3",
@@ -172,7 +498,7 @@ const CheckInsView = ()=>{
                             className: "w-10 h-10 mx-auto mb-2 text-slate-600"
                         }, void 0, false, {
                             fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                            lineNumber: 87,
+                            lineNumber: 203,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -180,7 +506,7 @@ const CheckInsView = ()=>{
                             children: "No check-ins found"
                         }, void 0, false, {
                             fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                            lineNumber: 88,
+                            lineNumber: 204,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0)),
                         isClient && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -189,13 +515,13 @@ const CheckInsView = ()=>{
                             children: "Submit Your First Check-In"
                         }, void 0, false, {
                             fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                            lineNumber: 90,
+                            lineNumber: 206,
                             columnNumber: 15
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                    lineNumber: 86,
+                    lineNumber: 202,
                     columnNumber: 11
                 }, ("TURBOPACK compile-time value", void 0)) : filteredCheckIns.sort((a, b)=>new Date(b.checkInDate).getTime() - new Date(a.checkInDate).getTime()).map((ci)=>{
                     const client = allProfiles.find((p)=>p.id === ci.clientId);
@@ -213,7 +539,7 @@ const CheckInsView = ()=>{
                                                 children: (client === null || client === void 0 ? void 0 : client.fullName) || 'Athlete'
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                                lineNumber: 111,
+                                                lineNumber: 227,
                                                 columnNumber: 23
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -225,21 +551,21 @@ const CheckInsView = ()=>{
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                                lineNumber: 112,
+                                                lineNumber: 228,
                                                 columnNumber: 23
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                className: "px-2 py-0.5 rounded text-[10px] font-bold uppercase ".concat(ci.status === 'reviewed' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400 animate-pulse'),
-                                                children: ci.status === 'reviewed' ? '✓ Reviewed' : 'Pending Review'
+                                                className: "px-2 py-0.5 rounded text-[10px] font-bold uppercase ".concat(ci.status === 'reviewed' ? 'bg-emerald-500/20 text-emerald-400' : ci.status === 'missed' ? 'bg-rose-500/20 text-rose-400' : ci.status === 'submitted' ? 'bg-amber-500/20 text-amber-400 animate-pulse' : 'bg-slate-700 text-slate-300'),
+                                                children: ci.status === 'reviewed' ? '✓ Reviewed' : ci.status === 'submitted' ? 'Needs Review' : ci.status
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                                lineNumber: 113,
+                                                lineNumber: 229,
                                                 columnNumber: 23
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                        lineNumber: 110,
+                                        lineNumber: 226,
                                         columnNumber: 21
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -256,13 +582,13 @@ const CheckInsView = ()=>{
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                                        lineNumber: 121,
+                                                        lineNumber: 243,
                                                         columnNumber: 37
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                                lineNumber: 121,
+                                                lineNumber: 243,
                                                 columnNumber: 23
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             ci.waistCm && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -276,13 +602,13 @@ const CheckInsView = ()=>{
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                                        lineNumber: 122,
+                                                        lineNumber: 244,
                                                         columnNumber: 51
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                                lineNumber: 122,
+                                                lineNumber: 244,
                                                 columnNumber: 38
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -296,13 +622,13 @@ const CheckInsView = ()=>{
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                                        lineNumber: 123,
+                                                        lineNumber: 245,
                                                         columnNumber: 36
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                                lineNumber: 123,
+                                                lineNumber: 245,
                                                 columnNumber: 23
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -316,13 +642,13 @@ const CheckInsView = ()=>{
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                                        lineNumber: 124,
+                                                        lineNumber: 246,
                                                         columnNumber: 37
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                                lineNumber: 124,
+                                                lineNumber: 246,
                                                 columnNumber: 23
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             ci.photos && ci.photos.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -332,7 +658,7 @@ const CheckInsView = ()=>{
                                                         className: "w-3 h-3"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                                        lineNumber: 127,
+                                                        lineNumber: 249,
                                                         columnNumber: 27
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     " ",
@@ -341,13 +667,13 @@ const CheckInsView = ()=>{
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                                lineNumber: 126,
+                                                lineNumber: 248,
                                                 columnNumber: 25
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                        lineNumber: 120,
+                                        lineNumber: 242,
                                         columnNumber: 21
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -359,7 +685,7 @@ const CheckInsView = ()=>{
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                        lineNumber: 132,
+                                        lineNumber: 254,
                                         columnNumber: 21
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     ci.coachFeedback && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -369,7 +695,7 @@ const CheckInsView = ()=>{
                                                 children: "Coach Feedback:"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                                lineNumber: 138,
+                                                lineNumber: 260,
                                                 columnNumber: 25
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             " ",
@@ -377,13 +703,13 @@ const CheckInsView = ()=>{
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                        lineNumber: 137,
+                                        lineNumber: 259,
                                         columnNumber: 23
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                lineNumber: 109,
+                                lineNumber: 225,
                                 columnNumber: 19
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -397,40 +723,40 @@ const CheckInsView = ()=>{
                                             className: "w-3.5 h-3.5"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                            lineNumber: 153,
+                                            lineNumber: 275,
                                             columnNumber: 23
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                    lineNumber: 144,
+                                    lineNumber: 266,
                                     columnNumber: 21
                                 }, ("TURBOPACK compile-time value", void 0))
                             }, void 0, false, {
                                 fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                                lineNumber: 143,
+                                lineNumber: 265,
                                 columnNumber: 19
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, ci.id, true, {
                         fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                        lineNumber: 105,
+                        lineNumber: 221,
                         columnNumber: 17
                     }, ("TURBOPACK compile-time value", void 0));
                 })
             }, void 0, false, {
                 fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-                lineNumber: 84,
+                lineNumber: 200,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0))
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/checkins/CheckInsView.tsx",
-        lineNumber: 43,
+        lineNumber: 80,
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0));
 };
-_s(CheckInsView, "ZYSn/BwjnHjdRdd/fNLF/G3uK8M=", false, function() {
+_s(CheckInsView, "50nK/HGrZQequRex2zsQwXqol7c=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useApp"]
     ];
@@ -491,33 +817,52 @@ const CheckInSubmitModal = ()=>{
             uploadedAt: new Date().toISOString()
         }
     ]);
+    const [saveError, setSaveError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [isSaving, setIsSaving] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     if (!isCheckInModalOpen) return null;
-    const handleSubmit = (e)=>{
+    const handleSubmit = async (e)=>{
         e.preventDefault();
+        if (isSaving) return;
         const parsedWeight = parseFloat(weightKg);
         if (isNaN(parsedWeight) || parsedWeight <= 0) return;
-        submitCheckIn({
-            clientId: currentUser.id,
-            coachId: currentUser.assignedCoachId || 'user-coach-1',
-            checkInDate: new Date().toISOString().slice(0, 10),
-            weightKg: parsedWeight,
-            waistCm: parseFloat(waistCm) || undefined,
-            chestCm: parseFloat(chestCm) || undefined,
-            armsCm: parseFloat(armsCm) || undefined,
-            hipsCm: parseFloat(hipsCm) || undefined,
-            thighsCm: parseFloat(thighsCm) || undefined,
-            sleepRating,
-            stressRating,
-            energyRating,
-            hungerRating,
-            digestionRating,
-            workoutAdherenceRating: workoutAdherence,
-            nutritionAdherenceRating: nutritionAdherence,
-            clientNotes: clientNotes.trim() || 'Weekly check-in submitted.',
-            questions: questions.trim() || undefined,
-            photos
-        });
-        setIsCheckInModalOpen(false);
+        if (!currentUser.assignedCoachId) {
+            setSaveError('A coach must be assigned to your account before submitting a check-in.');
+            return;
+        }
+        setSaveError(null);
+        setIsSaving(true);
+        try {
+            const result = await submitCheckIn({
+                clientId: currentUser.id,
+                coachId: currentUser.assignedCoachId,
+                checkInDate: new Date().toISOString().slice(0, 10),
+                weightKg: parsedWeight,
+                waistCm: parseFloat(waistCm) || undefined,
+                chestCm: parseFloat(chestCm) || undefined,
+                armsCm: parseFloat(armsCm) || undefined,
+                hipsCm: parseFloat(hipsCm) || undefined,
+                thighsCm: parseFloat(thighsCm) || undefined,
+                sleepRating,
+                stressRating,
+                energyRating,
+                hungerRating,
+                digestionRating,
+                workoutAdherenceRating: workoutAdherence,
+                nutritionAdherenceRating: nutritionAdherence,
+                clientNotes: clientNotes.trim() || 'Check-in submitted.',
+                questions: questions.trim() || undefined,
+                photos
+            });
+            if (!result.success) {
+                setSaveError(result.error || 'Check-in was not saved.');
+                return;
+            }
+            setIsCheckInModalOpen(false);
+        } catch (error) {
+            setSaveError(error instanceof Error ? error.message : 'Check-in was not saved.');
+        } finally{
+            setIsSaving(false);
+        }
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-xs",
@@ -536,22 +881,22 @@ const CheckInSubmitModal = ()=>{
                                         className: "w-5 h-5"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                        lineNumber: 93,
+                                        lineNumber: 111,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0))
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                    lineNumber: 92,
+                                    lineNumber: 110,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
                                             className: "text-base sm:text-lg font-bold text-white",
-                                            children: "Weekly Athlete Check-In"
+                                            children: "Athlete Check-In"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                            lineNumber: 96,
+                                            lineNumber: 114,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -559,19 +904,19 @@ const CheckInSubmitModal = ()=>{
                                             children: "Submit weight, body tape measurements, biofeedback & progress photos"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                            lineNumber: 97,
+                                            lineNumber: 115,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                    lineNumber: 95,
+                                    lineNumber: 113,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                            lineNumber: 91,
+                            lineNumber: 109,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -581,24 +926,33 @@ const CheckInSubmitModal = ()=>{
                                 className: "w-5 h-5"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                lineNumber: 105,
+                                lineNumber: 123,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0))
                         }, void 0, false, {
                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                            lineNumber: 101,
+                            lineNumber: 119,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                    lineNumber: 90,
+                    lineNumber: 108,
                     columnNumber: 9
                 }, ("TURBOPACK compile-time value", void 0)),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
                     onSubmit: handleSubmit,
                     className: "flex-1 overflow-y-auto p-4 sm:p-6 space-y-6",
                     children: [
+                        saveError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                            role: "alert",
+                            className: "rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300",
+                            children: saveError
+                        }, void 0, false, {
+                            fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
+                            lineNumber: 129,
+                            columnNumber: 25
+                        }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "space-y-3",
                             children: [
@@ -609,14 +963,14 @@ const CheckInSubmitModal = ()=>{
                                             className: "w-2 h-2 rounded-full bg-amber-400"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                            lineNumber: 114,
+                                            lineNumber: 133,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         " 1. Weight & Circumference Measurements"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                    lineNumber: 113,
+                                    lineNumber: 132,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -630,7 +984,7 @@ const CheckInSubmitModal = ()=>{
                                                     children: "Morning Weight (kg) *"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                    lineNumber: 119,
+                                                    lineNumber: 138,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -642,13 +996,13 @@ const CheckInSubmitModal = ()=>{
                                                     className: "w-full px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-white font-mono font-bold text-sm focus:outline-none focus:border-amber-500"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                    lineNumber: 120,
+                                                    lineNumber: 139,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                            lineNumber: 118,
+                                            lineNumber: 137,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -659,7 +1013,7 @@ const CheckInSubmitModal = ()=>{
                                                     children: "Waist (Navel cm)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                    lineNumber: 131,
+                                                    lineNumber: 150,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -670,13 +1024,13 @@ const CheckInSubmitModal = ()=>{
                                                     className: "w-full px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-white font-mono text-sm focus:outline-none focus:border-amber-500"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                    lineNumber: 132,
+                                                    lineNumber: 151,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                            lineNumber: 130,
+                                            lineNumber: 149,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -687,7 +1041,7 @@ const CheckInSubmitModal = ()=>{
                                                     children: "Hips / Glutes (cm)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                    lineNumber: 142,
+                                                    lineNumber: 161,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -698,13 +1052,13 @@ const CheckInSubmitModal = ()=>{
                                                     className: "w-full px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-white font-mono text-sm focus:outline-none focus:border-amber-500"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                    lineNumber: 143,
+                                                    lineNumber: 162,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                            lineNumber: 141,
+                                            lineNumber: 160,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -715,7 +1069,7 @@ const CheckInSubmitModal = ()=>{
                                                     children: "Chest (cm)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                    lineNumber: 153,
+                                                    lineNumber: 172,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -726,13 +1080,13 @@ const CheckInSubmitModal = ()=>{
                                                     className: "w-full px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-white font-mono text-sm focus:outline-none focus:border-amber-500"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                    lineNumber: 154,
+                                                    lineNumber: 173,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                            lineNumber: 152,
+                                            lineNumber: 171,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -743,7 +1097,7 @@ const CheckInSubmitModal = ()=>{
                                                     children: "Arms / Biceps (cm)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                    lineNumber: 164,
+                                                    lineNumber: 183,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -754,13 +1108,13 @@ const CheckInSubmitModal = ()=>{
                                                     className: "w-full px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-white font-mono text-sm focus:outline-none focus:border-amber-500"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                    lineNumber: 165,
+                                                    lineNumber: 184,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                            lineNumber: 163,
+                                            lineNumber: 182,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -771,7 +1125,7 @@ const CheckInSubmitModal = ()=>{
                                                     children: "Thighs (cm)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                    lineNumber: 175,
+                                                    lineNumber: 194,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -782,25 +1136,25 @@ const CheckInSubmitModal = ()=>{
                                                     className: "w-full px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-white font-mono text-sm focus:outline-none focus:border-amber-500"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                    lineNumber: 176,
+                                                    lineNumber: 195,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                            lineNumber: 174,
+                                            lineNumber: 193,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                    lineNumber: 117,
+                                    lineNumber: 136,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                            lineNumber: 112,
+                            lineNumber: 131,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -813,14 +1167,14 @@ const CheckInSubmitModal = ()=>{
                                             className: "w-2 h-2 rounded-full bg-blue-400"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                            lineNumber: 190,
+                                            lineNumber: 209,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         " 2. Biofeedback & Adherence (1-10)"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                    lineNumber: 189,
+                                    lineNumber: 208,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -837,7 +1191,7 @@ const CheckInSubmitModal = ()=>{
                                                             children: "Sleep Quality & Duration"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                            lineNumber: 196,
+                                                            lineNumber: 215,
                                                             columnNumber: 19
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -848,13 +1202,13 @@ const CheckInSubmitModal = ()=>{
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                            lineNumber: 197,
+                                                            lineNumber: 216,
                                                             columnNumber: 19
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                    lineNumber: 195,
+                                                    lineNumber: 214,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -866,13 +1220,13 @@ const CheckInSubmitModal = ()=>{
                                                     className: "w-full accent-amber-500"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                    lineNumber: 199,
+                                                    lineNumber: 218,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                            lineNumber: 194,
+                                            lineNumber: 213,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -886,7 +1240,7 @@ const CheckInSubmitModal = ()=>{
                                                             children: "Daily Energy & Vitality"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                            lineNumber: 211,
+                                                            lineNumber: 230,
                                                             columnNumber: 19
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -897,13 +1251,13 @@ const CheckInSubmitModal = ()=>{
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                            lineNumber: 212,
+                                                            lineNumber: 231,
                                                             columnNumber: 19
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                    lineNumber: 210,
+                                                    lineNumber: 229,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -915,13 +1269,13 @@ const CheckInSubmitModal = ()=>{
                                                     className: "w-full accent-amber-500"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                    lineNumber: 214,
+                                                    lineNumber: 233,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                            lineNumber: 209,
+                                            lineNumber: 228,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -935,7 +1289,7 @@ const CheckInSubmitModal = ()=>{
                                                             children: "Life / Work Stress Level"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                            lineNumber: 226,
+                                                            lineNumber: 245,
                                                             columnNumber: 19
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -946,13 +1300,13 @@ const CheckInSubmitModal = ()=>{
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                            lineNumber: 227,
+                                                            lineNumber: 246,
                                                             columnNumber: 19
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                    lineNumber: 225,
+                                                    lineNumber: 244,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -964,13 +1318,13 @@ const CheckInSubmitModal = ()=>{
                                                     className: "w-full accent-amber-500"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                    lineNumber: 229,
+                                                    lineNumber: 248,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                            lineNumber: 224,
+                                            lineNumber: 243,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -984,7 +1338,7 @@ const CheckInSubmitModal = ()=>{
                                                             children: "Workout Adherence"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                            lineNumber: 241,
+                                                            lineNumber: 260,
                                                             columnNumber: 19
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -995,13 +1349,13 @@ const CheckInSubmitModal = ()=>{
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                            lineNumber: 242,
+                                                            lineNumber: 261,
                                                             columnNumber: 19
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                    lineNumber: 240,
+                                                    lineNumber: 259,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1013,25 +1367,25 @@ const CheckInSubmitModal = ()=>{
                                                     className: "w-full accent-emerald-500"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                    lineNumber: 244,
+                                                    lineNumber: 263,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                            lineNumber: 239,
+                                            lineNumber: 258,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                    lineNumber: 193,
+                                    lineNumber: 212,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                            lineNumber: 188,
+                            lineNumber: 207,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1044,14 +1398,14 @@ const CheckInSubmitModal = ()=>{
                                             className: "w-2 h-2 rounded-full bg-emerald-400"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                            lineNumber: 259,
+                                            lineNumber: 278,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         " 3. Client Notes & Questions"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                    lineNumber: 258,
+                                    lineNumber: 277,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1061,7 +1415,7 @@ const CheckInSubmitModal = ()=>{
                                             children: "How did this week go? (Wins, challenges, energy, workout highlights) *"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                            lineNumber: 263,
+                                            lineNumber: 282,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
@@ -1073,13 +1427,13 @@ const CheckInSubmitModal = ()=>{
                                             className: "w-full px-3.5 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-emerald-500 resize-none"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                            lineNumber: 266,
+                                            lineNumber: 285,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                    lineNumber: 262,
+                                    lineNumber: 281,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1089,7 +1443,7 @@ const CheckInSubmitModal = ()=>{
                                             children: "Any specific questions or adjustment requests for next week?"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                            lineNumber: 277,
+                                            lineNumber: 296,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
@@ -1100,19 +1454,19 @@ const CheckInSubmitModal = ()=>{
                                             className: "w-full px-3.5 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-emerald-500 resize-none"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                            lineNumber: 280,
+                                            lineNumber: 299,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                    lineNumber: 276,
+                                    lineNumber: 295,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                            lineNumber: 257,
+                            lineNumber: 276,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1125,14 +1479,14 @@ const CheckInSubmitModal = ()=>{
                                             className: "w-2 h-2 rounded-full bg-purple-400"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                            lineNumber: 293,
+                                            lineNumber: 312,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
-                                        " 4. Progress Photos (Front, Side, Back)"
+                                        " 4. Progress Photos"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                    lineNumber: 292,
+                                    lineNumber: 311,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1147,21 +1501,63 @@ const CheckInSubmitModal = ()=>{
                                                         className: "w-full h-32 object-cover"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                        lineNumber: 299,
+                                                        lineNumber: 318,
                                                         columnNumber: 19
                                                     }, ("TURBOPACK compile-time value", void 0)),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        className: "absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-slate-900/80 text-[10px] uppercase font-bold text-white",
-                                                        children: p.photoType
-                                                    }, void 0, false, {
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                                                        "aria-label": "Progress photo type",
+                                                        value: p.photoType,
+                                                        onChange: (event)=>{
+                                                            const photoType = event.target.value;
+                                                            setPhotos((prev)=>prev.map((photo)=>photo.id === p.id ? {
+                                                                        ...photo,
+                                                                        photoType
+                                                                    } : photo));
+                                                        },
+                                                        className: "absolute bottom-1 left-1 rounded bg-slate-900/90 px-1.5 py-0.5 text-[10px] uppercase font-bold text-white",
+                                                        children: [
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                                value: "front",
+                                                                children: "Front"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
+                                                                lineNumber: 330,
+                                                                columnNumber: 21
+                                                            }, ("TURBOPACK compile-time value", void 0)),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                                value: "side",
+                                                                children: "Side"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
+                                                                lineNumber: 331,
+                                                                columnNumber: 21
+                                                            }, ("TURBOPACK compile-time value", void 0)),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                                value: "back",
+                                                                children: "Back"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
+                                                                lineNumber: 332,
+                                                                columnNumber: 21
+                                                            }, ("TURBOPACK compile-time value", void 0)),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                                value: "other",
+                                                                children: "Other"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
+                                                                lineNumber: 333,
+                                                                columnNumber: 21
+                                                            }, ("TURBOPACK compile-time value", void 0))
+                                                        ]
+                                                    }, void 0, true, {
                                                         fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                        lineNumber: 300,
+                                                        lineNumber: 319,
                                                         columnNumber: 19
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, p.id, true, {
                                                 fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                lineNumber: 298,
+                                                lineNumber: 317,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0))),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1185,32 +1581,32 @@ const CheckInSubmitModal = ()=>{
                                                     className: "w-5 h-5"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                    lineNumber: 323,
+                                                    lineNumber: 355,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                     children: "Add Photo"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                                    lineNumber: 324,
+                                                    lineNumber: 356,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                            lineNumber: 306,
+                                            lineNumber: 338,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                    lineNumber: 296,
+                                    lineNumber: 315,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                            lineNumber: 291,
+                            lineNumber: 310,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1223,43 +1619,44 @@ const CheckInSubmitModal = ()=>{
                                     children: "Cancel"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                    lineNumber: 331,
+                                    lineNumber: 363,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                     type: "submit",
-                                    className: "flex-1 py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-lg shadow-amber-500/20",
-                                    children: "Submit Check-In to Coach"
+                                    disabled: isSaving,
+                                    className: "flex-1 py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-lg shadow-amber-500/20 disabled:opacity-60",
+                                    children: isSaving ? 'Saving…' : 'Submit Check-In to Coach'
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                                    lineNumber: 338,
+                                    lineNumber: 370,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                            lineNumber: 330,
+                            lineNumber: 362,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-                    lineNumber: 110,
+                    lineNumber: 128,
                     columnNumber: 9
                 }, ("TURBOPACK compile-time value", void 0))
             ]
         }, void 0, true, {
             fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-            lineNumber: 88,
+            lineNumber: 106,
             columnNumber: 7
         }, ("TURBOPACK compile-time value", void 0))
     }, void 0, false, {
         fileName: "[project]/src/components/checkins/CheckInSubmitModal.tsx",
-        lineNumber: 87,
+        lineNumber: 105,
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0));
 };
-_s(CheckInSubmitModal, "3Z4jCbqRimVWaZrIAFwdDzHYK9o=", false, function() {
+_s(CheckInSubmitModal, "RHSzoCIy/ndodqPO9gpfGsx6hBg=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useApp"]
     ];
@@ -1296,6 +1693,8 @@ const CheckInReviewModal = ()=>{
     _s();
     const { activeCheckInReviewId, setActiveCheckInReviewId, checkIns, allProfiles, reviewCheckIn } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useApp"])();
     const [feedbackText, setFeedbackText] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('');
+    const [saveError, setSaveError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [isSaving, setIsSaving] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     if (!activeCheckInReviewId) return null;
     const currentCheckIn = checkIns.find((c)=>c.id === activeCheckInReviewId);
     if (!currentCheckIn) return null;
@@ -1305,11 +1704,23 @@ const CheckInReviewModal = ()=>{
     const prevCheckIn = allClientCheckIns[0];
     const weightDelta = prevCheckIn ? (currentCheckIn.weightKg - prevCheckIn.weightKg).toFixed(1) : null;
     const waistDelta = prevCheckIn && currentCheckIn.waistCm && prevCheckIn.waistCm ? (currentCheckIn.waistCm - prevCheckIn.waistCm).toFixed(1) : null;
-    const handleSendReview = (e)=>{
+    const handleSendReview = async (e)=>{
         e.preventDefault();
-        if (!feedbackText.trim()) return;
-        reviewCheckIn(currentCheckIn.id, feedbackText.trim());
-        setActiveCheckInReviewId(null);
+        if (!feedbackText.trim() || isSaving) return;
+        setSaveError(null);
+        setIsSaving(true);
+        try {
+            const result = await reviewCheckIn(currentCheckIn.id, feedbackText.trim());
+            if (!result.success) {
+                setSaveError(result.error || 'Review was not saved.');
+                return;
+            }
+            setActiveCheckInReviewId(null);
+        } catch (error) {
+            setSaveError(error instanceof Error ? error.message : 'Review was not saved.');
+        } finally{
+            setIsSaving(false);
+        }
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-xs",
@@ -1328,12 +1739,12 @@ const CheckInReviewModal = ()=>{
                                         className: "w-5 h-5"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                        lineNumber: 60,
+                                        lineNumber: 74,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0))
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                    lineNumber: 59,
+                                    lineNumber: 73,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1349,7 +1760,7 @@ const CheckInReviewModal = ()=>{
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                                    lineNumber: 64,
+                                                    lineNumber: 78,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1357,13 +1768,13 @@ const CheckInReviewModal = ()=>{
                                                     children: currentCheckIn.status
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                                    lineNumber: 67,
+                                                    lineNumber: 81,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                            lineNumber: 63,
+                                            lineNumber: 77,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1374,19 +1785,19 @@ const CheckInReviewModal = ()=>{
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                            lineNumber: 73,
+                                            lineNumber: 87,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                    lineNumber: 62,
+                                    lineNumber: 76,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                            lineNumber: 58,
+                            lineNumber: 72,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1396,18 +1807,18 @@ const CheckInReviewModal = ()=>{
                                 className: "w-5 h-5"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                lineNumber: 81,
+                                lineNumber: 95,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0))
                         }, void 0, false, {
                             fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                            lineNumber: 77,
+                            lineNumber: 91,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                    lineNumber: 57,
+                    lineNumber: 71,
                     columnNumber: 9
                 }, ("TURBOPACK compile-time value", void 0)),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1417,10 +1828,10 @@ const CheckInReviewModal = ()=>{
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
                                     className: "text-xs font-bold uppercase tracking-wider text-slate-400 mb-3",
-                                    children: "Metrics & Weekly Delta"
+                                    children: "Metrics & Change Since Previous Check-In"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                    lineNumber: 89,
+                                    lineNumber: 103,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1434,7 +1845,7 @@ const CheckInReviewModal = ()=>{
                                                     children: "Weight"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                                    lineNumber: 94,
+                                                    lineNumber: 108,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1445,7 +1856,7 @@ const CheckInReviewModal = ()=>{
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                                    lineNumber: 95,
+                                                    lineNumber: 109,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 weightDelta !== null && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1455,13 +1866,13 @@ const CheckInReviewModal = ()=>{
                                                             className: "w-3.5 h-3.5"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                                            lineNumber: 102,
+                                                            lineNumber: 116,
                                                             columnNumber: 52
                                                         }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$trending$2d$up$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TrendingUp$3e$__["TrendingUp"], {
                                                             className: "w-3.5 h-3.5"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                                            lineNumber: 102,
+                                                            lineNumber: 116,
                                                             columnNumber: 95
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         parseFloat(weightDelta) > 0 ? "+".concat(weightDelta) : weightDelta,
@@ -1469,13 +1880,13 @@ const CheckInReviewModal = ()=>{
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                                    lineNumber: 99,
+                                                    lineNumber: 113,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                            lineNumber: 93,
+                                            lineNumber: 107,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1486,7 +1897,7 @@ const CheckInReviewModal = ()=>{
                                                     children: "Waist"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                                    lineNumber: 109,
+                                                    lineNumber: 123,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1494,7 +1905,7 @@ const CheckInReviewModal = ()=>{
                                                     children: currentCheckIn.waistCm ? "".concat(currentCheckIn.waistCm, " cm") : '--'
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                                    lineNumber: 110,
+                                                    lineNumber: 124,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 waistDelta !== null && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1505,48 +1916,8 @@ const CheckInReviewModal = ()=>{
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                                    lineNumber: 114,
+                                                    lineNumber: 128,
                                                     columnNumber: 19
-                                                }, ("TURBOPACK compile-time value", void 0))
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                            lineNumber: 108,
-                                            columnNumber: 15
-                                        }, ("TURBOPACK compile-time value", void 0)),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "p-3 bg-slate-850 rounded-xl border border-slate-750",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                    className: "text-[11px] text-slate-400 uppercase font-semibold",
-                                                    children: "Sleep Quality"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                                    lineNumber: 123,
-                                                    columnNumber: 17
-                                                }, ("TURBOPACK compile-time value", void 0)),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "text-xl font-extrabold text-amber-400 font-mono mt-0.5",
-                                                    children: [
-                                                        currentCheckIn.sleepRating,
-                                                        " / 10"
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                                    lineNumber: 124,
-                                                    columnNumber: 17
-                                                }, ("TURBOPACK compile-time value", void 0)),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                    className: "text-[10px] text-slate-400",
-                                                    children: [
-                                                        "Energy: ",
-                                                        currentCheckIn.energyRating,
-                                                        "/10"
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                                    lineNumber: 127,
-                                                    columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
@@ -1559,10 +1930,50 @@ const CheckInReviewModal = ()=>{
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                     className: "text-[11px] text-slate-400 uppercase font-semibold",
+                                                    children: "Sleep Quality"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
+                                                    lineNumber: 137,
+                                                    columnNumber: 17
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "text-xl font-extrabold text-amber-400 font-mono mt-0.5",
+                                                    children: [
+                                                        currentCheckIn.sleepRating,
+                                                        " / 10"
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
+                                                    lineNumber: 138,
+                                                    columnNumber: 17
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    className: "text-[10px] text-slate-400",
+                                                    children: [
+                                                        "Energy: ",
+                                                        currentCheckIn.energyRating,
+                                                        "/10"
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
+                                                    lineNumber: 141,
+                                                    columnNumber: 17
+                                                }, ("TURBOPACK compile-time value", void 0))
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
+                                            lineNumber: 136,
+                                            columnNumber: 15
+                                        }, ("TURBOPACK compile-time value", void 0)),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "p-3 bg-slate-850 rounded-xl border border-slate-750",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    className: "text-[11px] text-slate-400 uppercase font-semibold",
                                                     children: "Adherence"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                                    lineNumber: 131,
+                                                    lineNumber: 145,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1573,7 +1984,7 @@ const CheckInReviewModal = ()=>{
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                                    lineNumber: 132,
+                                                    lineNumber: 146,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1585,25 +1996,25 @@ const CheckInReviewModal = ()=>{
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                                    lineNumber: 135,
+                                                    lineNumber: 149,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                            lineNumber: 130,
+                                            lineNumber: 144,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                    lineNumber: 92,
+                                    lineNumber: 106,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                            lineNumber: 88,
+                            lineNumber: 102,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1616,7 +2027,7 @@ const CheckInReviewModal = ()=>{
                                             children: "Athlete Log Notes"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                            lineNumber: 143,
+                                            lineNumber: 157,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1628,13 +2039,13 @@ const CheckInReviewModal = ()=>{
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                            lineNumber: 144,
+                                            lineNumber: 158,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                    lineNumber: 142,
+                                    lineNumber: 156,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 currentCheckIn.questions && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1645,7 +2056,7 @@ const CheckInReviewModal = ()=>{
                                             children: "Client Questions for Coach"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                            lineNumber: 151,
+                                            lineNumber: 165,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1657,19 +2068,19 @@ const CheckInReviewModal = ()=>{
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                            lineNumber: 152,
+                                            lineNumber: 166,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                    lineNumber: 150,
+                                    lineNumber: 164,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                            lineNumber: 141,
+                            lineNumber: 155,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0)),
                         currentCheckIn.photos && currentCheckIn.photos.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1681,7 +2092,7 @@ const CheckInReviewModal = ()=>{
                                             className: "w-3.5 h-3.5"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                            lineNumber: 163,
+                                            lineNumber: 177,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         " Progress Photos (",
@@ -1690,7 +2101,7 @@ const CheckInReviewModal = ()=>{
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                    lineNumber: 162,
+                                    lineNumber: 176,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1704,7 +2115,7 @@ const CheckInReviewModal = ()=>{
                                                     className: "w-full h-44 object-cover"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                                    lineNumber: 168,
+                                                    lineNumber: 182,
                                                     columnNumber: 21
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1712,30 +2123,39 @@ const CheckInReviewModal = ()=>{
                                                     children: p.photoType
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                                    lineNumber: 169,
+                                                    lineNumber: 183,
                                                     columnNumber: 21
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, p.id, true, {
                                             fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                            lineNumber: 167,
+                                            lineNumber: 181,
                                             columnNumber: 19
                                         }, ("TURBOPACK compile-time value", void 0)))
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                    lineNumber: 165,
+                                    lineNumber: 179,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                            lineNumber: 161,
+                            lineNumber: 175,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
                             onSubmit: handleSendReview,
                             className: "space-y-3 border-t border-slate-800 pt-4",
                             children: [
+                                saveError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                    role: "alert",
+                                    className: "rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300",
+                                    children: saveError
+                                }, void 0, false, {
+                                    fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
+                                    lineNumber: 194,
+                                    columnNumber: 27
+                                }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "flex items-center justify-between",
                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
@@ -1745,19 +2165,19 @@ const CheckInReviewModal = ()=>{
                                                 className: "w-4 h-4"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                                lineNumber: 182,
+                                                lineNumber: 197,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             " Coach Feedback & Next Week Instructions"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                        lineNumber: 181,
+                                        lineNumber: 196,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0))
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                    lineNumber: 180,
+                                    lineNumber: 195,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
@@ -1769,7 +2189,7 @@ const CheckInReviewModal = ()=>{
                                     className: "w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-emerald-500 resize-none leading-relaxed"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                    lineNumber: 186,
+                                    lineNumber: 201,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1782,49 +2202,50 @@ const CheckInReviewModal = ()=>{
                                             children: "Close"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                            lineNumber: 196,
+                                            lineNumber: 211,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                             type: "submit",
-                                            className: "flex-1 py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20",
-                                            children: "Submit Feedback & Mark Reviewed"
+                                            disabled: isSaving,
+                                            className: "flex-1 py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20 disabled:opacity-60",
+                                            children: isSaving ? 'Saving…' : 'Submit Feedback & Mark Reviewed'
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                            lineNumber: 203,
+                                            lineNumber: 218,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                                    lineNumber: 195,
+                                    lineNumber: 210,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                            lineNumber: 179,
+                            lineNumber: 193,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-                    lineNumber: 86,
+                    lineNumber: 100,
                     columnNumber: 9
                 }, ("TURBOPACK compile-time value", void 0))
             ]
         }, void 0, true, {
             fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-            lineNumber: 55,
+            lineNumber: 69,
             columnNumber: 7
         }, ("TURBOPACK compile-time value", void 0))
     }, void 0, false, {
         fileName: "[project]/src/components/checkins/CheckInReviewModal.tsx",
-        lineNumber: 54,
+        lineNumber: 68,
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0));
 };
-_s(CheckInReviewModal, "enK2fXT/8vYZ0LqopSrzDTYsoQ0=", false, function() {
+_s(CheckInReviewModal, "0KeGdR6bL4gnUgJHklsy9740qXY=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useApp"]
     ];

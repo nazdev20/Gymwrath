@@ -39,6 +39,14 @@ const EQUIPMENT_TYPES = [
     'Machine',
     'Bodyweight'
 ];
+const EXERCISE_CATEGORIES = [
+    'strength',
+    'cardio',
+    'flexibility',
+    'balance',
+    'plyometric',
+    'other'
+];
 const ExerciseLibrary = ()=>{
     _s();
     const { exercises, addExercise, currentUser } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useApp"])();
@@ -48,8 +56,11 @@ const ExerciseLibrary = ()=>{
     const [expandedExerciseId, setExpandedExerciseId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
     // Modal
     const [isAddModalOpen, setIsAddModalOpen] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [isSavingExercise, setIsSavingExercise] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [saveError, setSaveError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
     const [newExName, setNewExName] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('');
     const [newExDesc, setNewExDesc] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('');
+    const [newExCategory, setNewExCategory] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('strength');
     const [newExMuscle, setNewExMuscle] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('Chest');
     const [newExEquipment, setNewExEquipment] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('Barbell');
     const [newExInstructions, setNewExInstructions] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('');
@@ -60,22 +71,38 @@ const ExerciseLibrary = ()=>{
         const matchesEquip = selectedEquipment === 'All' || ex.equipment === selectedEquipment;
         return matchesSearch && matchesMuscle && matchesEquip;
     });
-    const handleCreateExercise = (e)=>{
+    const handleCreateExercise = async (e)=>{
         e.preventDefault();
-        if (!newExName.trim()) return;
-        addExercise({
-            name: newExName.trim(),
-            description: newExDesc.trim() || 'Custom coach exercise',
-            instructions: newExInstructions.split('\n').filter((i)=>i.trim().length > 0),
-            muscleGroup: newExMuscle,
-            equipment: newExEquipment,
-            isGlobal: currentUser.role === 'admin',
-            createdBy: currentUser.id
-        });
-        setIsAddModalOpen(false);
-        setNewExName('');
-        setNewExDesc('');
-        setNewExInstructions('');
+        if (!newExName.trim() || isSavingExercise) return;
+        setIsSavingExercise(true);
+        setSaveError(null);
+        try {
+            const saveResult = await addExercise({
+                name: newExName.trim(),
+                description: newExDesc.trim() || 'Custom coach exercise',
+                category: newExCategory,
+                instructions: newExInstructions.split('\n').filter((i)=>i.trim().length > 0),
+                muscleGroup: newExMuscle,
+                equipment: newExEquipment,
+                isGlobal: currentUser.role === 'admin',
+                createdBy: currentUser.id
+            });
+            if (!saveResult.success) {
+                setSaveError("Exercise was not saved: ".concat(saveResult.error || 'unknown error'));
+                return;
+            } else if (saveResult.warning) {
+                setSaveError(saveResult.warning);
+            }
+            setIsAddModalOpen(false);
+            setNewExName('');
+            setNewExDesc('');
+            setNewExInstructions('');
+        } catch (error) {
+            console.error('Failed to create exercise:', error);
+            setSaveError("Exercise could not be saved to Supabase: ".concat(error instanceof Error ? error.message : 'unknown error'));
+        } finally{
+            setIsSavingExercise(false);
+        }
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "space-y-6",
@@ -94,12 +121,12 @@ const ExerciseLibrary = ()=>{
                                             className: "w-4 h-4"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                            lineNumber: 90,
+                                            lineNumber: 118,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                        lineNumber: 89,
+                                        lineNumber: 117,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -107,13 +134,13 @@ const ExerciseLibrary = ()=>{
                                         children: "Exercise Movement Library"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                        lineNumber: 92,
+                                        lineNumber: 120,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                lineNumber: 88,
+                                lineNumber: 116,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -121,13 +148,13 @@ const ExerciseLibrary = ()=>{
                                 children: "Standardized movement catalog with biomechanics, execution cues, and video references."
                             }, void 0, false, {
                                 fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                lineNumber: 94,
+                                lineNumber: 122,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                        lineNumber: 87,
+                        lineNumber: 115,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     (currentUser.role === 'coach' || currentUser.role === 'admin') && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -138,21 +165,30 @@ const ExerciseLibrary = ()=>{
                                 className: "w-4 h-4"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                lineNumber: 104,
+                                lineNumber: 132,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0)),
                             " Add Custom Exercise"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                        lineNumber: 100,
+                        lineNumber: 128,
                         columnNumber: 11
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                lineNumber: 86,
+                lineNumber: 114,
                 columnNumber: 7
+            }, ("TURBOPACK compile-time value", void 0)),
+            saveError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                role: "alert",
+                className: "rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-xs text-amber-300",
+                children: saveError
+            }, void 0, false, {
+                fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
+                lineNumber: 138,
+                columnNumber: 9
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-4 shadow-lg",
@@ -167,7 +203,7 @@ const ExerciseLibrary = ()=>{
                                         className: "w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                        lineNumber: 114,
+                                        lineNumber: 148,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -178,13 +214,13 @@ const ExerciseLibrary = ()=>{
                                         className: "w-full pl-9 pr-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                        lineNumber: 115,
+                                        lineNumber: 149,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                lineNumber: 113,
+                                lineNumber: 147,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -195,7 +231,7 @@ const ExerciseLibrary = ()=>{
                                         children: "Equipment:"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                        lineNumber: 126,
+                                        lineNumber: 160,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -207,24 +243,24 @@ const ExerciseLibrary = ()=>{
                                                 children: eq
                                             }, eq, false, {
                                                 fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                                lineNumber: 133,
+                                                lineNumber: 167,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0)))
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                        lineNumber: 127,
+                                        lineNumber: 161,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                lineNumber: 125,
+                                lineNumber: 159,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                        lineNumber: 111,
+                        lineNumber: 145,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -235,7 +271,7 @@ const ExerciseLibrary = ()=>{
                                 children: "Target:"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                lineNumber: 141,
+                                lineNumber: 175,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             MUSCLE_GROUPS.map((muscle)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -244,19 +280,19 @@ const ExerciseLibrary = ()=>{
                                     children: muscle
                                 }, muscle, false, {
                                     fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                    lineNumber: 143,
+                                    lineNumber: 177,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                        lineNumber: 140,
+                        lineNumber: 174,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                lineNumber: 110,
+                lineNumber: 144,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -277,7 +313,7 @@ const ExerciseLibrary = ()=>{
                                                 children: ex.name
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                                lineNumber: 170,
+                                                lineNumber: 204,
                                                 columnNumber: 19
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -285,13 +321,13 @@ const ExerciseLibrary = ()=>{
                                                 children: ex.equipment
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                                lineNumber: 171,
+                                                lineNumber: 205,
                                                 columnNumber: 19
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                        lineNumber: 169,
+                                        lineNumber: 203,
                                         columnNumber: 17
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -299,7 +335,7 @@ const ExerciseLibrary = ()=>{
                                         children: ex.description
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                        lineNumber: 176,
+                                        lineNumber: 210,
                                         columnNumber: 17
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -313,7 +349,7 @@ const ExerciseLibrary = ()=>{
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                                lineNumber: 179,
+                                                lineNumber: 213,
                                                 columnNumber: 19
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             (_ex_secondaryMuscles = ex.secondaryMuscles) === null || _ex_secondaryMuscles === void 0 ? void 0 : _ex_secondaryMuscles.map((sm)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -324,13 +360,13 @@ const ExerciseLibrary = ()=>{
                                                     ]
                                                 }, sm, true, {
                                                     fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                                    lineNumber: 183,
+                                                    lineNumber: 217,
                                                     columnNumber: 21
                                                 }, ("TURBOPACK compile-time value", void 0)))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                        lineNumber: 178,
+                                        lineNumber: 212,
                                         columnNumber: 17
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     isExpanded && ex.instructions && ex.instructions.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -341,7 +377,7 @@ const ExerciseLibrary = ()=>{
                                                 children: "Execution Form Cues:"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                                lineNumber: 192,
+                                                lineNumber: 226,
                                                 columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ol", {
@@ -351,24 +387,24 @@ const ExerciseLibrary = ()=>{
                                                         children: inst
                                                     }, i, false, {
                                                         fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                                        lineNumber: 195,
+                                                        lineNumber: 229,
                                                         columnNumber: 25
                                                     }, ("TURBOPACK compile-time value", void 0)))
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                                lineNumber: 193,
+                                                lineNumber: 227,
                                                 columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                        lineNumber: 191,
+                                        lineNumber: 225,
                                         columnNumber: 19
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                lineNumber: 168,
+                                lineNumber: 202,
                                 columnNumber: 15
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -379,7 +415,7 @@ const ExerciseLibrary = ()=>{
                                         children: ex.isGlobal ? 'Verified System Exercise' : 'Custom Coach Exercise'
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                        lineNumber: 203,
+                                        lineNumber: 237,
                                         columnNumber: 17
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -392,7 +428,7 @@ const ExerciseLibrary = ()=>{
                                                     className: "w-3.5 h-3.5"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                                    lineNumber: 211,
+                                                    lineNumber: 245,
                                                     columnNumber: 33
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
@@ -403,32 +439,32 @@ const ExerciseLibrary = ()=>{
                                                     className: "w-3.5 h-3.5"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                                    lineNumber: 213,
+                                                    lineNumber: 247,
                                                     columnNumber: 38
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                        lineNumber: 206,
+                                        lineNumber: 240,
                                         columnNumber: 17
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                lineNumber: 202,
+                                lineNumber: 236,
                                 columnNumber: 15
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, ex.id, true, {
                         fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                        lineNumber: 164,
+                        lineNumber: 198,
                         columnNumber: 13
                     }, ("TURBOPACK compile-time value", void 0));
                 })
             }, void 0, false, {
                 fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                lineNumber: 159,
+                lineNumber: 193,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             isAddModalOpen && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -446,14 +482,14 @@ const ExerciseLibrary = ()=>{
                                             className: "w-5 h-5 text-emerald-400"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                            lineNumber: 228,
+                                            lineNumber: 262,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         " Create Custom Exercise"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                    lineNumber: 227,
+                                    lineNumber: 261,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -463,18 +499,18 @@ const ExerciseLibrary = ()=>{
                                         className: "w-5 h-5"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                        lineNumber: 231,
+                                        lineNumber: 265,
                                         columnNumber: 17
                                     }, ("TURBOPACK compile-time value", void 0))
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                    lineNumber: 230,
+                                    lineNumber: 264,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                            lineNumber: 226,
+                            lineNumber: 260,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
@@ -488,7 +524,7 @@ const ExerciseLibrary = ()=>{
                                             children: "Exercise Name"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                            lineNumber: 237,
+                                            lineNumber: 271,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -500,18 +536,51 @@ const ExerciseLibrary = ()=>{
                                             className: "w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-sm focus:outline-none focus:border-emerald-500"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                            lineNumber: 238,
+                                            lineNumber: 272,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                    lineNumber: 236,
+                                    lineNumber: 270,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "grid grid-cols-2 gap-3",
+                                    className: "grid grid-cols-3 gap-3",
                                     children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "block text-xs font-semibold uppercase text-slate-300 mb-1",
+                                                    children: "Category"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
+                                                    lineNumber: 284,
+                                                    columnNumber: 19
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                                                    value: newExCategory,
+                                                    onChange: (e)=>setNewExCategory(e.target.value),
+                                                    className: "w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-emerald-500",
+                                                    children: EXERCISE_CATEGORIES.map((category)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: category,
+                                                            children: category
+                                                        }, category, false, {
+                                                            fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
+                                                            lineNumber: 291,
+                                                            columnNumber: 23
+                                                        }, ("TURBOPACK compile-time value", void 0)))
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
+                                                    lineNumber: 285,
+                                                    columnNumber: 19
+                                                }, ("TURBOPACK compile-time value", void 0))
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
+                                            lineNumber: 283,
+                                            columnNumber: 17
+                                        }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
@@ -519,7 +588,7 @@ const ExerciseLibrary = ()=>{
                                                     children: "Primary Muscle"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                                    lineNumber: 250,
+                                                    lineNumber: 296,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -531,18 +600,18 @@ const ExerciseLibrary = ()=>{
                                                             children: m
                                                         }, m, false, {
                                                             fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                                            lineNumber: 257,
+                                                            lineNumber: 303,
                                                             columnNumber: 23
                                                         }, ("TURBOPACK compile-time value", void 0)))
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                                    lineNumber: 251,
+                                                    lineNumber: 297,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                            lineNumber: 249,
+                                            lineNumber: 295,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -552,7 +621,7 @@ const ExerciseLibrary = ()=>{
                                                     children: "Equipment"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                                    lineNumber: 263,
+                                                    lineNumber: 309,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -564,24 +633,24 @@ const ExerciseLibrary = ()=>{
                                                             children: eq
                                                         }, eq, false, {
                                                             fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                                            lineNumber: 270,
+                                                            lineNumber: 316,
                                                             columnNumber: 23
                                                         }, ("TURBOPACK compile-time value", void 0)))
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                                    lineNumber: 264,
+                                                    lineNumber: 310,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                            lineNumber: 262,
+                                            lineNumber: 308,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                    lineNumber: 248,
+                                    lineNumber: 282,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -591,7 +660,7 @@ const ExerciseLibrary = ()=>{
                                             children: "Description / Focus"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                            lineNumber: 277,
+                                            lineNumber: 323,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
@@ -602,13 +671,13 @@ const ExerciseLibrary = ()=>{
                                             className: "w-full px-3.5 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-emerald-500 resize-none"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                            lineNumber: 278,
+                                            lineNumber: 324,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                    lineNumber: 276,
+                                    lineNumber: 322,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -618,7 +687,7 @@ const ExerciseLibrary = ()=>{
                                             children: "Execution Cues (One step per line)"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                            lineNumber: 288,
+                                            lineNumber: 334,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
@@ -629,13 +698,13 @@ const ExerciseLibrary = ()=>{
                                             className: "w-full px-3.5 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-emerald-500 resize-none font-mono"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                            lineNumber: 291,
+                                            lineNumber: 337,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                    lineNumber: 287,
+                                    lineNumber: 333,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -648,49 +717,50 @@ const ExerciseLibrary = ()=>{
                                             children: "Cancel"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                            lineNumber: 301,
+                                            lineNumber: 347,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                             type: "submit",
-                                            className: "flex-1 py-2 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs",
-                                            children: "Save Exercise"
+                                            disabled: isSavingExercise,
+                                            className: "flex-1 py-2 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-bold text-xs",
+                                            children: isSavingExercise ? 'Saving...' : 'Save Exercise'
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                            lineNumber: 308,
+                                            lineNumber: 354,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                                    lineNumber: 300,
+                                    lineNumber: 346,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                            lineNumber: 235,
+                            lineNumber: 269,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                    lineNumber: 225,
+                    lineNumber: 259,
                     columnNumber: 11
                 }, ("TURBOPACK compile-time value", void 0))
             }, void 0, false, {
                 fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-                lineNumber: 224,
+                lineNumber: 258,
                 columnNumber: 9
             }, ("TURBOPACK compile-time value", void 0))
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/workouts/ExerciseLibrary.tsx",
-        lineNumber: 84,
+        lineNumber: 112,
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0));
 };
-_s(ExerciseLibrary, "RbPfk0bYnX8GyiWmPDVNEs2Htso=", false, function() {
+_s(ExerciseLibrary, "d5cq1zRHAqvYzIPZRLukSPKsI6M=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$AppContext$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useApp"]
     ];
@@ -722,6 +792,36 @@ var _s = __turbopack_context__.k.signature();
 ;
 ;
 ;
+const WEEKDAYS = [
+    {
+        value: 0,
+        label: 'Sunday'
+    },
+    {
+        value: 1,
+        label: 'Monday'
+    },
+    {
+        value: 2,
+        label: 'Tuesday'
+    },
+    {
+        value: 3,
+        label: 'Wednesday'
+    },
+    {
+        value: 4,
+        label: 'Thursday'
+    },
+    {
+        value: 5,
+        label: 'Friday'
+    },
+    {
+        value: 6,
+        label: 'Saturday'
+    }
+];
 const ProgramBuilder = ()=>{
     var _exercises_, _exercises_1;
     _s();
@@ -781,7 +881,7 @@ const ProgramBuilder = ()=>{
     const [assignStartDate, setAssignStartDate] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(new Date().toISOString().slice(0, 10));
     const clients = allProfiles.filter((p)=>p.role === 'client' && p.status === 'active');
     const handleAddWorkoutToNewProgram = ()=>{
-        const nextDay = newWorkouts.length % 7 + 1;
+        const nextDay = (newWorkouts.length + 1) % 7;
         setNewWorkouts((prev)=>{
             var _exercises_, _exercises_1;
             return [
@@ -904,12 +1004,12 @@ const ProgramBuilder = ()=>{
                                             className: "w-4 h-4"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                            lineNumber: 151,
+                                            lineNumber: 161,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                        lineNumber: 150,
+                                        lineNumber: 160,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -917,13 +1017,13 @@ const ProgramBuilder = ()=>{
                                         children: "Program Builder & Templates"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                        lineNumber: 153,
+                                        lineNumber: 163,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                lineNumber: 149,
+                                lineNumber: 159,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -931,13 +1031,13 @@ const ProgramBuilder = ()=>{
                                 children: "Build multi-week periodized training blocks and assign them directly to client schedules."
                             }, void 0, false, {
                                 fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                lineNumber: 155,
+                                lineNumber: 165,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                        lineNumber: 148,
+                        lineNumber: 158,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -954,14 +1054,14 @@ const ProgramBuilder = ()=>{
                                         className: "w-4 h-4 text-emerald-400"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                        lineNumber: 169,
+                                        lineNumber: 179,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     " Assign Current Program"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                lineNumber: 162,
+                                lineNumber: 172,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -972,26 +1072,26 @@ const ProgramBuilder = ()=>{
                                         className: "w-4 h-4"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                        lineNumber: 177,
+                                        lineNumber: 187,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     " Create New Program"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                lineNumber: 173,
+                                lineNumber: 183,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                        lineNumber: 160,
+                        lineNumber: 170,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                lineNumber: 147,
+                lineNumber: 157,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1005,7 +1105,7 @@ const ProgramBuilder = ()=>{
                                 children: "Program Catalog"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                lineNumber: 186,
+                                lineNumber: 196,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             programs.map((prog)=>{
@@ -1022,7 +1122,7 @@ const ProgramBuilder = ()=>{
                                                     children: prog.name
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                    lineNumber: 201,
+                                                    lineNumber: 211,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1033,13 +1133,13 @@ const ProgramBuilder = ()=>{
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                    lineNumber: 204,
+                                                    lineNumber: 214,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                            lineNumber: 200,
+                                            lineNumber: 210,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1047,7 +1147,7 @@ const ProgramBuilder = ()=>{
                                             children: prog.description
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                            lineNumber: 208,
+                                            lineNumber: 218,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1060,7 +1160,7 @@ const ProgramBuilder = ()=>{
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                    lineNumber: 210,
+                                                    lineNumber: 220,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1071,32 +1171,32 @@ const ProgramBuilder = ()=>{
                                                             className: "w-3 h-3"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                            lineNumber: 212,
+                                                            lineNumber: 222,
                                                             columnNumber: 32
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                    lineNumber: 211,
+                                                    lineNumber: 221,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                            lineNumber: 209,
+                                            lineNumber: 219,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, prog.id, true, {
                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                    lineNumber: 191,
+                                    lineNumber: 201,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0));
                             })
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                        lineNumber: 185,
+                        lineNumber: 195,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1117,7 +1217,7 @@ const ProgramBuilder = ()=>{
                                                             children: selectedProgram.name
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                            lineNumber: 227,
+                                                            lineNumber: 237,
                                                             columnNumber: 21
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1128,13 +1228,13 @@ const ProgramBuilder = ()=>{
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                            lineNumber: 228,
+                                                            lineNumber: 238,
                                                             columnNumber: 21
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                    lineNumber: 226,
+                                                    lineNumber: 236,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1142,13 +1242,13 @@ const ProgramBuilder = ()=>{
                                                     children: selectedProgram.description
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                    lineNumber: 232,
+                                                    lineNumber: 242,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                            lineNumber: 225,
+                                            lineNumber: 235,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1162,20 +1262,20 @@ const ProgramBuilder = ()=>{
                                                     className: "w-4 h-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                    lineNumber: 242,
+                                                    lineNumber: 252,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 " Assign to Client"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                            lineNumber: 235,
+                                            lineNumber: 245,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                    lineNumber: 224,
+                                    lineNumber: 234,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1190,12 +1290,14 @@ const ProgramBuilder = ()=>{
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                            lineNumber: 248,
+                                            lineNumber: 258,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "space-y-3",
-                                            children: selectedProgram.workouts.map((pw)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: selectedProgram.workouts.map((pw)=>{
+                                                var _WEEKDAYS_find;
+                                                return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     className: "p-4 rounded-xl bg-slate-850 border border-slate-750 space-y-3",
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1205,14 +1307,11 @@ const ProgramBuilder = ()=>{
                                                                     className: "flex items-center gap-2",
                                                                     children: [
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                            className: "w-6 h-6 rounded-md bg-slate-750 text-slate-300 text-xs font-mono font-bold flex items-center justify-center",
-                                                                            children: [
-                                                                                "D",
-                                                                                pw.dayOfWeek
-                                                                            ]
-                                                                        }, void 0, true, {
+                                                                            className: "w-6 h-6 rounded-md bg-slate-750 text-slate-300 text-[10px] font-bold flex items-center justify-center",
+                                                                            children: (_WEEKDAYS_find = WEEKDAYS.find((day)=>day.value === pw.dayOfWeek)) === null || _WEEKDAYS_find === void 0 ? void 0 : _WEEKDAYS_find.label.slice(0, 3)
+                                                                        }, void 0, false, {
                                                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                                            lineNumber: 260,
+                                                                            lineNumber: 270,
                                                                             columnNumber: 27
                                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
@@ -1220,13 +1319,13 @@ const ProgramBuilder = ()=>{
                                                                             children: pw.title
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                                            lineNumber: 263,
+                                                                            lineNumber: 273,
                                                                             columnNumber: 27
                                                                         }, ("TURBOPACK compile-time value", void 0))
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                                    lineNumber: 259,
+                                                                    lineNumber: 269,
                                                                     columnNumber: 25
                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1240,13 +1339,13 @@ const ProgramBuilder = ()=>{
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                                    lineNumber: 265,
+                                                                    lineNumber: 275,
                                                                     columnNumber: 25
                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                            lineNumber: 258,
+                                                            lineNumber: 268,
                                                             columnNumber: 23
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1267,7 +1366,7 @@ const ProgramBuilder = ()=>{
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                                                    lineNumber: 275,
+                                                                                    lineNumber: 285,
                                                                                     columnNumber: 31
                                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1275,13 +1374,13 @@ const ProgramBuilder = ()=>{
                                                                                     children: we.exerciseName
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                                                    lineNumber: 276,
+                                                                                    lineNumber: 286,
                                                                                     columnNumber: 31
                                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                                            lineNumber: 274,
+                                                                            lineNumber: 284,
                                                                             columnNumber: 29
                                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1295,42 +1394,43 @@ const ProgramBuilder = ()=>{
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                                            lineNumber: 278,
+                                                                            lineNumber: 288,
                                                                             columnNumber: 29
                                                                         }, ("TURBOPACK compile-time value", void 0))
                                                                     ]
                                                                 }, we.id, true, {
                                                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                                    lineNumber: 273,
+                                                                    lineNumber: 283,
                                                                     columnNumber: 27
                                                                 }, ("TURBOPACK compile-time value", void 0));
                                                             })
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                            lineNumber: 271,
+                                                            lineNumber: 281,
                                                             columnNumber: 23
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     ]
                                                 }, pw.id, true, {
                                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                    lineNumber: 254,
+                                                    lineNumber: 264,
                                                     columnNumber: 21
-                                                }, ("TURBOPACK compile-time value", void 0)))
+                                                }, ("TURBOPACK compile-time value", void 0));
+                                            })
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                            lineNumber: 252,
+                                            lineNumber: 262,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                    lineNumber: 247,
+                                    lineNumber: 257,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                            lineNumber: 223,
+                            lineNumber: 233,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "text-center py-16 bg-slate-900 border border-slate-800 rounded-2xl text-slate-400",
@@ -1339,7 +1439,7 @@ const ProgramBuilder = ()=>{
                                     className: "w-10 h-10 mx-auto mb-2 text-slate-600"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                    lineNumber: 292,
+                                    lineNumber: 302,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1347,24 +1447,24 @@ const ProgramBuilder = ()=>{
                                     children: "Select a program to inspect"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                    lineNumber: 293,
+                                    lineNumber: 303,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                            lineNumber: 291,
+                            lineNumber: 301,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0))
                     }, void 0, false, {
                         fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                        lineNumber: 221,
+                        lineNumber: 231,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                lineNumber: 183,
+                lineNumber: 193,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             isAssignModalOpen && selectedProgram && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1382,7 +1482,7 @@ const ProgramBuilder = ()=>{
                                             className: "w-5 h-5 text-emerald-400"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                            lineNumber: 305,
+                                            lineNumber: 315,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         ' Assign "',
@@ -1391,7 +1491,7 @@ const ProgramBuilder = ()=>{
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                    lineNumber: 304,
+                                    lineNumber: 314,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1401,18 +1501,18 @@ const ProgramBuilder = ()=>{
                                         className: "w-5 h-5"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                        lineNumber: 308,
+                                        lineNumber: 318,
                                         columnNumber: 17
                                     }, ("TURBOPACK compile-time value", void 0))
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                    lineNumber: 307,
+                                    lineNumber: 317,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                            lineNumber: 303,
+                            lineNumber: 313,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
@@ -1426,7 +1526,7 @@ const ProgramBuilder = ()=>{
                                             children: "Select Client"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                            lineNumber: 314,
+                                            lineNumber: 324,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -1443,18 +1543,18 @@ const ProgramBuilder = ()=>{
                                                     ]
                                                 }, c.id, true, {
                                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                    lineNumber: 321,
+                                                    lineNumber: 331,
                                                     columnNumber: 21
                                                 }, ("TURBOPACK compile-time value", void 0)))
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                            lineNumber: 315,
+                                            lineNumber: 325,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                    lineNumber: 313,
+                                    lineNumber: 323,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1464,7 +1564,7 @@ const ProgramBuilder = ()=>{
                                             children: "Start Date (Calculates Workout Dates)"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                            lineNumber: 329,
+                                            lineNumber: 339,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1475,13 +1575,13 @@ const ProgramBuilder = ()=>{
                                             className: "w-full px-3 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-sm focus:outline-none focus:border-emerald-500"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                            lineNumber: 332,
+                                            lineNumber: 342,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                    lineNumber: 328,
+                                    lineNumber: 338,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1494,7 +1594,7 @@ const ProgramBuilder = ()=>{
                                             children: "Cancel"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                            lineNumber: 342,
+                                            lineNumber: 352,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1503,30 +1603,30 @@ const ProgramBuilder = ()=>{
                                             children: "Schedule Workouts"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                            lineNumber: 349,
+                                            lineNumber: 359,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                    lineNumber: 341,
+                                    lineNumber: 351,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                            lineNumber: 312,
+                            lineNumber: 322,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                    lineNumber: 302,
+                    lineNumber: 312,
                     columnNumber: 11
                 }, ("TURBOPACK compile-time value", void 0))
             }, void 0, false, {
                 fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                lineNumber: 301,
+                lineNumber: 311,
                 columnNumber: 9
             }, ("TURBOPACK compile-time value", void 0)),
             isCreateModalOpen && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1544,14 +1644,14 @@ const ProgramBuilder = ()=>{
                                             className: "w-5 h-5 text-emerald-400"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                            lineNumber: 367,
+                                            lineNumber: 377,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         " Build New Workout Program"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                    lineNumber: 366,
+                                    lineNumber: 376,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1561,18 +1661,18 @@ const ProgramBuilder = ()=>{
                                         className: "w-5 h-5"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                        lineNumber: 370,
+                                        lineNumber: 380,
                                         columnNumber: 17
                                     }, ("TURBOPACK compile-time value", void 0))
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                    lineNumber: 369,
+                                    lineNumber: 379,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                            lineNumber: 365,
+                            lineNumber: 375,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
@@ -1590,7 +1690,7 @@ const ProgramBuilder = ()=>{
                                                     children: "Program Title"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                    lineNumber: 377,
+                                                    lineNumber: 387,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1602,13 +1702,13 @@ const ProgramBuilder = ()=>{
                                                     className: "w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-sm focus:outline-none focus:border-emerald-500"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                    lineNumber: 378,
+                                                    lineNumber: 388,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                            lineNumber: 376,
+                                            lineNumber: 386,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1618,7 +1718,7 @@ const ProgramBuilder = ()=>{
                                                     children: "Duration (Weeks)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                    lineNumber: 389,
+                                                    lineNumber: 399,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1630,19 +1730,19 @@ const ProgramBuilder = ()=>{
                                                     className: "w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-sm focus:outline-none focus:border-emerald-500"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                    lineNumber: 390,
+                                                    lineNumber: 400,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                            lineNumber: 388,
+                                            lineNumber: 398,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                    lineNumber: 375,
+                                    lineNumber: 385,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1652,7 +1752,7 @@ const ProgramBuilder = ()=>{
                                             children: "Description / Focus"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                            lineNumber: 402,
+                                            lineNumber: 412,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
@@ -1663,13 +1763,13 @@ const ProgramBuilder = ()=>{
                                             className: "w-full px-3.5 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-emerald-500 resize-none"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                            lineNumber: 403,
+                                            lineNumber: 413,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                    lineNumber: 401,
+                                    lineNumber: 411,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1687,7 +1787,7 @@ const ProgramBuilder = ()=>{
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                    lineNumber: 415,
+                                                    lineNumber: 425,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1699,20 +1799,20 @@ const ProgramBuilder = ()=>{
                                                             className: "w-3.5 h-3.5"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                            lineNumber: 423,
+                                                            lineNumber: 433,
                                                             columnNumber: 21
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         " Add Another Workout"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                    lineNumber: 418,
+                                                    lineNumber: 428,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                            lineNumber: 414,
+                                            lineNumber: 424,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1739,7 +1839,7 @@ const ProgramBuilder = ()=>{
                                                                     className: "px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-white font-bold text-xs focus:outline-none focus:border-emerald-500"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                                    lineNumber: 431,
+                                                                    lineNumber: 441,
                                                                     columnNumber: 25
                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1757,13 +1857,52 @@ const ProgramBuilder = ()=>{
                                                                     className: "px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-emerald-500"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                                    lineNumber: 446,
+                                                                    lineNumber: 456,
                                                                     columnNumber: 25
                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                            lineNumber: 430,
+                                                            lineNumber: 440,
+                                                            columnNumber: 23
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                                    className: "block text-[11px] font-semibold uppercase text-slate-400 mb-1",
+                                                                    children: "Training Day"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
+                                                                    lineNumber: 472,
+                                                                    columnNumber: 25
+                                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                                                                    value: workout.dayOfWeek,
+                                                                    onChange: (event)=>{
+                                                                        const dayOfWeek = Number(event.target.value);
+                                                                        setNewWorkouts((prev)=>prev.map((item, index)=>index === wIdx ? {
+                                                                                    ...item,
+                                                                                    dayOfWeek
+                                                                                } : item));
+                                                                    },
+                                                                    className: "w-full sm:w-1/2 px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-emerald-500",
+                                                                    children: WEEKDAYS.map((day)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                                            value: day.value,
+                                                                            children: day.label
+                                                                        }, day.value, false, {
+                                                                            fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
+                                                                            lineNumber: 484,
+                                                                            columnNumber: 29
+                                                                        }, ("TURBOPACK compile-time value", void 0)))
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
+                                                                    lineNumber: 473,
+                                                                    columnNumber: 25
+                                                                }, ("TURBOPACK compile-time value", void 0))
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
+                                                            lineNumber: 471,
                                                             columnNumber: 23
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1796,12 +1935,12 @@ const ProgramBuilder = ()=>{
                                                                                         ]
                                                                                     }, ex.id, true, {
                                                                                         fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                                                        lineNumber: 482,
+                                                                                        lineNumber: 509,
                                                                                         columnNumber: 33
                                                                                     }, ("TURBOPACK compile-time value", void 0)))
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                                                lineNumber: 466,
+                                                                                lineNumber: 493,
                                                                                 columnNumber: 29
                                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1814,18 +1953,18 @@ const ProgramBuilder = ()=>{
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                                                    lineNumber: 487,
+                                                                                    lineNumber: 514,
                                                                                     columnNumber: 31
                                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                                                lineNumber: 486,
+                                                                                lineNumber: 513,
                                                                                 columnNumber: 29
                                                                             }, ("TURBOPACK compile-time value", void 0))
                                                                         ]
                                                                     }, we.id, true, {
                                                                         fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                                        lineNumber: 465,
+                                                                        lineNumber: 492,
                                                                         columnNumber: 27
                                                                     }, ("TURBOPACK compile-time value", void 0))),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1837,7 +1976,7 @@ const ProgramBuilder = ()=>{
                                                                             className: "w-3 h-3"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                                            lineNumber: 497,
+                                                                            lineNumber: 524,
                                                                             columnNumber: 27
                                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                                         " Add Exercise to ",
@@ -1845,30 +1984,30 @@ const ProgramBuilder = ()=>{
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                                    lineNumber: 492,
+                                                                    lineNumber: 519,
                                                                     columnNumber: 25
                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                            lineNumber: 463,
+                                                            lineNumber: 490,
                                                             columnNumber: 23
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     ]
                                                 }, workout.id, true, {
                                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                                    lineNumber: 429,
+                                                    lineNumber: 439,
                                                     columnNumber: 21
                                                 }, ("TURBOPACK compile-time value", void 0)))
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                            lineNumber: 427,
+                                            lineNumber: 437,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                    lineNumber: 413,
+                                    lineNumber: 423,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1881,7 +2020,7 @@ const ProgramBuilder = ()=>{
                                             children: "Cancel"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                            lineNumber: 506,
+                                            lineNumber: 533,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1890,36 +2029,36 @@ const ProgramBuilder = ()=>{
                                             children: "Save & Publish Program"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                            lineNumber: 513,
+                                            lineNumber: 540,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                                    lineNumber: 505,
+                                    lineNumber: 532,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                            lineNumber: 374,
+                            lineNumber: 384,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                    lineNumber: 364,
+                    lineNumber: 374,
                     columnNumber: 11
                 }, ("TURBOPACK compile-time value", void 0))
             }, void 0, false, {
                 fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-                lineNumber: 363,
+                lineNumber: 373,
                 columnNumber: 9
             }, ("TURBOPACK compile-time value", void 0))
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/workouts/ProgramBuilder.tsx",
-        lineNumber: 145,
+        lineNumber: 155,
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0));
 };
