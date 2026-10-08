@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import {
   Profile,
-  UserRole,
   AccountStatus,
   Exercise,
   Program,
@@ -18,6 +17,13 @@ import {
   LoggedExercise
 } from '../types';
 import { SupabaseService } from '../services/supabaseService';
+import { supabase } from '../lib/supabase';
+
+interface SupabaseAuthResult {
+  success: boolean;
+  error?: string;
+  requiresEmailConfirmation?: boolean;
+}
 
 export type AppView = 
   | 'dashboard' 
@@ -67,20 +73,21 @@ interface AppContextType {
   // Supabase sync state & actions
   isLoadingSupabase: boolean;
   isSupabaseConnected: boolean;
-  loadFromSupabase: () => Promise<boolean>;
-  clearAllLocalData: () => void;
+  supabaseAuthUserId: string | null;
+  loadFromSupabase: (userId?: string) => Promise<boolean>;
+  signInWithSupabase: (email: string, password: string) => Promise<SupabaseAuthResult>;
+  signUpWithSupabase: (name: string, email: string, password: string, goals?: string) => Promise<SupabaseAuthResult>;
+  signOutFromSupabase: () => Promise<SupabaseAuthResult>;
 
   // Actions
-  switchUser: (userId: string) => void;
   updateProfile: (updated: Partial<Profile>) => void;
-  registerUser: (name: string, email: string, role: UserRole, goals?: string) => Profile;
   approveUser: (userId: string, assignedCoachId: string) => void;
   suspendUser: (userId: string) => void;
   activateUser: (userId: string) => void;
   assignCoach: (clientId: string, coachId: string) => void;
   
   // Exercise & Program Actions
-  addExercise: (exercise: Omit<Exercise, 'id' | 'createdAt'>) => Exercise;
+  addExercise: (exercise: Omit<Exercise, 'id' | 'createdAt'>) => Promise<{ success: boolean; error?: string; warning?: string }>;
   updateExercise: (id: string, updates: Partial<Exercise>) => void;
   deleteExercise: (id: string) => void;
   createProgram: (program: Omit<Program, 'id' | 'createdAt'>) => Program;
@@ -120,74 +127,24 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-const STORAGE_PREFIX = 'fitness_db_live_v4_';
-
-// Auto-purge any legacy mock storage keys from older sessions
-try {
-  if (typeof window !== 'undefined' && window.localStorage) {
-    const legacyPrefixes = ['fitness_platform_', 'apex_coaching_', 'coaching_platform_', 'fitness_v2_'];
-    Object.keys(localStorage).forEach(key => {
-      if (legacyPrefixes.some(p => key.startsWith(p))) {
-        localStorage.removeItem(key);
-      }
-    });
-  }
-} catch (e) {
-  console.warn('Storage purge error:', e);
-}
-
-function loadFromStorage<T>(key: string, fallback: T): T {
-  try {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const saved = localStorage.getItem(STORAGE_PREFIX + key);
-      if (saved) return JSON.parse(saved);
-    }
-  } catch (e) {
-    console.error('Failed to parse storage item for ' + key, e);
-  }
-  return fallback;
-}
-
-function saveToStorage<T>(key: string, data: T) {
-  try {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(data));
-    }
-  } catch (e) {
-    console.error('Failed to save storage item for ' + key, e);
-  }
-}
-
-// Clean bootstrap profiles: Coach and Admin (0 clients initially)
-const DEFAULT_COACH_PROFILE: Profile = {
-  id: 'coach-primary',
-  email: 'coach@apexcoaching.com',
-  fullName: 'Coach',
-  role: 'coach',
-  status: 'active',
-  avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256',
+const GUEST_PROFILE: Profile = {
+  id: '',
+  email: '',
+  fullName: 'Guest',
+  role: 'client',
+  status: 'pending',
+  avatarUrl: '',
   timezone: 'UTC',
-  createdAt: new Date().toISOString(),
-  bio: 'Head Performance Coach'
+  createdAt: ''
 };
 
-const DEFAULT_ADMIN_PROFILE: Profile = {
-  id: 'user-admin-1',
-  email: 'admin@fitnessplatform.com',
-  fullName: 'System Administrator',
-  role: 'admin',
-  status: 'active',
-  avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256',
-  timezone: 'UTC',
-  createdAt: new Date().toISOString(),
-  bio: 'Platform Root Administrator'
-};
-
-const INITIAL_BASE_PROFILES: Profile[] = [DEFAULT_COACH_PROFILE, DEFAULT_ADMIN_PROFILE];
-
-export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [allProfiles, setAllProfiles] = useState<Profile[]>(INITIAL_BASE_PROFILES);
-  const [currentUserId, setCurrentUserId] = useState<string>('coach-primary');
+export const AppProvider: React.FC<{
+  children: React.ReactNode;
+  initialUserId?: string | null;
+  initialProfile?: Profile | null;
+}> = ({ children, initialUserId = null, initialProfile = null }) => {
+  const [allProfiles, setAllProfiles] = useState<Profile[]>(initialProfile ? [initialProfile] : []);
+  const [currentUserId, setCurrentUserId] = useState<string>(initialUserId || '');
   
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [programs, setPrograms] = useState<Program[]>([]);
@@ -201,11 +158,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
-  const [isStorageHydrated, setIsStorageHydrated] = useState(false);
 
   // Supabase Loading & Connectivity State
   const [isLoadingSupabase, setIsLoadingSupabase] = useState<boolean>(false);
   const [isSupabaseConnected, setIsSupabaseConnected] = useState<boolean>(false);
+  const [supabaseAuthUserId, setSupabaseAuthUserId] = useState<string | null>(null);
 
   // Navigation & Modals
   const [activeView, setActiveView] = useState<AppView>('dashboard');
@@ -215,30 +172,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isCheckInModalOpen, setIsCheckInModalOpen] = useState<boolean>(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState<boolean>(false);
 
-  useEffect(() => {
-    setAllProfiles(loadFromStorage('profiles', INITIAL_BASE_PROFILES));
-    setCurrentUserId(loadFromStorage('current_user_id', 'coach-primary'));
-    setExercises(loadFromStorage('exercises', []));
-    setPrograms(loadFromStorage('programs', []));
-    setScheduledWorkouts(loadFromStorage('workouts', []));
-    setCheckIns(loadFromStorage('checkins', []));
-    setStepRecords(loadFromStorage('steps', []));
-    setFoods(loadFromStorage('foods', []));
-    setNutritionTargets(loadFromStorage('targets', []));
-    setMealPlans(loadFromStorage('mealplans', []));
-    setFoodLogs(loadFromStorage('foodlogs', []));
-    setConversations(loadFromStorage('conversations', []));
-    setMessages(loadFromStorage('messages', []));
-    setNotifications(loadFromStorage('notifications', []));
-    setIsStorageHydrated(true);
-  }, []);
-
-  // Auto-fetch data from Supabase after local state has been restored
-  const loadFromSupabase = async (): Promise<boolean> => {
+  // Load application records only after Supabase Auth identifies the current user.
+  const loadFromSupabase = async (authenticatedUserId = supabaseAuthUserId): Promise<boolean> => {
+    if (!authenticatedUserId) return false;
     setIsLoadingSupabase(true);
     try {
       const result = await SupabaseService.loadAllDataFromSupabase();
-      if (result && result.profiles && result.profiles.length > 0) {
+      const authenticatedProfile = result?.profiles.find(profile => profile.id === authenticatedUserId);
+      if (result && authenticatedProfile) {
         setAllProfiles(result.profiles);
         if (result.exercises) setExercises(result.exercises);
         if (result.programs) setPrograms(result.programs);
@@ -252,16 +193,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         if (result.messages) setMessages(result.messages);
         if (result.notifications) setNotifications(result.notifications);
 
-        // Select the first profile if current is invalid
-        if (!result.profiles.some(p => p.id === currentUserId)) {
-          setCurrentUserId(result.profiles[0].id);
-        }
+        setCurrentUserId(authenticatedUserId);
         setIsSupabaseConnected(true);
         setIsLoadingSupabase(false);
         return true;
       } else {
-        // Table exists or empty
-        setIsSupabaseConnected(true);
+        setAllProfiles([]);
+        setCurrentUserId('');
+        setExercises([]);
+        setPrograms([]);
+        setScheduledWorkouts([]);
+        setCheckIns([]);
+        setStepRecords([]);
+        setFoods([]);
+        setNutritionTargets([]);
+        setMealPlans([]);
+        setFoodLogs([]);
+        setConversations([]);
+        setMessages([]);
+        setNotifications([]);
+        setIsSupabaseConnected(Boolean(result));
         setIsLoadingSupabase(false);
         return false;
       }
@@ -274,18 +225,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   useEffect(() => {
-    if (isStorageHydrated) loadFromSupabase();
-  }, [isStorageHydrated]);
-
-  // Clear all local storage data
-  const clearAllLocalData = () => {
-    Object.keys(localStorage).forEach(key => {
-      if (key.startsWith(STORAGE_PREFIX) || key.startsWith('fitness_') || key.startsWith('apex_')) {
-        localStorage.removeItem(key);
-      }
-    });
-    setAllProfiles(INITIAL_BASE_PROFILES);
-    setCurrentUserId(DEFAULT_COACH_PROFILE.id);
+    if (supabaseAuthUserId) {
+      void loadFromSupabase();
+      return;
+    }
+    setAllProfiles([]);
     setExercises([]);
     setPrograms([]);
     setScheduledWorkouts([]);
@@ -298,78 +242,105 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setConversations([]);
     setMessages([]);
     setNotifications([]);
+    setIsSupabaseConnected(false);
+  }, [supabaseAuthUserId]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const applyAuthUser = (userId: string | null) => {
+      if (!isMounted) return;
+      setSupabaseAuthUserId(userId);
+      setCurrentUserId(userId || '');
+    };
+
+    void supabase.auth.getSession().then(({ data, error }) => {
+      if (error) {
+        console.error('Failed to restore Supabase session:', error);
+        return;
+      }
+      applyAuthUser(data.session?.user.id || null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      applyAuthUser(session?.user.id || null);
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const signInWithSupabase = async (email: string, password: string): Promise<SupabaseAuthResult> => {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return { success: false, error: error.message };
+    if (!data.user) return { success: false, error: 'Supabase did not return a user for this session.' };
+
+    setSupabaseAuthUserId(data.user.id);
+    setCurrentUserId(data.user.id);
+    const loaded = await loadFromSupabase(data.user.id);
+    if (!loaded) {
+      await supabase.auth.signOut();
+      setSupabaseAuthUserId(null);
+      return {
+        success: false,
+        error: 'Signed in, but no profile was found. Confirm the fitness schema setup and profile row for this account.'
+      };
+    }
+    return { success: true };
+  };
+
+  const signUpWithSupabase = async (
+    name: string,
+    email: string,
+    password: string,
+    goals?: string
+  ): Promise<SupabaseAuthResult> => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: name,
+          fitness_goals: goals || ''
+        }
+      }
+    });
+    if (error) return { success: false, error: error.message };
+    if (!data.user) return { success: false, error: 'Supabase did not create a user.' };
+
+    if (!data.session) {
+      return { success: true, requiresEmailConfirmation: true };
+    }
+
+    setSupabaseAuthUserId(data.user.id);
+    setCurrentUserId(data.user.id);
+    const loaded = await loadFromSupabase(data.user.id);
+    if (!loaded) {
+      await supabase.auth.signOut();
+      setSupabaseAuthUserId(null);
+      return {
+        success: false,
+        error: 'The account was created, but its fitness profile could not be loaded. Contact an administrator.'
+      };
+    }
+    return { success: true };
+  };
+
+  const signOutFromSupabase = async (): Promise<SupabaseAuthResult> => {
+    const { error } = await supabase.auth.signOut();
+    if (error) return { success: false, error: error.message };
+    setSupabaseAuthUserId(null);
+    return { success: true };
   };
 
   // Sync to storage
-  useEffect(() => { if (isStorageHydrated) saveToStorage('profiles', allProfiles); }, [allProfiles, isStorageHydrated]);
-  useEffect(() => { if (isStorageHydrated) saveToStorage('current_user_id', currentUserId); }, [currentUserId, isStorageHydrated]);
-  useEffect(() => { if (isStorageHydrated) saveToStorage('exercises', exercises); }, [exercises, isStorageHydrated]);
-  useEffect(() => { if (isStorageHydrated) saveToStorage('programs', programs); }, [programs, isStorageHydrated]);
-  useEffect(() => { if (isStorageHydrated) saveToStorage('workouts', scheduledWorkouts); }, [scheduledWorkouts, isStorageHydrated]);
-  useEffect(() => { if (isStorageHydrated) saveToStorage('checkins', checkIns); }, [checkIns, isStorageHydrated]);
-  useEffect(() => { if (isStorageHydrated) saveToStorage('steps', stepRecords); }, [stepRecords, isStorageHydrated]);
-  useEffect(() => { if (isStorageHydrated) saveToStorage('foods', foods); }, [foods, isStorageHydrated]);
-  useEffect(() => { if (isStorageHydrated) saveToStorage('targets', nutritionTargets); }, [nutritionTargets, isStorageHydrated]);
-  useEffect(() => { if (isStorageHydrated) saveToStorage('mealplans', mealPlans); }, [mealPlans, isStorageHydrated]);
-  useEffect(() => { if (isStorageHydrated) saveToStorage('foodlogs', foodLogs); }, [foodLogs, isStorageHydrated]);
-  useEffect(() => { if (isStorageHydrated) saveToStorage('conversations', conversations); }, [conversations, isStorageHydrated]);
-  useEffect(() => { if (isStorageHydrated) saveToStorage('messages', messages); }, [messages, isStorageHydrated]);
-  useEffect(() => { if (isStorageHydrated) saveToStorage('notifications', notifications); }, [notifications, isStorageHydrated]);
 
-  const currentUser = allProfiles.find(p => p.id === currentUserId) || allProfiles[0] || DEFAULT_COACH_PROFILE;
-
-  const switchUser = (userId: string) => {
-    const target = allProfiles.find(p => p.id === userId);
-    if (target) {
-      setCurrentUserId(userId);
-      setActiveView('dashboard');
-      setSelectedClientId(null);
-    }
-  };
+  const currentUser = allProfiles.find(p => p.id === currentUserId) || GUEST_PROFILE;
 
   const updateProfile = (updated: Partial<Profile>) => {
     setAllProfiles(prev => prev.map(p => (p.id === currentUser.id ? { ...p, ...updated } : p)));
     SupabaseService.saveProfile({ ...currentUser, ...updated });
-  };
-
-  const registerUser = (name: string, email: string, role: UserRole, goals?: string): Profile => {
-    const newId = `user-${role}-${Date.now()}`;
-    const newProfile: Profile = {
-      id: newId,
-      email,
-      fullName: name,
-      role,
-      status: role === 'client' ? 'pending' : 'active',
-      avatarUrl: `https://images.unsplash.com/photo-${role === 'coach' ? '1534528741775-53994a69daeb' : '1535713875002-d1d0cf377fde'}?auto=format&fit=crop&q=80&w=256`,
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
-      createdAt: new Date().toISOString(),
-      goals: goals || 'Improve overall strength and fitness'
-    };
-    
-    setAllProfiles(prev => [...prev, newProfile]);
-    SupabaseService.saveProfile(newProfile);
-
-    // If client, notify admin
-    if (role === 'client') {
-      const adminUsers = allProfiles.filter(p => p.role === 'admin');
-      adminUsers.forEach(admin => {
-        setNotifications(prev => [
-          {
-            id: `notif-${Date.now()}-${admin.id}`,
-            recipientId: admin.id,
-            title: 'New Client Registration',
-            message: `${name} has registered and requires account approval and coach assignment.`,
-            type: 'account_pending',
-            linkTarget: { view: 'admin' },
-            isRead: false,
-            createdAt: new Date().toISOString()
-          },
-          ...prev
-        ]);
-      });
-    }
-
-    return newProfile;
   };
 
   const approveUser = (userId: string, assignedCoachId: string) => {
@@ -455,15 +426,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (target) SupabaseService.saveProfile({ ...target, assignedCoachId: coachId });
   };
 
-  const addExercise = (exercise: Omit<Exercise, 'id' | 'createdAt'>): Exercise => {
+  const addExercise = async (exercise: Omit<Exercise, 'id' | 'createdAt'>): Promise<{ success: boolean; error?: string; warning?: string }> => {
+    if (!supabaseAuthUserId) {
+      return { success: false, error: 'Sign in before saving an exercise.' };
+    }
     const newEx: Exercise = {
       ...exercise,
-      id: `ex-${Date.now()}`,
+      createdBy: supabaseAuthUserId,
+      id: crypto.randomUUID(),
       createdAt: new Date().toISOString()
     };
-    setExercises(prev => [newEx, ...prev]);
-    SupabaseService.saveExercise(newEx);
-    return newEx;
+    const result = await SupabaseService.saveExercise(newEx);
+    if (result.success) setExercises(prev => [newEx, ...prev]);
+    return result;
   };
 
   const updateExercise = (id: string, updates: Partial<Exercise>) => {
@@ -805,12 +780,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
         isLoadingSupabase,
         isSupabaseConnected,
+        supabaseAuthUserId,
         loadFromSupabase,
-        clearAllLocalData,
+        signInWithSupabase,
+        signUpWithSupabase,
+        signOutFromSupabase,
 
-        switchUser,
         updateProfile,
-        registerUser,
         approveUser,
         suspendUser,
         activateUser,

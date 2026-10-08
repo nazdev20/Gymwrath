@@ -24,7 +24,6 @@ import {
   ChevronDown,
   ChevronUp,
   ExternalLink,
-  Trash2,
   Download,
   GitBranch,
   UserCheck,
@@ -39,7 +38,7 @@ import {
 } from 'lucide-react';
 
 export const DatabaseSchemaView: React.FC = () => {
-  const { loadFromSupabase, clearAllLocalData, isLoadingSupabase } = useApp();
+  const { loadFromSupabase, isLoadingSupabase } = useApp();
 
   const [selectedModule, setSelectedModule] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -170,20 +169,11 @@ export const DatabaseSchemaView: React.FC = () => {
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => setIsConfigModalOpen(true)}
-            title="Configure Supabase Project URL & Anon Key"
+            title="View Supabase environment and setup requirements"
             className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-750 hover:border-emerald-500/40 text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-1.5 shadow-xs"
           >
             <Settings className="w-3.5 h-3.5" />
-            Configure Keys
-          </button>
-
-          <button
-            onClick={clearAllLocalData}
-            title="Wipe any cached local storage"
-            className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-rose-950/40 hover:text-rose-400 border border-slate-700 hover:border-rose-500/30 text-xs font-semibold text-slate-300 transition-colors flex items-center gap-1.5"
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-            Clear Local Cache
+            Supabase Setup
           </button>
 
           <button
@@ -527,7 +517,7 @@ export const DatabaseSchemaView: React.FC = () => {
             <div>
               <p className="text-xs font-bold text-white">Full PostgreSQL DDL Migration Script</p>
               <p className="text-[11px] text-slate-400">
-                You can copy and run this in the Supabase SQL Editor to create all 20+ tables, constraints, and indexes.
+                Run this in the Supabase SQL Editor to create the fitness schema, tables, constraints, and indexes. Then expose the fitness schema in Supabase API settings and configure access policies.
               </p>
             </div>
             <button

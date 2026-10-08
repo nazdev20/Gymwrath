@@ -46,6 +46,8 @@ export const ExerciseLibrary: React.FC = () => {
 
   // Modal
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isSavingExercise, setIsSavingExercise] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [newExName, setNewExName] = useState('');
   const [newExDesc, setNewExDesc] = useState('');
   const [newExMuscle, setNewExMuscle] = useState<MuscleGroup>('Chest');
@@ -60,24 +62,39 @@ export const ExerciseLibrary: React.FC = () => {
     return matchesSearch && matchesMuscle && matchesEquip;
   });
 
-  const handleCreateExercise = (e: React.FormEvent) => {
+  const handleCreateExercise = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newExName.trim()) return;
+    if (!newExName.trim() || isSavingExercise) return;
 
-    addExercise({
-      name: newExName.trim(),
-      description: newExDesc.trim() || 'Custom coach exercise',
-      instructions: newExInstructions.split('\n').filter(i => i.trim().length > 0),
-      muscleGroup: newExMuscle,
-      equipment: newExEquipment,
-      isGlobal: currentUser.role === 'admin',
-      createdBy: currentUser.id
-    });
+    setIsSavingExercise(true);
+    setSaveError(null);
+    try {
+      const saveResult = await addExercise({
+        name: newExName.trim(),
+        description: newExDesc.trim() || 'Custom coach exercise',
+        instructions: newExInstructions.split('\n').filter(i => i.trim().length > 0),
+        muscleGroup: newExMuscle,
+        equipment: newExEquipment,
+        isGlobal: currentUser.role === 'admin',
+        createdBy: currentUser.id
+      });
 
-    setIsAddModalOpen(false);
-    setNewExName('');
-    setNewExDesc('');
-    setNewExInstructions('');
+      if (!saveResult.success) {
+        setSaveError(`Exercise was not saved: ${saveResult.error || 'unknown error'}`);
+        return;
+      } else if (saveResult.warning) {
+        setSaveError(saveResult.warning);
+      }
+      setIsAddModalOpen(false);
+      setNewExName('');
+      setNewExDesc('');
+      setNewExInstructions('');
+    } catch (error) {
+      console.error('Failed to create exercise:', error);
+      setSaveError(`Exercise could not be saved to Supabase: ${error instanceof Error ? error.message : 'unknown error'}`);
+    } finally {
+      setIsSavingExercise(false);
+    }
   };
 
   return (
@@ -105,6 +122,12 @@ export const ExerciseLibrary: React.FC = () => {
           </button>
         )}
       </div>
+
+      {saveError && (
+        <p role="alert" className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-xs text-amber-300">
+          {saveError}
+        </p>
+      )}
 
       {/* Filters Bar */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-4 shadow-lg">
@@ -307,9 +330,10 @@ export const ExerciseLibrary: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs"
+                  disabled={isSavingExercise}
+                  className="flex-1 py-2 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-bold text-xs"
                 >
-                  Save Exercise
+                  {isSavingExercise ? 'Saving...' : 'Save Exercise'}
                 </button>
               </div>
             </form>

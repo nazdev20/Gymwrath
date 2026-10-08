@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Profile, UserRole } from '../../types';
 import {
   ShieldCheck,
   Users,
@@ -26,12 +25,21 @@ export const AdminDashboard: React.FC = () => {
     suspendUser,
     activateUser,
     assignCoach,
-    setActiveView
+    setActiveView,
+    loadFromSupabase
   } = useApp();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | 'client' | 'coach' | 'admin'>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'active' | 'suspended'>('all');
+  const [newUserName, setNewUserName] = useState('');
+  const [newUserEmail, setNewUserEmail] = useState('');
+  const [newUserPassword, setNewUserPassword] = useState('');
+  const [newUserRole, setNewUserRole] = useState<'client' | 'coach'>('client');
+  const [newUserGoals, setNewUserGoals] = useState('');
+  const [isCreatingUser, setIsCreatingUser] = useState(false);
+  const [userCreationError, setUserCreationError] = useState<string | null>(null);
+  const [userCreationMessage, setUserCreationMessage] = useState<string | null>(null);
 
   // Approval modal state
   const [approvingUserId, setApprovingUserId] = useState<string | null>(null);
@@ -60,6 +68,46 @@ export const AdminDashboard: React.FC = () => {
     if (approvingUserId && selectedCoachId) {
       approveUser(approvingUserId, selectedCoachId);
       setApprovingUserId(null);
+    }
+  };
+
+  const handleCreateUser = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (isCreatingUser) return;
+    setIsCreatingUser(true);
+    setUserCreationError(null);
+    setUserCreationMessage(null);
+    try {
+      const response = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: newUserName,
+          email: newUserEmail,
+          password: newUserPassword,
+          role: newUserRole,
+          goals: newUserGoals
+        })
+      });
+      const result = await response.json() as { error?: string; message?: string };
+      if (!response.ok) {
+        setUserCreationError(result.error || 'The server could not create this account.');
+        return;
+      }
+      const refreshed = await loadFromSupabase();
+      if (!refreshed) {
+        setUserCreationError('The account was created, but the user list could not be refreshed. Reload the page to verify it.');
+        return;
+      }
+      setUserCreationMessage(result.message || 'Account created.');
+      setNewUserName('');
+      setNewUserEmail('');
+      setNewUserPassword('');
+      setNewUserGoals('');
+    } catch (error) {
+      setUserCreationError(error instanceof Error ? error.message : 'The server could not create this account.');
+    } finally {
+      setIsCreatingUser(false);
     }
   };
 
@@ -138,6 +186,30 @@ export const AdminDashboard: React.FC = () => {
         </div>
       </div>
 
+      <form onSubmit={handleCreateUser} className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div>
+          <h2 className="text-base font-bold text-white">Create an application user</h2>
+          <p className="text-xs text-slate-400">Creates a Supabase Auth account and linked profile. Administrator accounts can only be initialized through the protected setup endpoint.</p>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <input required maxLength={150} value={newUserName} onChange={event => setNewUserName(event.target.value)} placeholder="Full name" className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white" />
+          <input required type="email" value={newUserEmail} onChange={event => setNewUserEmail(event.target.value)} placeholder="Email address" className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white" />
+          <input required type="password" minLength={8} value={newUserPassword} onChange={event => setNewUserPassword(event.target.value)} placeholder="Temporary password" className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white" />
+          <select value={newUserRole} onChange={event => setNewUserRole(event.target.value as 'client' | 'coach')} className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white">
+            <option value="client">Client</option>
+            <option value="coach">Coach</option>
+          </select>
+          <button type="submit" disabled={isCreatingUser} className="flex items-center justify-center gap-2 rounded-xl bg-purple-500 px-3 py-2 text-sm font-bold text-white hover:bg-purple-400 disabled:opacity-60">
+            <UserPlus className="h-4 w-4" /> {isCreatingUser ? 'Creating…' : 'Create user'}
+          </button>
+        </div>
+        {newUserRole === 'client' && (
+          <input value={newUserGoals} onChange={event => setNewUserGoals(event.target.value)} maxLength={1000} placeholder="Client goals / notes (optional)" className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white" />
+        )}
+        {userCreationError && <p role="alert" className="text-xs text-rose-300">{userCreationError}</p>}
+        {userCreationMessage && <p role="status" className="text-xs text-emerald-300">{userCreationMessage}</p>}
+      </form>
+
       {/* User Management Table */}
       <div className="min-w-0 bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
         <div className="p-5 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -160,6 +232,16 @@ export const AdminDashboard: React.FC = () => {
             </div>
 
             {/* Filter */}
+            <select
+              value={roleFilter}
+              onChange={e => setRoleFilter(e.target.value as 'all' | 'client' | 'coach' | 'admin')}
+              className="px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-slate-300 focus:outline-none focus:border-purple-500"
+            >
+              <option value="all">All Roles</option>
+              <option value="admin">Admins</option>
+              <option value="coach">Coaches</option>
+              <option value="client">Clients</option>
+            </select>
             <select
               value={statusFilter}
               onChange={e => setStatusFilter(e.target.value as any)}

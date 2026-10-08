@@ -22,6 +22,7 @@ import { MessagesView } from './components/messages/MessagesView';
 import { DatabaseSchemaView } from './components/database/DatabaseSchemaView';
 import { NotificationDrawer } from './components/notifications/NotificationDrawer';
 import { AuthModal } from './components/auth/AuthModal';
+import { Profile } from './types';
 
 const MainLayout: React.FC = () => {
   const { currentUser, activeView, selectedClientId } = useApp();
@@ -110,9 +111,9 @@ const MainLayout: React.FC = () => {
   );
 };
 
-export default function App() {
+export default function App({ initialUserId, initialProfile }: { initialUserId: string | null; initialProfile: Profile | null }) {
   return (
-    <AppProvider>
+    <AppProvider initialUserId={initialUserId} initialProfile={initialProfile}>
       <MainLayout />
     </AppProvider>
   );

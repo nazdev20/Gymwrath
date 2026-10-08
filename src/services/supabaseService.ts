@@ -525,14 +525,23 @@ export const SupabaseService = {
   },
 
   // Insert or Upsert an exercise
-  async saveExercise(ex: Exercise): Promise<boolean> {
-    if (getSupabaseConfig().isOfflineMode || getSupabaseReachableState() === false) return false;
+  async saveExercise(ex: Exercise): Promise<{ success: boolean; error?: string; warning?: string }> {
+    if (getSupabaseConfig().isOfflineMode) {
+      return { success: false, error: 'Supabase is in offline mode.' };
+    }
+    if (getSupabaseReachableState() === false) {
+      return { success: false, error: 'The Supabase endpoint is unreachable.' };
+    }
     try {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError) return { success: false, error: `Unable to verify the signed-in user: ${authError.message}` };
+      if (!user) return { success: false, error: 'Sign in before saving an exercise.' };
+      const coachId = user.id;
       const { error } = await supabase.from('exercises').upsert({
         id: ex.id,
-        coach_id: ex.createdBy,
+        coach_id: coachId,
         name: ex.name,
-        description: ex.instructions.join('\n'),
+        description: ex.description,
         category: ex.muscleGroup,
         muscle_groups: [ex.muscleGroup, ...(ex.secondaryMuscles || [])],
         equipment: ex.equipment,
@@ -542,9 +551,19 @@ export const SupabaseService = {
         created_at: ex.createdAt,
         updated_at: new Date().toISOString()
       }, { onConflict: 'id' });
-      return !error;
-    } catch {
-      return false;
+      if (error) {
+        console.error('Failed to save exercise to Supabase:', error);
+        return { success: false, error: error.message };
+      }
+      return {
+        success: true
+      };
+    } catch (error) {
+      console.error('Failed to save exercise to Supabase:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown Supabase error.'
+      };
     }
   }
 };

@@ -3,10 +3,6 @@ import { useApp } from '../../context/AppContext';
 import {
   Bell,
   Dumbbell,
-  Shield,
-  User,
-  ChevronDown,
-  UserPlus,
   Menu,
   X,
   Database
@@ -25,8 +21,8 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const {
     currentUser,
-    allProfiles,
-    switchUser,
+    supabaseAuthUserId,
+    signOutFromSupabase,
     unreadNotificationCount,
     setIsNotificationsOpen,
     isNotificationsOpen,
@@ -35,32 +31,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     isSupabaseConnected
   } = useApp();
 
-  const [isPersonaOpen, setIsPersonaOpen] = useState(false);
-
-  const getRoleBadge = (role: string) => {
-    switch (role) {
-      case 'admin':
-        return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/30">
-            <Shield className="w-3 h-3" /> Admin
-          </span>
-        );
-      case 'coach':
-        return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-            <Dumbbell className="w-3 h-3" /> Coach
-          </span>
-        );
-      case 'client':
-        return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/30">
-            <User className="w-3 h-3" /> Client
-          </span>
-        );
-      default:
-        return null;
-    }
-  };
+  const [signOutError, setSignOutError] = useState<string | null>(null);
 
   return (
     <header className="sticky top-0 z-30 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 text-white">
@@ -107,102 +78,33 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           </div>
 
-          {/* Right Controls: Persona Switcher, Notifications, Profile Avatar */}
+          {/* Right Controls: Auth, Notifications, Profile Avatar */}
           <div className="flex min-w-0 items-center gap-0.5 min-[360px]:gap-1.5 sm:gap-3">
-            {/* Quick Switch Persona Selector */}
-            <div className="relative">
+            {supabaseAuthUserId ? (
+              <>
+                <span className="hidden text-xs text-slate-300 sm:inline">{currentUser.fullName}</span>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setSignOutError(null);
+                    const result = await signOutFromSupabase();
+                    if (!result.success) setSignOutError(result.error || 'Unable to sign out.');
+                  }}
+                  className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700"
+                >
+                  Sign out
+                </button>
+              </>
+            ) : (
               <button
-                id="persona-switcher-button"
-                onClick={() => setIsPersonaOpen(!isPersonaOpen)}
-                className="flex min-w-0 items-center gap-1 sm:gap-2 px-1.5 min-[360px]:px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-xs sm:text-sm text-slate-200 transition-colors min-h-[38px]"
-                title="Switch Persona / Role for Testing"
+                type="button"
+                onClick={onOpenAuth}
+                className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/20"
               >
-                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></div>
-                <span className="hidden md:inline text-xs text-slate-400">Persona:</span>
-                <span className="min-w-0 font-semibold text-xs sm:text-sm truncate max-w-[48px] min-[360px]:max-w-[85px] sm:max-w-[130px]">
-                  {currentUser.fullName.split(' ')[0]}
-                </span>
-                <div className="hidden min-[480px]:block shrink-0">{getRoleBadge(currentUser.role)}</div>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                Sign in / register
               </button>
-
-              {/* Persona Popover Dropdown */}
-              {isPersonaOpen && (
-                <>
-                  {/* Backdrop on mobile for easy dismissal */}
-                  <div
-                    className="fixed inset-0 z-40 bg-slate-950/50 backdrop-blur-2xs sm:hidden"
-                    onClick={() => setIsPersonaOpen(false)}
-                  />
-
-                  <div className="fixed inset-x-3 top-16 sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2 w-auto sm:w-80 bg-slate-900 rounded-2xl shadow-2xl border border-slate-700 py-2 z-50 animate-in fade-in zoom-in-95 duration-150 max-h-[80vh] flex flex-col">
-                    <div className="px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
-                      <div>
-                        <p className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                          Switch User Persona
-                        </p>
-                        <p className="text-[11px] text-slate-400 mt-0.5">
-                          Test permissions, views & coach/client workflows
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => setIsPersonaOpen(false)}
-                        className="sm:hidden p-1 text-slate-400 hover:text-white"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-
-                    <div className="flex-1 overflow-y-auto divide-y divide-slate-800/60 p-1">
-                      {allProfiles.map(p => (
-                        <button
-                          key={p.id}
-                          onClick={() => {
-                            switchUser(p.id);
-                            setIsPersonaOpen(false);
-                          }}
-                          className={`w-full p-2.5 rounded-xl flex items-center gap-3 text-left transition-colors ${
-                            p.id === currentUser.id
-                              ? 'bg-emerald-500/10 border border-emerald-500/30'
-                              : 'hover:bg-slate-800 border border-transparent'
-                          }`}
-                        >
-                          <img
-                            src={p.avatarUrl}
-                            alt={p.fullName}
-                            className="w-9 h-9 rounded-full object-cover border border-slate-700 shrink-0"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between gap-1">
-                              <p className="text-xs sm:text-sm font-semibold text-slate-100 truncate">
-                                {p.fullName}
-                              </p>
-                              {getRoleBadge(p.role)}
-                            </div>
-                            <p className="text-[11px] text-slate-400 truncate">
-                              {p.status !== 'active' ? `Status: ${p.status.toUpperCase()} • ` : ''}
-                              {p.email}
-                            </p>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-
-                    <div className="p-2.5 border-t border-slate-800">
-                      <button
-                        onClick={() => {
-                          setIsPersonaOpen(false);
-                          if (onOpenAuth) onOpenAuth();
-                        }}
-                        className="w-full flex items-center justify-center gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300 py-2 rounded-xl bg-emerald-950/30 hover:bg-emerald-950/60 border border-emerald-500/20 transition-colors"
-                      >
-                        <UserPlus className="w-4 h-4" /> Register New Account
-                      </button>
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
+            )}
+            {signOutError && <span role="alert" className="max-w-32 text-xs text-rose-300">{signOutError}</span>}
 
             {/* Database / Supabase Status Pill */}
             <button

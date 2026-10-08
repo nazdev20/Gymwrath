@@ -501,17 +501,20 @@ export const SCHEMA_TABLES: SchemaTableDefinition[] = [
 export const FITNESS_SCHEMA_DDL_SQL = `-- ====================================================================
 -- FITNESS COACHING PLATFORM - SUPABASE POSTGRESQL SCHEMA DDL
 -- Generated directly from the ER Diagram
+-- After running, add "fitness" to Supabase's exposed API schemas in the
+-- Supabase dashboard. This script configures schema grants and role-aware RLS.
 -- ====================================================================
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+CREATE SCHEMA IF NOT EXISTS fitness;
 
 -- --------------------------------------------------------------------
 -- 1. USERS & ASSIGNMENTS
 -- --------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS public.profiles (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+CREATE TABLE IF NOT EXISTS fitness.profiles (
+  id UUID PRIMARY KEY,
   role VARCHAR(20) NOT NULL CHECK (role IN ('admin', 'coach', 'client')),
   email VARCHAR(255) UNIQUE NOT NULL,
   first_name VARCHAR(100) NOT NULL,
@@ -536,10 +539,25 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS public.coach_client_assignments (
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'profiles_auth_user_id_fkey'
+      AND conrelid = 'fitness.profiles'::regclass
+  ) THEN
+    ALTER TABLE fitness.profiles
+      ADD CONSTRAINT profiles_auth_user_id_fkey
+      FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE NOT VALID;
+  END IF;
+END;
+$$;
+
+CREATE TABLE IF NOT EXISTS fitness.coach_client_assignments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  coach_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
-  client_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
+  client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   status VARCHAR(30) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'requested', 'declined')),
   requested_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   responded_at TIMESTAMPTZ,
@@ -552,9 +570,9 @@ CREATE TABLE IF NOT EXISTS public.coach_client_assignments (
 -- --------------------------------------------------------------------
 -- 2. WORKOUT & TRAINING
 -- --------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS public.exercises (
+CREATE TABLE IF NOT EXISTS fitness.exercises (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  coach_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+  coach_id UUID REFERENCES fitness.profiles(id) ON DELETE SET NULL,
   name VARCHAR(255) NOT NULL,
   description TEXT NOT NULL,
   category VARCHAR(100) NOT NULL,
@@ -567,9 +585,9 @@ CREATE TABLE IF NOT EXISTS public.exercises (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS public.workouts (
+CREATE TABLE IF NOT EXISTS fitness.workouts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  coach_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   name VARCHAR(255) NOT NULL,
   description TEXT,
   type VARCHAR(50) NOT NULL DEFAULT 'hypertrophy',
@@ -579,18 +597,18 @@ CREATE TABLE IF NOT EXISTS public.workouts (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS public.workout_exercises (
+CREATE TABLE IF NOT EXISTS fitness.workout_exercises (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  workout_id UUID NOT NULL REFERENCES public.workouts(id) ON DELETE CASCADE,
-  exercise_id UUID NOT NULL REFERENCES public.exercises(id) ON DELETE RESTRICT,
+  workout_id UUID NOT NULL REFERENCES fitness.workouts(id) ON DELETE CASCADE,
+  exercise_id UUID NOT NULL REFERENCES fitness.exercises(id) ON DELETE RESTRICT,
   order_index INTEGER NOT NULL DEFAULT 1,
   notes TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS public.exercise_set_templates (
+CREATE TABLE IF NOT EXISTS fitness.exercise_set_templates (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  workout_exercise_id UUID NOT NULL REFERENCES public.workout_exercises(id) ON DELETE CASCADE,
+  workout_exercise_id UUID NOT NULL REFERENCES fitness.workout_exercises(id) ON DELETE CASCADE,
   set_number INTEGER NOT NULL,
   target_reps VARCHAR(50) NOT NULL DEFAULT '10',
   target_weight NUMERIC DEFAULT 0,
@@ -601,9 +619,9 @@ CREATE TABLE IF NOT EXISTS public.exercise_set_templates (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS public.training_programs (
+CREATE TABLE IF NOT EXISTS fitness.training_programs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  coach_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   name VARCHAR(255) NOT NULL,
   description TEXT,
   duration_weeks INTEGER NOT NULL DEFAULT 8,
@@ -612,21 +630,21 @@ CREATE TABLE IF NOT EXISTS public.training_programs (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS public.program_workouts (
+CREATE TABLE IF NOT EXISTS fitness.program_workouts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  program_id UUID NOT NULL REFERENCES public.training_programs(id) ON DELETE CASCADE,
-  workout_id UUID NOT NULL REFERENCES public.workouts(id) ON DELETE CASCADE,
+  program_id UUID NOT NULL REFERENCES fitness.training_programs(id) ON DELETE CASCADE,
+  workout_id UUID NOT NULL REFERENCES fitness.workouts(id) ON DELETE CASCADE,
   week_number INTEGER NOT NULL DEFAULT 1,
   day_of_week INTEGER NOT NULL DEFAULT 1,
   order_index INTEGER NOT NULL DEFAULT 1,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS public.program_assignments (
+CREATE TABLE IF NOT EXISTS fitness.program_assignments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  program_id UUID NOT NULL REFERENCES public.training_programs(id) ON DELETE CASCADE,
-  client_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
-  coach_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  program_id UUID NOT NULL REFERENCES fitness.training_programs(id) ON DELETE CASCADE,
+  client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
+  coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   start_date DATE NOT NULL,
   end_date DATE NOT NULL,
   status VARCHAR(30) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'completed', 'paused', 'cancelled')),
@@ -634,12 +652,12 @@ CREATE TABLE IF NOT EXISTS public.program_assignments (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS public.workout_assignments (
+CREATE TABLE IF NOT EXISTS fitness.workout_assignments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  client_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
-  coach_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
-  workout_id UUID NOT NULL REFERENCES public.workouts(id) ON DELETE CASCADE,
-  program_assignment_id UUID REFERENCES public.program_assignments(id) ON DELETE SET NULL,
+  client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
+  coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
+  workout_id UUID NOT NULL REFERENCES fitness.workouts(id) ON DELETE CASCADE,
+  program_assignment_id UUID REFERENCES fitness.program_assignments(id) ON DELETE SET NULL,
   scheduled_date DATE NOT NULL,
   status VARCHAR(30) NOT NULL DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'in_progress', 'completed', 'missed')),
   notes TEXT,
@@ -647,10 +665,10 @@ CREATE TABLE IF NOT EXISTS public.workout_assignments (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS public.workout_completions (
+CREATE TABLE IF NOT EXISTS fitness.workout_completions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  assignment_id UUID NOT NULL REFERENCES public.workout_assignments(id) ON DELETE CASCADE,
-  client_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  assignment_id UUID NOT NULL REFERENCES fitness.workout_assignments(id) ON DELETE CASCADE,
+  client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   completed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   duration_min INTEGER NOT NULL DEFAULT 45,
   perceived_difficulty NUMERIC NOT NULL DEFAULT 8,
@@ -660,10 +678,10 @@ CREATE TABLE IF NOT EXISTS public.workout_completions (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS public.completed_exercise_sets (
+CREATE TABLE IF NOT EXISTS fitness.completed_exercise_sets (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  completion_id UUID NOT NULL REFERENCES public.workout_completions(id) ON DELETE CASCADE,
-  exercise_id UUID NOT NULL REFERENCES public.exercises(id) ON DELETE RESTRICT,
+  completion_id UUID NOT NULL REFERENCES fitness.workout_completions(id) ON DELETE CASCADE,
+  exercise_id UUID NOT NULL REFERENCES fitness.exercises(id) ON DELETE RESTRICT,
   set_number INTEGER NOT NULL,
   actual_reps INTEGER NOT NULL,
   actual_weight NUMERIC NOT NULL DEFAULT 0,
@@ -677,9 +695,9 @@ CREATE TABLE IF NOT EXISTS public.completed_exercise_sets (
 -- --------------------------------------------------------------------
 -- 3. NUTRITION
 -- --------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS public.nutrition_plans (
+CREATE TABLE IF NOT EXISTS fitness.nutrition_plans (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  coach_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   name VARCHAR(255) NOT NULL,
   description TEXT,
   target_calories NUMERIC NOT NULL,
@@ -691,9 +709,9 @@ CREATE TABLE IF NOT EXISTS public.nutrition_plans (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS public.nutrition_plan_meals (
+CREATE TABLE IF NOT EXISTS fitness.nutrition_plan_meals (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  plan_id UUID NOT NULL REFERENCES public.nutrition_plans(id) ON DELETE CASCADE,
+  plan_id UUID NOT NULL REFERENCES fitness.nutrition_plans(id) ON DELETE CASCADE,
   meal_name VARCHAR(100) NOT NULL,
   meal_order INTEGER NOT NULL DEFAULT 1,
   description TEXT,
@@ -704,9 +722,9 @@ CREATE TABLE IF NOT EXISTS public.nutrition_plan_meals (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS public.meal_foods (
+CREATE TABLE IF NOT EXISTS fitness.meal_foods (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  plan_meal_id UUID NOT NULL REFERENCES public.nutrition_plan_meals(id) ON DELETE CASCADE,
+  plan_meal_id UUID NOT NULL REFERENCES fitness.nutrition_plan_meals(id) ON DELETE CASCADE,
   food_name VARCHAR(255) NOT NULL,
   quantity NUMERIC NOT NULL,
   unit VARCHAR(50) NOT NULL DEFAULT 'g',
@@ -718,11 +736,11 @@ CREATE TABLE IF NOT EXISTS public.meal_foods (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS public.nutrition_plan_assignments (
+CREATE TABLE IF NOT EXISTS fitness.nutrition_plan_assignments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  plan_id UUID NOT NULL REFERENCES public.nutrition_plans(id) ON DELETE CASCADE,
-  client_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
-  coach_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  plan_id UUID NOT NULL REFERENCES fitness.nutrition_plans(id) ON DELETE CASCADE,
+  client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
+  coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   start_date DATE NOT NULL,
   end_date DATE,
   status VARCHAR(30) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'completed', 'paused')),
@@ -734,9 +752,9 @@ CREATE TABLE IF NOT EXISTS public.nutrition_plan_assignments (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS public.daily_nutrition_logs (
+CREATE TABLE IF NOT EXISTS fitness.daily_nutrition_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  client_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   log_date DATE NOT NULL,
   total_calories NUMERIC NOT NULL DEFAULT 0,
   total_protein_g NUMERIC NOT NULL DEFAULT 0,
@@ -749,18 +767,18 @@ CREATE TABLE IF NOT EXISTS public.daily_nutrition_logs (
   UNIQUE(client_id, log_date)
 );
 
-CREATE TABLE IF NOT EXISTS public.nutrition_log_meals (
+CREATE TABLE IF NOT EXISTS fitness.nutrition_log_meals (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  daily_log_id UUID NOT NULL REFERENCES public.daily_nutrition_logs(id) ON DELETE CASCADE,
+  daily_log_id UUID NOT NULL REFERENCES fitness.daily_nutrition_logs(id) ON DELETE CASCADE,
   meal_name VARCHAR(100) NOT NULL,
   meal_order INTEGER NOT NULL DEFAULT 1,
   consumed_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS public.nutrition_log_foods (
+CREATE TABLE IF NOT EXISTS fitness.nutrition_log_foods (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  log_meal_id UUID NOT NULL REFERENCES public.nutrition_log_meals(id) ON DELETE CASCADE,
+  log_meal_id UUID NOT NULL REFERENCES fitness.nutrition_log_meals(id) ON DELETE CASCADE,
   food_name VARCHAR(255) NOT NULL,
   quantity NUMERIC NOT NULL,
   unit VARCHAR(50) NOT NULL DEFAULT 'g',
@@ -774,10 +792,10 @@ CREATE TABLE IF NOT EXISTS public.nutrition_log_foods (
 -- --------------------------------------------------------------------
 -- 4. CHECK-INS
 -- --------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS public.check_in_schedules (
+CREATE TABLE IF NOT EXISTS fitness.check_in_schedules (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  coach_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
-  client_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
+  client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   frequency VARCHAR(50) NOT NULL DEFAULT 'weekly',
   custom_interval_days INTEGER,
   day_of_week VARCHAR(50) DEFAULT 'Sunday',
@@ -788,11 +806,11 @@ CREATE TABLE IF NOT EXISTS public.check_in_schedules (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS public.check_ins (
+CREATE TABLE IF NOT EXISTS fitness.check_ins (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  schedule_id UUID REFERENCES public.check_in_schedules(id) ON DELETE SET NULL,
-  client_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
-  coach_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  schedule_id UUID REFERENCES fitness.check_in_schedules(id) ON DELETE SET NULL,
+  client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
+  coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   due_date DATE NOT NULL,
   status VARCHAR(30) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'submitted', 'reviewed')),
   submitted_at TIMESTAMPTZ,
@@ -808,9 +826,9 @@ CREATE TABLE IF NOT EXISTS public.check_ins (
 -- --------------------------------------------------------------------
 -- 5. PROGRESS
 -- --------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS public.progress_records (
+CREATE TABLE IF NOT EXISTS fitness.progress_records (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  client_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   recorded_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   record_type VARCHAR(50) NOT NULL DEFAULT 'daily_metrics',
   weight_kg NUMERIC,
@@ -829,10 +847,10 @@ CREATE TABLE IF NOT EXISTS public.progress_records (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS public.progress_photos (
+CREATE TABLE IF NOT EXISTS fitness.progress_photos (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  client_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
-  progress_record_id UUID REFERENCES public.progress_records(id) ON DELETE SET NULL,
+  client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
+  progress_record_id UUID REFERENCES fitness.progress_records(id) ON DELETE SET NULL,
   storage_path TEXT NOT NULL,
   photo_type VARCHAR(50) NOT NULL DEFAULT 'front',
   caption TEXT,
@@ -842,20 +860,20 @@ CREATE TABLE IF NOT EXISTS public.progress_photos (
 -- --------------------------------------------------------------------
 -- 6. MESSAGING
 -- --------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS public.conversations (
+CREATE TABLE IF NOT EXISTS fitness.conversations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  coach_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
-  client_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
+  client_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   last_message_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE(coach_id, client_id)
 );
 
-CREATE TABLE IF NOT EXISTS public.messages (
+CREATE TABLE IF NOT EXISTS fitness.messages (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  conversation_id UUID NOT NULL REFERENCES public.conversations(id) ON DELETE CASCADE,
-  sender_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
-  recipient_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  conversation_id UUID NOT NULL REFERENCES fitness.conversations(id) ON DELETE CASCADE,
+  sender_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
+  recipient_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   content TEXT NOT NULL,
   is_read BOOLEAN NOT NULL DEFAULT false,
   read_at TIMESTAMPTZ,
@@ -865,9 +883,9 @@ CREATE TABLE IF NOT EXISTS public.messages (
 -- --------------------------------------------------------------------
 -- 7. NOTIFICATIONS & SETTINGS
 -- --------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS public.notifications (
+CREATE TABLE IF NOT EXISTS fitness.notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
   type VARCHAR(100) NOT NULL,
   title VARCHAR(255) NOT NULL,
   body TEXT NOT NULL,
@@ -877,22 +895,823 @@ CREATE TABLE IF NOT EXISTS public.notifications (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS public.system_settings (
+CREATE TABLE IF NOT EXISTS fitness.system_settings (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   key VARCHAR(100) UNIQUE NOT NULL,
   value JSONB NOT NULL,
   description TEXT,
-  updated_by UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+  updated_by UUID REFERENCES fitness.profiles(id) ON DELETE SET NULL,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 -- --------------------------------------------------------------------
 -- INDEXES FOR PERFORMANCE
 -- --------------------------------------------------------------------
-CREATE INDEX IF NOT EXISTS idx_profiles_role ON public.profiles(role);
-CREATE INDEX IF NOT EXISTS idx_workout_assignments_client_date ON public.workout_assignments(client_id, scheduled_date);
-CREATE INDEX IF NOT EXISTS idx_daily_nutrition_client_date ON public.daily_nutrition_logs(client_id, log_date);
-CREATE INDEX IF NOT EXISTS idx_progress_records_client_date ON public.progress_records(client_id, recorded_at);
-CREATE INDEX IF NOT EXISTS idx_messages_conversation ON public.messages(conversation_id, created_at);
-CREATE INDEX IF NOT EXISTS idx_notifications_user ON public.notifications(user_id, is_read);
+CREATE INDEX IF NOT EXISTS idx_profiles_role ON fitness.profiles(role);
+CREATE INDEX IF NOT EXISTS idx_workout_assignments_client_date ON fitness.workout_assignments(client_id, scheduled_date);
+CREATE INDEX IF NOT EXISTS idx_daily_nutrition_client_date ON fitness.daily_nutrition_logs(client_id, log_date);
+CREATE INDEX IF NOT EXISTS idx_progress_records_client_date ON fitness.progress_records(client_id, recorded_at);
+CREATE INDEX IF NOT EXISTS idx_messages_conversation ON fitness.messages(conversation_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_notifications_user ON fitness.notifications(user_id, is_read);
+
+-- --------------------------------------------------------------------
+-- AUTH IDENTITY, ROLE HELPERS & ROW-LEVEL SECURITY
+-- --------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION fitness.current_user_role()
+RETURNS TEXT
+LANGUAGE SQL
+STABLE
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+  SELECT p.role::text
+  FROM fitness.profiles AS p
+  WHERE p.id = auth.uid() AND p.is_active AND p.approval_status = 'active'
+$$;
+
+CREATE OR REPLACE FUNCTION fitness.current_user_approval_status()
+RETURNS TEXT
+LANGUAGE SQL
+STABLE
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+  SELECT p.approval_status::text
+  FROM fitness.profiles AS p
+  WHERE p.id = auth.uid()
+$$;
+
+CREATE OR REPLACE FUNCTION fitness.is_admin()
+RETURNS BOOLEAN
+LANGUAGE SQL
+STABLE
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+  SELECT coalesce(fitness.current_user_role() = 'admin', false)
+$$;
+
+CREATE OR REPLACE FUNCTION fitness.is_coach_for_client(target_client_id UUID)
+RETURNS BOOLEAN
+LANGUAGE SQL
+STABLE
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+  SELECT coalesce(fitness.current_user_role() = 'coach', false)
+    AND EXISTS (
+      SELECT 1
+      FROM fitness.coach_client_assignments AS a
+      WHERE a.coach_id = auth.uid()
+        AND a.client_id = target_client_id
+        AND a.status = 'active'
+    )
+$$;
+
+CREATE OR REPLACE FUNCTION fitness.can_access_workout(target_workout_id UUID)
+RETURNS BOOLEAN
+LANGUAGE SQL
+STABLE
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+  SELECT fitness.is_admin()
+    OR EXISTS (
+      SELECT 1 FROM fitness.workouts AS w
+      WHERE w.id = target_workout_id
+        AND w.coach_id = auth.uid()
+        AND fitness.current_user_role() = 'coach'
+    )
+    OR EXISTS (
+      SELECT 1 FROM fitness.workout_assignments AS wa
+      WHERE wa.workout_id = target_workout_id
+        AND wa.client_id = auth.uid()
+        AND wa.status <> 'missed'
+        AND fitness.current_user_role() = 'client'
+    )
+$$;
+
+CREATE OR REPLACE FUNCTION fitness.create_profile_for_auth_user()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+DECLARE
+  requested_role TEXT;
+  full_name TEXT;
+  first_name_value TEXT;
+  last_name_value TEXT;
+  goals_value TEXT[];
+BEGIN
+  requested_role := CASE
+    WHEN NEW.raw_app_meta_data ->> 'role' IN ('admin', 'coach')
+      THEN NEW.raw_app_meta_data ->> 'role'
+    ELSE 'client'
+  END;
+
+  IF requested_role = 'admin' THEN
+    PERFORM pg_advisory_xact_lock(8162025, 1);
+    IF EXISTS (
+       SELECT 1
+       FROM fitness.system_settings
+       WHERE key = 'gymwrath_initial_admin_initialized'
+    ) OR EXISTS (
+       SELECT 1
+       FROM fitness.profiles AS p
+       JOIN auth.users AS u ON u.id = p.id
+       WHERE p.role = 'admin'
+    ) THEN
+      RAISE EXCEPTION 'An administrator already exists; initial administrator setup is closed';
+    END IF;
+  END IF;
+
+  full_name := nullif(trim(coalesce(
+    NEW.raw_user_meta_data ->> 'full_name',
+    NEW.raw_user_meta_data ->> 'name',
+    ''
+  )), '');
+  IF full_name IS NULL THEN
+    full_name := split_part(coalesce(NEW.email, ''), '@', 1);
+  END IF;
+  first_name_value := coalesce(nullif(split_part(full_name, ' ', 1), ''), 'User');
+  last_name_value := nullif(trim(substr(full_name, length(first_name_value) + 1)), '');
+
+  goals_value := CASE jsonb_typeof(NEW.raw_user_meta_data -> 'fitness_goals')
+    WHEN 'array' THEN ARRAY(
+      SELECT jsonb_array_elements_text(NEW.raw_user_meta_data -> 'fitness_goals')
+    )
+    WHEN 'string' THEN CASE
+      WHEN nullif(trim(NEW.raw_user_meta_data ->> 'fitness_goals'), '') IS NULL THEN '{}'::TEXT[]
+      ELSE ARRAY[NEW.raw_user_meta_data ->> 'fitness_goals']
+    END
+    ELSE '{}'::TEXT[]
+  END;
+
+  INSERT INTO fitness.profiles (
+    id, role, email, first_name, last_name, approval_status, fitness_goals
+  )
+  VALUES (
+    NEW.id,
+    requested_role,
+    coalesce(NEW.email, ''),
+    first_name_value,
+    coalesce(last_name_value, ''),
+    CASE WHEN requested_role = 'client' THEN 'pending' ELSE 'active' END,
+    goals_value
+  );
+
+  IF requested_role = 'admin' THEN
+    INSERT INTO fitness.system_settings (key, value, description, updated_by)
+    VALUES (
+      'gymwrath_initial_admin_initialized',
+      jsonb_build_object('user_id', NEW.id),
+      'One-time initial administrator setup marker',
+      NEW.id
+    )
+    ON CONFLICT (key) DO NOTHING;
+    IF NOT FOUND THEN
+      RAISE EXCEPTION 'Initial administrator setup has already been completed';
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS gymwrath_create_profile ON auth.users;
+CREATE TRIGGER gymwrath_create_profile
+AFTER INSERT ON auth.users
+FOR EACH ROW EXECUTE FUNCTION fitness.create_profile_for_auth_user();
+
+REVOKE ALL ON FUNCTION fitness.create_profile_for_auth_user() FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION fitness.create_profile_for_auth_user() TO supabase_auth_admin;
+REVOKE ALL ON FUNCTION fitness.current_user_role() FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION fitness.current_user_approval_status() FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION fitness.is_admin() FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION fitness.is_coach_for_client(UUID) FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION fitness.can_access_workout(UUID) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION fitness.current_user_role() TO authenticated;
+GRANT EXECUTE ON FUNCTION fitness.current_user_approval_status() TO authenticated;
+GRANT EXECUTE ON FUNCTION fitness.is_admin() TO authenticated;
+GRANT EXECUTE ON FUNCTION fitness.is_coach_for_client(UUID) TO authenticated;
+GRANT EXECUTE ON FUNCTION fitness.can_access_workout(UUID) TO authenticated;
+
+REVOKE ALL ON SCHEMA fitness FROM PUBLIC, anon;
+GRANT USAGE ON SCHEMA fitness TO authenticated;
+GRANT USAGE ON SCHEMA fitness TO service_role;
+REVOKE ALL ON ALL TABLES IN SCHEMA fitness FROM PUBLIC, anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA fitness TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA fitness TO service_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA fitness REVOKE ALL ON TABLES FROM PUBLIC, anon;
+ALTER DEFAULT PRIVILEGES IN SCHEMA fitness GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO authenticated;
+ALTER DEFAULT PRIVILEGES IN SCHEMA fitness GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO service_role;
+
+DO $$
+DECLARE
+  table_name TEXT;
+BEGIN
+  FOREACH table_name IN ARRAY ARRAY[
+    'profiles', 'coach_client_assignments', 'exercises', 'workouts',
+    'workout_exercises', 'exercise_set_templates', 'training_programs',
+    'program_workouts', 'program_assignments', 'workout_assignments',
+    'workout_completions', 'completed_exercise_sets', 'nutrition_plans',
+    'nutrition_plan_meals', 'meal_foods', 'nutrition_plan_assignments',
+    'daily_nutrition_logs', 'nutrition_log_meals', 'nutrition_log_foods',
+    'check_in_schedules', 'check_ins', 'progress_records', 'progress_photos',
+    'conversations', 'messages', 'notifications', 'system_settings'
+  ]
+  LOOP
+    EXECUTE format('ALTER TABLE fitness.%I ENABLE ROW LEVEL SECURITY', table_name);
+    EXECUTE format('DROP POLICY IF EXISTS admins_manage_%I ON fitness.%I', table_name, table_name);
+    EXECUTE format(
+      'CREATE POLICY admins_manage_%I ON fitness.%I FOR ALL TO authenticated USING (fitness.is_admin()) WITH CHECK (fitness.is_admin())',
+      table_name, table_name
+    );
+  END LOOP;
+END;
+$$;
+
+DO $$
+DECLARE
+  policy_spec TEXT;
+BEGIN
+  FOREACH policy_spec IN ARRAY ARRAY[
+    'profiles:profiles_read_authorized', 'profiles:profiles_update_self',
+    'coach_client_assignments:assignments_read_participants',
+    'coach_client_assignments:assignments_coach_insert',
+    'coach_client_assignments:assignments_coach_update',
+    'exercises:exercises_read_authenticated', 'exercises:exercises_coach_insert',
+    'exercises:exercises_coach_update', 'exercises:exercises_coach_delete',
+    'workouts:workouts_read_assigned', 'workouts:workouts_coach_write',
+    'workouts:workouts_coach_update', 'workouts:workouts_coach_delete',
+    'training_programs:programs_read_owner', 'training_programs:programs_coach_insert',
+    'training_programs:programs_coach_update', 'training_programs:programs_coach_delete',
+    'workout_exercises:workout_exercises_read_authorized',
+    'workout_exercises:workout_exercises_coach_insert',
+    'workout_exercises:workout_exercises_coach_update',
+    'workout_exercises:workout_exercises_coach_delete',
+    'exercise_set_templates:set_templates_read_authorized',
+    'exercise_set_templates:set_templates_coach_insert',
+    'exercise_set_templates:set_templates_coach_update',
+    'exercise_set_templates:set_templates_coach_delete',
+    'program_workouts:program_workouts_read_authorized',
+    'program_workouts:program_workouts_coach_write',
+    'program_assignments:program_assignments_read_participants',
+    'program_assignments:program_assignments_coach_write',
+    'workout_assignments:workout_assignments_read_participants',
+    'workout_assignments:workout_assignments_coach_insert',
+    'workout_assignments:workout_assignments_coach_update',
+    'workout_completions:completions_read_participants',
+    'workout_completions:completions_client_insert',
+    'workout_completions:completions_coach_update',
+    'completed_exercise_sets:completed_sets_read_participants',
+    'completed_exercise_sets:completed_sets_client_write',
+    'nutrition_plans:nutrition_plans_read_authorized',
+    'nutrition_plans:nutrition_plans_coach_write',
+    'nutrition_plan_meals:nutrition_meals_read_authorized',
+    'nutrition_plan_meals:nutrition_meals_coach_write',
+    'meal_foods:meal_foods_read_authorized',
+    'meal_foods:meal_foods_coach_write',
+    'nutrition_plan_assignments:nutrition_assignments_read_participants',
+    'nutrition_plan_assignments:nutrition_assignments_coach_write',
+    'nutrition_log_meals:nutrition_log_meals_read_authorized',
+    'nutrition_log_meals:nutrition_log_meals_client_write',
+    'nutrition_log_foods:nutrition_log_foods_read_authorized',
+    'nutrition_log_foods:nutrition_log_foods_client_write',
+    'check_in_schedules:check_schedules_read_participants',
+    'check_in_schedules:check_schedules_coach_write',
+    'check_ins:check_ins_read_participants', 'check_ins:check_ins_client_insert',
+    'check_ins:check_ins_coach_update', 'progress_records:progress_records_read_participants',
+    'progress_records:progress_records_client_insert', 'progress_records:progress_records_client_update',
+    'progress_photos:progress_photos_read_participants',
+    'progress_photos:progress_photos_client_insert',
+    'progress_photos:progress_photos_client_delete',
+    'daily_nutrition_logs:nutrition_logs_read_participants',
+    'daily_nutrition_logs:nutrition_logs_client_write',
+    'conversations:conversations_read_participants', 'conversations:conversations_coach_create',
+    'messages:messages_read_participants', 'messages:messages_send_participant',
+    'messages:messages_update_recipient', 'notifications:notifications_read_self',
+    'notifications:notifications_update_self'
+  ]
+  LOOP
+    EXECUTE format(
+      'DROP POLICY IF EXISTS %I ON fitness.%I',
+      split_part(policy_spec, ':', 2),
+      split_part(policy_spec, ':', 1)
+    );
+  END LOOP;
+END;
+$$;
+
+CREATE POLICY profiles_read_authorized ON fitness.profiles
+  FOR SELECT TO authenticated
+  USING (
+    id = auth.uid()
+    OR fitness.is_admin()
+    OR fitness.is_coach_for_client(id)
+    OR EXISTS (
+      SELECT 1 FROM fitness.coach_client_assignments AS a
+      WHERE a.client_id = auth.uid() AND a.coach_id = fitness.profiles.id AND a.status = 'active'
+    )
+  );
+CREATE POLICY profiles_update_self ON fitness.profiles
+  FOR UPDATE TO authenticated
+  USING (
+    id = auth.uid()
+    AND role = fitness.current_user_role()
+    AND approval_status = fitness.current_user_approval_status()
+    AND NOT fitness.is_admin()
+  )
+  WITH CHECK (
+    id = auth.uid()
+    AND role = fitness.current_user_role()
+    AND approval_status = fitness.current_user_approval_status()
+    AND NOT fitness.is_admin()
+  );
+
+CREATE POLICY assignments_read_participants ON fitness.coach_client_assignments
+  FOR SELECT TO authenticated
+  USING (
+    fitness.is_admin()
+    OR (fitness.current_user_role() IN ('coach', 'client') AND (coach_id = auth.uid() OR client_id = auth.uid()))
+  );
+CREATE POLICY assignments_coach_insert ON fitness.coach_client_assignments
+  FOR INSERT TO authenticated
+  WITH CHECK (
+    fitness.current_user_role() = 'coach'
+    AND coach_id = auth.uid()
+    AND EXISTS (SELECT 1 FROM fitness.profiles p WHERE p.id = client_id AND p.role = 'client')
+  );
+CREATE POLICY assignments_coach_update ON fitness.coach_client_assignments
+  FOR UPDATE TO authenticated
+  USING (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())
+  WITH CHECK (fitness.current_user_role() = 'coach' AND coach_id = auth.uid());
+
+CREATE POLICY exercises_read_authenticated ON fitness.exercises
+  FOR SELECT TO authenticated
+  USING (
+    fitness.is_admin()
+    OR (fitness.current_user_role() IN ('coach', 'client') AND (is_global OR coach_id = auth.uid()))
+  );
+CREATE POLICY exercises_coach_insert ON fitness.exercises
+  FOR INSERT TO authenticated
+  WITH CHECK (
+    fitness.is_admin()
+    OR (fitness.current_user_role() = 'coach' AND coach_id = auth.uid() AND NOT is_global)
+  );
+CREATE POLICY exercises_coach_update ON fitness.exercises
+  FOR UPDATE TO authenticated
+  USING (fitness.is_admin() OR (fitness.current_user_role() = 'coach' AND coach_id = auth.uid() AND NOT is_global))
+  WITH CHECK (fitness.is_admin() OR (fitness.current_user_role() = 'coach' AND coach_id = auth.uid() AND NOT is_global));
+CREATE POLICY exercises_coach_delete ON fitness.exercises
+  FOR DELETE TO authenticated
+  USING (fitness.is_admin() OR (fitness.current_user_role() = 'coach' AND coach_id = auth.uid() AND NOT is_global));
+
+CREATE POLICY workouts_read_assigned ON fitness.workouts
+  FOR SELECT TO authenticated
+  USING (
+    fitness.is_admin()
+    OR (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())
+    OR EXISTS (
+      SELECT 1 FROM fitness.workout_assignments wa
+      WHERE wa.workout_id = fitness.workouts.id AND wa.client_id = auth.uid()
+        AND fitness.current_user_role() = 'client'
+    )
+  );
+CREATE POLICY workouts_coach_write ON fitness.workouts
+  FOR INSERT TO authenticated
+  WITH CHECK (fitness.current_user_role() = 'coach' AND coach_id = auth.uid());
+CREATE POLICY workouts_coach_update ON fitness.workouts
+  FOR UPDATE TO authenticated
+  USING (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())
+  WITH CHECK (fitness.current_user_role() = 'coach' AND coach_id = auth.uid());
+CREATE POLICY workouts_coach_delete ON fitness.workouts
+  FOR DELETE TO authenticated
+  USING (fitness.current_user_role() = 'coach' AND coach_id = auth.uid());
+
+CREATE POLICY programs_read_owner ON fitness.training_programs
+  FOR SELECT TO authenticated
+  USING (
+    (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())
+    OR EXISTS (
+      SELECT 1 FROM fitness.program_assignments pa
+      WHERE pa.program_id = fitness.training_programs.id
+        AND pa.client_id = auth.uid()
+        AND pa.status = 'active'
+        AND fitness.current_user_role() = 'client'
+    )
+  );
+CREATE POLICY programs_coach_insert ON fitness.training_programs
+  FOR INSERT TO authenticated
+  WITH CHECK (fitness.current_user_role() = 'coach' AND coach_id = auth.uid());
+CREATE POLICY programs_coach_update ON fitness.training_programs
+  FOR UPDATE TO authenticated
+  USING (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())
+  WITH CHECK (fitness.current_user_role() = 'coach' AND coach_id = auth.uid());
+CREATE POLICY programs_coach_delete ON fitness.training_programs
+  FOR DELETE TO authenticated
+  USING (fitness.current_user_role() = 'coach' AND coach_id = auth.uid());
+
+CREATE POLICY workout_assignments_read_participants ON fitness.workout_assignments
+  FOR SELECT TO authenticated
+  USING (
+    fitness.is_admin()
+    OR (fitness.current_user_role() IN ('coach', 'client') AND (client_id = auth.uid() OR coach_id = auth.uid()))
+  );
+CREATE POLICY workout_assignments_coach_insert ON fitness.workout_assignments
+  FOR INSERT TO authenticated
+  WITH CHECK (fitness.current_user_role() = 'coach' AND coach_id = auth.uid() AND fitness.is_coach_for_client(client_id));
+CREATE POLICY workout_assignments_coach_update ON fitness.workout_assignments
+  FOR UPDATE TO authenticated
+  USING (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())
+  WITH CHECK (fitness.current_user_role() = 'coach' AND coach_id = auth.uid());
+
+CREATE POLICY workout_exercises_read_authorized ON fitness.workout_exercises
+  FOR SELECT TO authenticated
+  USING (fitness.can_access_workout(workout_id));
+CREATE POLICY workout_exercises_coach_insert ON fitness.workout_exercises
+  FOR INSERT TO authenticated
+  WITH CHECK (
+    fitness.current_user_role() = 'coach'
+    AND EXISTS (SELECT 1 FROM fitness.workouts w WHERE w.id = workout_id AND w.coach_id = auth.uid())
+  );
+CREATE POLICY workout_exercises_coach_update ON fitness.workout_exercises
+  FOR UPDATE TO authenticated
+  USING (
+    fitness.current_user_role() = 'coach'
+    AND EXISTS (SELECT 1 FROM fitness.workouts w WHERE w.id = workout_id AND w.coach_id = auth.uid())
+  )
+  WITH CHECK (
+    fitness.current_user_role() = 'coach'
+    AND EXISTS (SELECT 1 FROM fitness.workouts w WHERE w.id = workout_id AND w.coach_id = auth.uid())
+  );
+CREATE POLICY workout_exercises_coach_delete ON fitness.workout_exercises
+  FOR DELETE TO authenticated
+  USING (
+    fitness.current_user_role() = 'coach'
+    AND EXISTS (SELECT 1 FROM fitness.workouts w WHERE w.id = workout_id AND w.coach_id = auth.uid())
+  );
+
+CREATE POLICY set_templates_read_authorized ON fitness.exercise_set_templates
+  FOR SELECT TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM fitness.workout_exercises we
+      WHERE we.id = workout_exercise_id AND fitness.can_access_workout(we.workout_id)
+    )
+  );
+CREATE POLICY set_templates_coach_insert ON fitness.exercise_set_templates
+  FOR INSERT TO authenticated
+  WITH CHECK (
+    fitness.current_user_role() = 'coach'
+    AND EXISTS (
+      SELECT 1 FROM fitness.workout_exercises we
+      JOIN fitness.workouts w ON w.id = we.workout_id
+      WHERE we.id = workout_exercise_id AND w.coach_id = auth.uid()
+    )
+  );
+CREATE POLICY set_templates_coach_update ON fitness.exercise_set_templates
+  FOR UPDATE TO authenticated
+  USING (
+    fitness.current_user_role() = 'coach'
+    AND EXISTS (
+      SELECT 1 FROM fitness.workout_exercises we
+      JOIN fitness.workouts w ON w.id = we.workout_id
+      WHERE we.id = workout_exercise_id AND w.coach_id = auth.uid()
+    )
+  )
+  WITH CHECK (
+    fitness.current_user_role() = 'coach'
+    AND EXISTS (
+      SELECT 1 FROM fitness.workout_exercises we
+      JOIN fitness.workouts w ON w.id = we.workout_id
+      WHERE we.id = workout_exercise_id AND w.coach_id = auth.uid()
+    )
+  );
+CREATE POLICY set_templates_coach_delete ON fitness.exercise_set_templates
+  FOR DELETE TO authenticated
+  USING (
+    fitness.current_user_role() = 'coach'
+    AND EXISTS (
+      SELECT 1 FROM fitness.workout_exercises we
+      JOIN fitness.workouts w ON w.id = we.workout_id
+      WHERE we.id = workout_exercise_id AND w.coach_id = auth.uid()
+    )
+  );
+
+CREATE POLICY program_assignments_read_participants ON fitness.program_assignments
+  FOR SELECT TO authenticated
+  USING (
+    fitness.is_admin()
+    OR (fitness.current_user_role() IN ('coach', 'client') AND (client_id = auth.uid() OR coach_id = auth.uid()))
+  );
+CREATE POLICY program_assignments_coach_write ON fitness.program_assignments
+  FOR ALL TO authenticated
+  USING (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())
+  WITH CHECK (
+    fitness.current_user_role() = 'coach'
+    AND coach_id = auth.uid()
+    AND fitness.is_coach_for_client(client_id)
+  );
+CREATE POLICY program_workouts_read_authorized ON fitness.program_workouts
+  FOR SELECT TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM fitness.training_programs p
+      WHERE p.id = program_id
+        AND (
+          p.coach_id = auth.uid()
+          OR EXISTS (
+            SELECT 1 FROM fitness.program_assignments pa
+            WHERE pa.program_id = p.id AND pa.client_id = auth.uid() AND pa.status = 'active'
+          )
+        )
+    )
+  );
+CREATE POLICY program_workouts_coach_write ON fitness.program_workouts
+  FOR ALL TO authenticated
+  USING (
+    fitness.current_user_role() = 'coach'
+    AND EXISTS (SELECT 1 FROM fitness.training_programs p WHERE p.id = program_id AND p.coach_id = auth.uid())
+  )
+  WITH CHECK (
+    fitness.current_user_role() = 'coach'
+    AND EXISTS (SELECT 1 FROM fitness.training_programs p WHERE p.id = program_id AND p.coach_id = auth.uid())
+  );
+
+CREATE POLICY completions_read_participants ON fitness.workout_completions
+  FOR SELECT TO authenticated
+  USING (
+    (fitness.current_user_role() = 'client' AND client_id = auth.uid())
+    OR fitness.is_coach_for_client(client_id)
+  );
+CREATE POLICY completions_client_insert ON fitness.workout_completions
+  FOR INSERT TO authenticated
+  WITH CHECK (
+    client_id = auth.uid()
+    AND fitness.current_user_role() = 'client'
+    AND EXISTS (
+      SELECT 1 FROM fitness.workout_assignments wa
+      WHERE wa.id = assignment_id AND wa.client_id = auth.uid()
+    )
+  );
+CREATE POLICY completions_coach_update ON fitness.workout_completions
+  FOR UPDATE TO authenticated
+  USING (fitness.is_coach_for_client(client_id))
+  WITH CHECK (fitness.is_coach_for_client(client_id));
+CREATE POLICY completed_sets_read_participants ON fitness.completed_exercise_sets
+  FOR SELECT TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM fitness.workout_completions wc
+      WHERE wc.id = completion_id
+        AND (wc.client_id = auth.uid() OR fitness.is_coach_for_client(wc.client_id))
+    )
+  );
+CREATE POLICY completed_sets_client_write ON fitness.completed_exercise_sets
+  FOR INSERT TO authenticated
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM fitness.workout_completions wc
+      WHERE wc.id = completion_id AND wc.client_id = auth.uid()
+    )
+  );
+
+CREATE POLICY nutrition_plans_read_authorized ON fitness.nutrition_plans
+  FOR SELECT TO authenticated
+  USING (
+    (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())
+    OR EXISTS (
+      SELECT 1 FROM fitness.nutrition_plan_assignments na
+      WHERE na.plan_id = fitness.nutrition_plans.id AND na.client_id = auth.uid()
+        AND na.status = 'active' AND fitness.current_user_role() = 'client'
+    )
+  );
+CREATE POLICY nutrition_plans_coach_write ON fitness.nutrition_plans
+  FOR ALL TO authenticated
+  USING (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())
+  WITH CHECK (fitness.current_user_role() = 'coach' AND coach_id = auth.uid());
+CREATE POLICY nutrition_meals_read_authorized ON fitness.nutrition_plan_meals
+  FOR SELECT TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM fitness.nutrition_plans p
+      WHERE p.id = plan_id AND (p.coach_id = auth.uid()
+        OR EXISTS (
+          SELECT 1 FROM fitness.nutrition_plan_assignments na
+          WHERE na.plan_id = p.id AND na.client_id = auth.uid() AND na.status = 'active'
+        ))
+    )
+  );
+CREATE POLICY nutrition_meals_coach_write ON fitness.nutrition_plan_meals
+  FOR ALL TO authenticated
+  USING (
+    fitness.current_user_role() = 'coach'
+    AND EXISTS (SELECT 1 FROM fitness.nutrition_plans p WHERE p.id = plan_id AND p.coach_id = auth.uid())
+  )
+  WITH CHECK (
+    fitness.current_user_role() = 'coach'
+    AND EXISTS (SELECT 1 FROM fitness.nutrition_plans p WHERE p.id = plan_id AND p.coach_id = auth.uid())
+  );
+CREATE POLICY meal_foods_read_authorized ON fitness.meal_foods
+  FOR SELECT TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM fitness.nutrition_plan_meals pm
+      JOIN fitness.nutrition_plans p ON p.id = pm.plan_id
+      WHERE pm.id = plan_meal_id AND (p.coach_id = auth.uid()
+        OR EXISTS (
+          SELECT 1 FROM fitness.nutrition_plan_assignments na
+          WHERE na.plan_id = p.id AND na.client_id = auth.uid() AND na.status = 'active'
+        ))
+    )
+  );
+CREATE POLICY meal_foods_coach_write ON fitness.meal_foods
+  FOR ALL TO authenticated
+  USING (
+    fitness.current_user_role() = 'coach'
+    AND EXISTS (
+      SELECT 1 FROM fitness.nutrition_plan_meals pm
+      JOIN fitness.nutrition_plans p ON p.id = pm.plan_id
+      WHERE pm.id = plan_meal_id AND p.coach_id = auth.uid()
+    )
+  )
+  WITH CHECK (
+    fitness.current_user_role() = 'coach'
+    AND EXISTS (
+      SELECT 1 FROM fitness.nutrition_plan_meals pm
+      JOIN fitness.nutrition_plans p ON p.id = pm.plan_id
+      WHERE pm.id = plan_meal_id AND p.coach_id = auth.uid()
+    )
+  );
+CREATE POLICY nutrition_assignments_read_participants ON fitness.nutrition_plan_assignments
+  FOR SELECT TO authenticated
+  USING (client_id = auth.uid() OR coach_id = auth.uid() OR fitness.is_admin());
+CREATE POLICY nutrition_assignments_coach_write ON fitness.nutrition_plan_assignments
+  FOR ALL TO authenticated
+  USING (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())
+  WITH CHECK (
+    fitness.current_user_role() = 'coach'
+    AND coach_id = auth.uid()
+    AND fitness.is_coach_for_client(client_id)
+  );
+
+CREATE POLICY check_ins_read_participants ON fitness.check_ins
+  FOR SELECT TO authenticated
+  USING (
+    (fitness.current_user_role() = 'client' AND client_id = auth.uid())
+    OR fitness.is_coach_for_client(client_id)
+  );
+CREATE POLICY check_ins_client_insert ON fitness.check_ins
+  FOR INSERT TO authenticated
+  WITH CHECK (client_id = auth.uid() AND fitness.current_user_role() = 'client');
+CREATE POLICY check_ins_coach_update ON fitness.check_ins
+  FOR UPDATE TO authenticated
+  USING (fitness.is_coach_for_client(client_id))
+  WITH CHECK (fitness.is_coach_for_client(client_id));
+
+CREATE POLICY progress_records_read_participants ON fitness.progress_records
+  FOR SELECT TO authenticated
+  USING (
+    (fitness.current_user_role() = 'client' AND client_id = auth.uid())
+    OR fitness.is_coach_for_client(client_id)
+  );
+CREATE POLICY progress_records_client_insert ON fitness.progress_records
+  FOR INSERT TO authenticated
+  WITH CHECK (client_id = auth.uid() AND fitness.current_user_role() = 'client');
+CREATE POLICY progress_records_client_update ON fitness.progress_records
+  FOR UPDATE TO authenticated
+  USING (client_id = auth.uid() OR fitness.is_coach_for_client(client_id))
+  WITH CHECK (client_id = auth.uid() OR fitness.is_coach_for_client(client_id));
+
+CREATE POLICY nutrition_logs_read_participants ON fitness.daily_nutrition_logs
+  FOR SELECT TO authenticated
+  USING (
+    (fitness.current_user_role() = 'client' AND client_id = auth.uid())
+    OR fitness.is_coach_for_client(client_id)
+  );
+CREATE POLICY nutrition_logs_client_write ON fitness.daily_nutrition_logs
+  FOR ALL TO authenticated
+  USING (client_id = auth.uid() AND fitness.current_user_role() = 'client')
+  WITH CHECK (client_id = auth.uid() AND fitness.current_user_role() = 'client');
+CREATE POLICY nutrition_log_meals_read_authorized ON fitness.nutrition_log_meals
+  FOR SELECT TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM fitness.daily_nutrition_logs dl
+      WHERE dl.id = daily_log_id
+        AND (dl.client_id = auth.uid() OR fitness.is_coach_for_client(dl.client_id))
+    )
+  );
+CREATE POLICY nutrition_log_meals_client_write ON fitness.nutrition_log_meals
+  FOR ALL TO authenticated
+  USING (
+    fitness.current_user_role() = 'client'
+    AND EXISTS (SELECT 1 FROM fitness.daily_nutrition_logs dl WHERE dl.id = daily_log_id AND dl.client_id = auth.uid())
+  )
+  WITH CHECK (
+    fitness.current_user_role() = 'client'
+    AND EXISTS (SELECT 1 FROM fitness.daily_nutrition_logs dl WHERE dl.id = daily_log_id AND dl.client_id = auth.uid())
+  );
+CREATE POLICY nutrition_log_foods_read_authorized ON fitness.nutrition_log_foods
+  FOR SELECT TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM fitness.nutrition_log_meals lm
+      JOIN fitness.daily_nutrition_logs dl ON dl.id = lm.daily_log_id
+      WHERE lm.id = log_meal_id
+        AND (dl.client_id = auth.uid() OR fitness.is_coach_for_client(dl.client_id))
+    )
+  );
+CREATE POLICY nutrition_log_foods_client_write ON fitness.nutrition_log_foods
+  FOR ALL TO authenticated
+  USING (
+    fitness.current_user_role() = 'client'
+    AND EXISTS (
+      SELECT 1 FROM fitness.nutrition_log_meals lm
+      JOIN fitness.daily_nutrition_logs dl ON dl.id = lm.daily_log_id
+      WHERE lm.id = log_meal_id AND dl.client_id = auth.uid()
+    )
+  )
+  WITH CHECK (
+    fitness.current_user_role() = 'client'
+    AND EXISTS (
+      SELECT 1 FROM fitness.nutrition_log_meals lm
+      JOIN fitness.daily_nutrition_logs dl ON dl.id = lm.daily_log_id
+      WHERE lm.id = log_meal_id AND dl.client_id = auth.uid()
+    )
+  );
+
+CREATE POLICY check_schedules_read_participants ON fitness.check_in_schedules
+  FOR SELECT TO authenticated
+  USING (
+    (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())
+    OR (fitness.current_user_role() = 'client' AND client_id = auth.uid())
+    OR fitness.is_coach_for_client(client_id)
+  );
+CREATE POLICY check_schedules_coach_write ON fitness.check_in_schedules
+  FOR ALL TO authenticated
+  USING (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())
+  WITH CHECK (
+    fitness.current_user_role() = 'coach'
+    AND coach_id = auth.uid()
+    AND fitness.is_coach_for_client(client_id)
+  );
+
+CREATE POLICY conversations_read_participants ON fitness.conversations
+  FOR SELECT TO authenticated
+  USING (
+    fitness.is_admin()
+    OR (fitness.current_user_role() = 'coach' AND coach_id = auth.uid())
+    OR (fitness.current_user_role() = 'client' AND client_id = auth.uid())
+  );
+CREATE POLICY conversations_coach_create ON fitness.conversations
+  FOR INSERT TO authenticated
+  WITH CHECK (coach_id = auth.uid() AND fitness.is_coach_for_client(client_id));
+CREATE POLICY messages_read_participants ON fitness.messages
+  FOR SELECT TO authenticated
+  USING (
+    fitness.current_user_role() IN ('admin', 'coach', 'client')
+    AND (sender_id = auth.uid() OR recipient_id = auth.uid()
+    OR EXISTS (
+      SELECT 1 FROM fitness.conversations c
+      WHERE c.id = conversation_id AND (c.coach_id = auth.uid() OR c.client_id = auth.uid())
+    )
+    )
+  );
+CREATE POLICY messages_send_participant ON fitness.messages
+  FOR INSERT TO authenticated
+  WITH CHECK (
+    sender_id = auth.uid()
+    AND EXISTS (
+      SELECT 1 FROM fitness.conversations c
+      WHERE c.id = conversation_id
+        AND (c.coach_id = auth.uid() OR c.client_id = auth.uid())
+        AND recipient_id IN (c.coach_id, c.client_id)
+    )
+  );
+CREATE POLICY messages_update_recipient ON fitness.messages
+  FOR UPDATE TO authenticated
+  USING (recipient_id = auth.uid())
+  WITH CHECK (recipient_id = auth.uid());
+
+CREATE POLICY notifications_read_self ON fitness.notifications
+  FOR SELECT TO authenticated
+  USING (user_id = auth.uid() AND fitness.current_user_role() IN ('admin', 'coach', 'client'));
+CREATE POLICY notifications_update_self ON fitness.notifications
+  FOR UPDATE TO authenticated
+  USING (user_id = auth.uid())
+  WITH CHECK (user_id = auth.uid());
+CREATE POLICY progress_photos_read_participants ON fitness.progress_photos
+  FOR SELECT TO authenticated
+  USING (
+    (fitness.current_user_role() = 'client' AND client_id = auth.uid())
+    OR fitness.is_coach_for_client(client_id)
+  );
+CREATE POLICY progress_photos_client_insert ON fitness.progress_photos
+  FOR INSERT TO authenticated
+  WITH CHECK (client_id = auth.uid() AND fitness.current_user_role() = 'client');
+CREATE POLICY progress_photos_client_delete ON fitness.progress_photos
+  FOR DELETE TO authenticated
+  USING (client_id = auth.uid() AND fitness.current_user_role() = 'client');
 `;
