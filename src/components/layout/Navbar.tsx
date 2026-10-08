@@ -142,7 +142,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* User Avatar */}
             <div className="hidden min-[480px]:flex items-center">
               <img
-                src={currentUser.avatarUrl}
+                src={currentUser.avatarUrl || undefined}
                 alt={currentUser.fullName}
                 className="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover ring-2 ring-emerald-500/40"
               />

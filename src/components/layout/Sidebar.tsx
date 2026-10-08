@@ -131,7 +131,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen = false, onCloseM
       <div className="p-4 border-b border-slate-800 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <img
-            src={currentUser.avatarUrl}
+            src={currentUser.avatarUrl || undefined}
             alt={currentUser.fullName}
             className="w-10 h-10 rounded-xl object-cover ring-1 ring-slate-700"
           />

@@ -57,10 +57,9 @@ export async function checkSupabaseConnection(
     const timeoutId = setTimeout(() => controller.abort(), 6000);
     let response: Response;
     try {
-      response = await fetch(`${targetUrl}/rest/v1/`, {
+      response = await fetch(`${targetUrl}/auth/v1/health`, {
         headers: {
           apikey: targetKey,
-          Authorization: `Bearer ${targetKey}`,
         },
         signal: controller.signal,
       });
@@ -68,9 +67,9 @@ export async function checkSupabaseConnection(
       clearTimeout(timeoutId);
     }
 
-    if (response.ok || response.status === 404) {
+    if (response.ok) {
       endpointIsReachable = true;
-      return { connected: true, endpoint: targetUrl, tablesFound: ['fitness'], statusText: 'Connected & active' };
+      return { connected: true, endpoint: targetUrl, statusText: 'Connected & active' };
     }
     endpointIsReachable = false;
     return { connected: false, endpoint: targetUrl, error: `HTTP ${response.status}: ${response.statusText}` };
