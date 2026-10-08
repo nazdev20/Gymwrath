@@ -1,0 +1,8 @@
+{
+  "name": "Remix Fitness Coaching Platform",
+  "description": "A production-grade fitness coaching web application for admins, coaches, and clients with custom workout programming, check-ins, manual step tracking, nutrition planning, and messaging.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
