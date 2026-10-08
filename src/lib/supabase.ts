@@ -11,13 +11,19 @@ function getEnvironmentConfig() {
   const url = (process.env.NEXT_PUBLIC_SUPABASE_URL || '').trim().replace(/\/+$/, '');
   const anonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '').trim();
 
-  if (!url || !anonKey) {
-    throw new Error(
-      'Missing Supabase environment variables. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.'
-    );
-  }
-
   return { url, anonKey };
+}
+
+const OFFLINE_SUPABASE_URL = 'http://127.0.0.1:54321';
+const OFFLINE_SUPABASE_KEY = 'offline-placeholder-key';
+
+function createSupabaseClient(url: string, anonKey: string): SupabaseClient {
+  return createClient(url || OFFLINE_SUPABASE_URL, anonKey || OFFLINE_SUPABASE_KEY, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+    },
+  });
 }
 
 export function getSupabaseConfig(): SupabaseConfig {
@@ -43,7 +49,7 @@ export function getSupabaseConfig(): SupabaseConfig {
     url,
     anonKey,
     isCustom: !!(customUrl.trim() || customKey.trim()),
-    isOfflineMode: offline,
+    isOfflineMode: offline || !url || !anonKey,
   };
 }
 
@@ -51,12 +57,7 @@ const initialConfig = getSupabaseConfig();
 export let SUPABASE_URL: string = initialConfig.url;
 export let SUPABASE_ANON_KEY: string = initialConfig.anonKey;
 
-let activeClient: SupabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-  },
-});
+let activeClient: SupabaseClient = createSupabaseClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let endpointIsReachable: boolean | null = null;
 
@@ -69,18 +70,27 @@ export function setSupabaseReachableState(reachable: boolean | null) {
 }
 
 export function setCustomSupabaseConfig(url: string, key: string, offline = false) {
-  const cleanUrl = url.trim().replace(/\/+$/, '');
-  const cleanKey = key.trim();
+  let cleanUrl = url.trim().replace(/\/+$/, '');
+  let cleanKey = key.trim();
 
   if (!cleanUrl || !cleanKey) {
-    resetSupabaseConfig();
-    return;
+    if (!offline) {
+      resetSupabaseConfig();
+      return;
+    }
+    cleanUrl = '';
+    cleanKey = '';
   }
 
   try {
     if (typeof window !== 'undefined' && window.localStorage) {
-      window.localStorage.setItem('apex_supabase_url', cleanUrl);
-      window.localStorage.setItem('apex_supabase_key', cleanKey);
+      if (cleanUrl && cleanKey) {
+        window.localStorage.setItem('apex_supabase_url', cleanUrl);
+        window.localStorage.setItem('apex_supabase_key', cleanKey);
+      } else {
+        window.localStorage.removeItem('apex_supabase_url');
+        window.localStorage.removeItem('apex_supabase_key');
+      }
       window.localStorage.setItem('apex_supabase_offline', offline ? 'true' : 'false');
     }
   } catch {}
@@ -88,12 +98,7 @@ export function setCustomSupabaseConfig(url: string, key: string, offline = fals
   SUPABASE_URL = cleanUrl;
   SUPABASE_ANON_KEY = cleanKey;
 
-  activeClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-    },
-  });
+  activeClient = createSupabaseClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   endpointIsReachable = null;
 }
@@ -112,12 +117,7 @@ export function resetSupabaseConfig() {
   SUPABASE_URL = env.url;
   SUPABASE_ANON_KEY = env.anonKey;
 
-  activeClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-    },
-  });
+  activeClient = createSupabaseClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   endpointIsReachable = null;
 }

@@ -64,34 +64,34 @@ export const AdminDashboard: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       {/* Admin Header */}
-      <div className="bg-gradient-to-r from-slate-900 via-purple-950/40 to-slate-900 border border-purple-500/30 rounded-2xl p-6 relative overflow-hidden">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
+      <div className="min-w-0 bg-gradient-to-r from-slate-900 via-purple-950/40 to-slate-900 border border-purple-500/30 rounded-2xl p-4 sm:p-6 relative overflow-hidden">
+        <div className="relative z-10 flex min-w-0 flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/40 flex items-center gap-1">
                 <ShieldCheck className="w-3.5 h-3.5" /> Platform Administration
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            <h1 className="min-w-0 break-words text-xl sm:text-3xl leading-tight font-extrabold text-white tracking-tight">
               System Control & Account Oversight
             </h1>
-            <p className="text-sm text-slate-400 mt-1 max-w-xl">
+            <p className="min-w-0 text-sm text-slate-400 mt-1 max-w-xl">
               Manage coach-client assignments, review pending registration requests, and oversee platform catalog invariants.
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex w-full flex-col items-stretch gap-2 sm:flex-row md:w-auto md:shrink-0">
             <button
               onClick={() => setActiveView('exercises')}
-              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition-colors flex items-center gap-1.5"
+              className="min-w-0 justify-center px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition-colors flex items-center gap-1.5"
             >
               <Dumbbell className="w-4 h-4" /> Global Exercises
             </button>
             <button
               onClick={() => setActiveView('nutrition')}
-              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition-colors flex items-center gap-1.5"
+              className="min-w-0 justify-center px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition-colors flex items-center gap-1.5"
             >
               <Utensils className="w-4 h-4" /> Food Catalog
             </button>
@@ -100,8 +100,8 @@ export const AdminDashboard: React.FC = () => {
       </div>
 
       {/* Metrics Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+      <div className="grid grid-cols-1 min-[380px]:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="min-w-0 bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider">Total Users</span>
             <Users className="w-4 h-4 text-purple-400" />
@@ -110,7 +110,7 @@ export const AdminDashboard: React.FC = () => {
           <p className="text-xs text-slate-400 mt-1">Across all roles</p>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+        <div className="min-w-0 bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider">Pending Approvals</span>
             <AlertTriangle className="w-4 h-4 text-amber-400" />
@@ -119,7 +119,7 @@ export const AdminDashboard: React.FC = () => {
           <p className="text-xs text-slate-400 mt-1">Awaiting coach assignment</p>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+        <div className="min-w-0 bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider">Active Coaches</span>
             <Dumbbell className="w-4 h-4 text-emerald-400" />
@@ -128,7 +128,7 @@ export const AdminDashboard: React.FC = () => {
           <p className="text-xs text-slate-400 mt-1">On platform</p>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+        <div className="min-w-0 bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider">Global Foods & Exercises</span>
             <Utensils className="w-4 h-4 text-blue-400" />
@@ -139,7 +139,7 @@ export const AdminDashboard: React.FC = () => {
       </div>
 
       {/* User Management Table */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+      <div className="min-w-0 bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
         <div className="p-5 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h2 className="text-base font-bold text-white">User Accounts & Access Control</h2>

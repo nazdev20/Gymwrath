@@ -345,7 +345,7 @@ export const NutritionView: React.FC = () => {
       {/* Log Food Modal */}
       {isLogFoodOpen && (
         <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
-          <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 text-white shadow-2xl space-y-4">
+          <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 text-white shadow-2xl space-y-4">
             <h3 className="text-base font-bold text-white">Log Food to Meal Diary</h3>
 
             <form onSubmit={handleSaveFoodLog} className="space-y-4">
@@ -424,7 +424,7 @@ export const NutritionView: React.FC = () => {
       {/* Set Macro Target Modal */}
       {isSetTargetOpen && (
         <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
-          <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 text-white shadow-2xl space-y-4">
+          <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 text-white shadow-2xl space-y-4">
             <h3 className="text-base font-bold text-white">Prescribe Daily Macro Targets</h3>
 
             <form onSubmit={handleSaveTarget} className="space-y-4">
@@ -439,7 +439,7 @@ export const NutritionView: React.FC = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 min-[420px]:grid-cols-3 gap-3 sm:gap-2">
                 <div>
                   <label className="block text-[11px] font-semibold uppercase text-slate-400 mb-1">Protein (g)</label>
                   <input
@@ -495,7 +495,7 @@ export const NutritionView: React.FC = () => {
       {/* Create Custom Food Modal */}
       {isAddCustomFoodOpen && (
         <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
-          <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 text-white shadow-2xl space-y-4">
+          <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 text-white shadow-2xl space-y-4">
             <h3 className="text-base font-bold text-white">Create Food Item (per 100g)</h3>
 
             <form onSubmit={handleSaveCustomFood} className="space-y-4">

@@ -64,10 +64,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header className="sticky top-0 z-30 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 text-white">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+        <div className="flex min-w-0 items-center justify-between gap-1 h-16">
           {/* Left: Mobile Menu Toggle & Brand Logo */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             {/* Mobile Hamburger Drawer Button */}
             {onToggleSidebar && (
               <button
@@ -86,17 +86,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                 setSelectedClientId(null);
                 setActiveView('dashboard');
               }}
-              className="flex items-center gap-2 group text-left focus:outline-none"
+              className="flex min-w-0 items-center gap-2 group text-left focus:outline-none"
             >
               <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform shrink-0">
                 <Dumbbell className="w-4 h-4 sm:w-5 sm:h-5 text-slate-950 font-bold" />
               </div>
-              <div className="min-w-0">
+              <div className="hidden min-w-0 min-[480px]:block">
                 <div className="flex items-center gap-1.5">
                   <span className="font-extrabold text-base sm:text-lg tracking-tight text-white truncate">
                     ApexCoaching
                   </span>
-                  <span className="text-[10px] text-emerald-400 px-1 py-0.2 rounded bg-emerald-950/80 border border-emerald-800/60 font-mono font-bold">
+                  <span className="hidden min-[480px]:inline text-[10px] text-emerald-400 px-1 py-0.2 rounded bg-emerald-950/80 border border-emerald-800/60 font-mono font-bold">
                     PRO
                   </span>
                 </div>
@@ -108,21 +108,21 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Right Controls: Persona Switcher, Notifications, Profile Avatar */}
-          <div className="flex items-center gap-1.5 sm:gap-3">
+          <div className="flex min-w-0 items-center gap-0.5 min-[360px]:gap-1.5 sm:gap-3">
             {/* Quick Switch Persona Selector */}
             <div className="relative">
               <button
                 id="persona-switcher-button"
                 onClick={() => setIsPersonaOpen(!isPersonaOpen)}
-                className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-xs sm:text-sm text-slate-200 transition-colors min-h-[38px]"
+                className="flex min-w-0 items-center gap-1 sm:gap-2 px-1.5 min-[360px]:px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-xs sm:text-sm text-slate-200 transition-colors min-h-[38px]"
                 title="Switch Persona / Role for Testing"
               >
                 <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></div>
                 <span className="hidden md:inline text-xs text-slate-400">Persona:</span>
-                <span className="font-semibold text-xs sm:text-sm truncate max-w-[85px] sm:max-w-[130px]">
+                <span className="min-w-0 font-semibold text-xs sm:text-sm truncate max-w-[48px] min-[360px]:max-w-[85px] sm:max-w-[130px]">
                   {currentUser.fullName.split(' ')[0]}
                 </span>
-                <div className="shrink-0">{getRoleBadge(currentUser.role)}</div>
+                <div className="hidden min-[480px]:block shrink-0">{getRoleBadge(currentUser.role)}</div>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
               </button>
 
@@ -224,7 +224,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 id="notifications-button"
                 onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-                className="relative p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-colors min-w-[38px] min-h-[38px] flex items-center justify-center"
+                className="relative p-1.5 min-[360px]:p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-colors min-w-[34px] min-[360px]:min-w-[38px] min-h-[38px] flex items-center justify-center"
                 title="Notifications"
                 aria-label="Notifications"
               >
@@ -238,7 +238,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             {/* User Avatar */}
-            <div className="flex items-center">
+            <div className="hidden min-[480px]:flex items-center">
               <img
                 src={currentUser.avatarUrl}
                 alt={currentUser.fullName}

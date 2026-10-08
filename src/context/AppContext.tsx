@@ -186,21 +186,22 @@ const DEFAULT_ADMIN_PROFILE: Profile = {
 const INITIAL_BASE_PROFILES: Profile[] = [DEFAULT_COACH_PROFILE, DEFAULT_ADMIN_PROFILE];
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [allProfiles, setAllProfiles] = useState<Profile[]>(() => loadFromStorage('profiles', INITIAL_BASE_PROFILES));
-  const [currentUserId, setCurrentUserId] = useState<string>(() => loadFromStorage('current_user_id', 'coach-primary'));
+  const [allProfiles, setAllProfiles] = useState<Profile[]>(INITIAL_BASE_PROFILES);
+  const [currentUserId, setCurrentUserId] = useState<string>('coach-primary');
   
-  const [exercises, setExercises] = useState<Exercise[]>(() => loadFromStorage('exercises', []));
-  const [programs, setPrograms] = useState<Program[]>(() => loadFromStorage('programs', []));
-  const [scheduledWorkouts, setScheduledWorkouts] = useState<ScheduledWorkout[]>(() => loadFromStorage('workouts', []));
-  const [checkIns, setCheckIns] = useState<CheckIn[]>(() => loadFromStorage('checkins', []));
-  const [stepRecords, setStepRecords] = useState<StepRecord[]>(() => loadFromStorage('steps', []));
-  const [foods, setFoods] = useState<Food[]>(() => loadFromStorage('foods', []));
-  const [nutritionTargets, setNutritionTargets] = useState<NutritionTarget[]>(() => loadFromStorage('targets', []));
-  const [mealPlans, setMealPlans] = useState<MealPlan[]>(() => loadFromStorage('mealplans', []));
-  const [foodLogs, setFoodLogs] = useState<FoodLogItem[]>(() => loadFromStorage('foodlogs', []));
-  const [conversations, setConversations] = useState<Conversation[]>(() => loadFromStorage('conversations', []));
-  const [messages, setMessages] = useState<Message[]>(() => loadFromStorage('messages', []));
-  const [notifications, setNotifications] = useState<AppNotification[]>(() => loadFromStorage('notifications', []));
+  const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [programs, setPrograms] = useState<Program[]>([]);
+  const [scheduledWorkouts, setScheduledWorkouts] = useState<ScheduledWorkout[]>([]);
+  const [checkIns, setCheckIns] = useState<CheckIn[]>([]);
+  const [stepRecords, setStepRecords] = useState<StepRecord[]>([]);
+  const [foods, setFoods] = useState<Food[]>([]);
+  const [nutritionTargets, setNutritionTargets] = useState<NutritionTarget[]>([]);
+  const [mealPlans, setMealPlans] = useState<MealPlan[]>([]);
+  const [foodLogs, setFoodLogs] = useState<FoodLogItem[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
+  const [isStorageHydrated, setIsStorageHydrated] = useState(false);
 
   // Supabase Loading & Connectivity State
   const [isLoadingSupabase, setIsLoadingSupabase] = useState<boolean>(false);
@@ -214,7 +215,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isCheckInModalOpen, setIsCheckInModalOpen] = useState<boolean>(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState<boolean>(false);
 
-  // Auto-fetch data from Supabase on mount
+  useEffect(() => {
+    setAllProfiles(loadFromStorage('profiles', INITIAL_BASE_PROFILES));
+    setCurrentUserId(loadFromStorage('current_user_id', 'coach-primary'));
+    setExercises(loadFromStorage('exercises', []));
+    setPrograms(loadFromStorage('programs', []));
+    setScheduledWorkouts(loadFromStorage('workouts', []));
+    setCheckIns(loadFromStorage('checkins', []));
+    setStepRecords(loadFromStorage('steps', []));
+    setFoods(loadFromStorage('foods', []));
+    setNutritionTargets(loadFromStorage('targets', []));
+    setMealPlans(loadFromStorage('mealplans', []));
+    setFoodLogs(loadFromStorage('foodlogs', []));
+    setConversations(loadFromStorage('conversations', []));
+    setMessages(loadFromStorage('messages', []));
+    setNotifications(loadFromStorage('notifications', []));
+    setIsStorageHydrated(true);
+  }, []);
+
+  // Auto-fetch data from Supabase after local state has been restored
   const loadFromSupabase = async (): Promise<boolean> => {
     setIsLoadingSupabase(true);
     try {
@@ -255,8 +274,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   useEffect(() => {
-    loadFromSupabase();
-  }, []);
+    if (isStorageHydrated) loadFromSupabase();
+  }, [isStorageHydrated]);
 
   // Clear all local storage data
   const clearAllLocalData = () => {
@@ -282,20 +301,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   // Sync to storage
-  useEffect(() => saveToStorage('profiles', allProfiles), [allProfiles]);
-  useEffect(() => saveToStorage('current_user_id', currentUserId), [currentUserId]);
-  useEffect(() => saveToStorage('exercises', exercises), [exercises]);
-  useEffect(() => saveToStorage('programs', programs), [programs]);
-  useEffect(() => saveToStorage('workouts', scheduledWorkouts), [scheduledWorkouts]);
-  useEffect(() => saveToStorage('checkins', checkIns), [checkIns]);
-  useEffect(() => saveToStorage('steps', stepRecords), [stepRecords]);
-  useEffect(() => saveToStorage('foods', foods), [foods]);
-  useEffect(() => saveToStorage('targets', nutritionTargets), [nutritionTargets]);
-  useEffect(() => saveToStorage('mealplans', mealPlans), [mealPlans]);
-  useEffect(() => saveToStorage('foodlogs', foodLogs), [foodLogs]);
-  useEffect(() => saveToStorage('conversations', conversations), [conversations]);
-  useEffect(() => saveToStorage('messages', messages), [messages]);
-  useEffect(() => saveToStorage('notifications', notifications), [notifications]);
+  useEffect(() => { if (isStorageHydrated) saveToStorage('profiles', allProfiles); }, [allProfiles, isStorageHydrated]);
+  useEffect(() => { if (isStorageHydrated) saveToStorage('current_user_id', currentUserId); }, [currentUserId, isStorageHydrated]);
+  useEffect(() => { if (isStorageHydrated) saveToStorage('exercises', exercises); }, [exercises, isStorageHydrated]);
+  useEffect(() => { if (isStorageHydrated) saveToStorage('programs', programs); }, [programs, isStorageHydrated]);
+  useEffect(() => { if (isStorageHydrated) saveToStorage('workouts', scheduledWorkouts); }, [scheduledWorkouts, isStorageHydrated]);
+  useEffect(() => { if (isStorageHydrated) saveToStorage('checkins', checkIns); }, [checkIns, isStorageHydrated]);
+  useEffect(() => { if (isStorageHydrated) saveToStorage('steps', stepRecords); }, [stepRecords, isStorageHydrated]);
+  useEffect(() => { if (isStorageHydrated) saveToStorage('foods', foods); }, [foods, isStorageHydrated]);
+  useEffect(() => { if (isStorageHydrated) saveToStorage('targets', nutritionTargets); }, [nutritionTargets, isStorageHydrated]);
+  useEffect(() => { if (isStorageHydrated) saveToStorage('mealplans', mealPlans); }, [mealPlans, isStorageHydrated]);
+  useEffect(() => { if (isStorageHydrated) saveToStorage('foodlogs', foodLogs); }, [foodLogs, isStorageHydrated]);
+  useEffect(() => { if (isStorageHydrated) saveToStorage('conversations', conversations); }, [conversations, isStorageHydrated]);
+  useEffect(() => { if (isStorageHydrated) saveToStorage('messages', messages); }, [messages, isStorageHydrated]);
+  useEffect(() => { if (isStorageHydrated) saveToStorage('notifications', notifications); }, [notifications, isStorageHydrated]);
 
   const currentUser = allProfiles.find(p => p.id === currentUserId) || allProfiles[0] || DEFAULT_COACH_PROFILE;
 

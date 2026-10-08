@@ -293,7 +293,7 @@ export const CheckInSubmitModal: React.FC = () => {
               <span className="w-2 h-2 rounded-full bg-purple-400"></span> 4. Progress Photos (Front, Side, Back)
             </h3>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 min-[480px]:grid-cols-3 gap-3">
               {photos.map(p => (
                 <div key={p.id} className="relative rounded-xl overflow-hidden border border-slate-750 group">
                   <img src={p.url} alt="Progress" className="w-full h-32 object-cover" />

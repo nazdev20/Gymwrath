@@ -76,7 +76,7 @@ const MainLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-emerald-500 selection:text-slate-950">
+    <div className="min-h-screen w-full min-w-0 max-w-full bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-emerald-500 selection:text-slate-950">
       {/* Top Sticky Navigation */}
       <Navbar
         onToggleSidebar={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -84,7 +84,7 @@ const MainLayout: React.FC = () => {
         onOpenAuth={() => setIsAuthModalOpen(true)}
       />
 
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex w-full min-w-0 flex-1 overflow-hidden">
         {/* Responsive Desktop Sidebar & Mobile Drawer */}
         <Sidebar
           isMobileOpen={isMobileMenuOpen}
@@ -92,7 +92,7 @@ const MainLayout: React.FC = () => {
         />
 
         {/* Main Scrollable Content Area with Mobile Safe Bottom Spacing */}
-        <main className="flex-1 overflow-y-auto p-3 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto pb-24 lg:pb-12">
+        <main className="min-w-0 flex-1 overflow-y-auto p-3 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto pb-24 lg:pb-12">
           {renderCurrentView()}
         </main>
       </div>

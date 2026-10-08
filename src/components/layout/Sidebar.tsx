@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useApp, AppView } from '../../context/AppContext';
 import {
   LayoutDashboard,
@@ -22,6 +22,18 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen = false, onCloseMobile }) => {
+  const [platformTime, setPlatformTime] = useState('--:--');
+
+  useEffect(() => {
+    const updatePlatformTime = () => {
+      setPlatformTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    };
+
+    updatePlatformTime();
+    const intervalId = window.setInterval(updatePlatformTime, 60_000);
+    return () => window.clearInterval(intervalId);
+  }, []);
+
   const {
     currentUser,
     activeView,
@@ -180,7 +192,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen = false, onCloseM
         <div className="flex items-center justify-between">
           <span>Platform Time:</span>
           <span className="font-mono text-slate-300">
-            {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            {platformTime}
           </span>
         </div>
         <div className="mt-1 flex items-center justify-between text-[11px] text-slate-400">

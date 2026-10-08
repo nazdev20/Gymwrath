@@ -176,7 +176,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ onOpenMobileMe
       aria-label="Mobile Navigation"
       className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 px-1 py-1 shadow-2xl safe-area-pb"
     >
-      <div className="flex items-center justify-around">
+      <div className="flex items-stretch">
         {tabs.map(tab => {
           const isActive = tab.id !== 'more' && activeView === tab.id;
 
@@ -191,7 +191,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ onOpenMobileMe
                   setActiveView(tab.id as AppView);
                 }
               }}
-              className={`relative flex flex-col items-center justify-center py-1.5 px-2 rounded-xl transition-all min-w-[50px] min-h-[46px] ${
+              className={`relative flex min-w-0 flex-1 flex-col items-center justify-center py-1.5 px-0.5 rounded-xl transition-all min-h-[46px] ${
                 isActive
                   ? 'text-emerald-400 bg-emerald-500/10'
                   : 'text-slate-400 hover:text-slate-200 active:scale-95'
@@ -209,7 +209,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ onOpenMobileMe
                   </span>
                 )}
               </div>
-              <span className={`text-[10px] font-medium mt-0.5 tracking-tight ${isActive ? 'font-bold' : ''}`}>
+              <span className={`max-w-full truncate whitespace-nowrap text-[10px] font-medium mt-0.5 ${isActive ? 'font-bold' : ''}`}>
                 {tab.label}
               </span>
             </button>

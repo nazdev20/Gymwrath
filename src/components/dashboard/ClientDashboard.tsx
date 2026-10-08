@@ -80,12 +80,12 @@ export const ClientDashboard: React.FC = () => {
     .sort((a, b) => new Date(b.checkInDate).getTime() - new Date(a.checkInDate).getTime())[0];
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 border border-slate-800 rounded-2xl p-6 relative overflow-hidden">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
+      <div className="min-w-0 bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 relative overflow-hidden">
+        <div className="relative z-10 flex min-w-0 flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2 mb-1">
               <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
                 Athlete Today's Hub
               </span>
@@ -93,7 +93,7 @@ export const ClientDashboard: React.FC = () => {
                 {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            <h1 className="break-words text-xl sm:text-3xl leading-tight font-extrabold text-white tracking-tight">
               Ready to train, {currentUser.fullName.split(' ')[0]}? 🔥
             </h1>
             <p className="text-sm text-slate-400 mt-1 max-w-xl">
@@ -268,7 +268,7 @@ export const ClientDashboard: React.FC = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3 pt-2">
+              <div className="grid grid-cols-2 min-[420px]:grid-cols-3 gap-2 sm:gap-3 pt-2">
                 {/* Protein */}
                 <div className="p-3 rounded-xl bg-slate-850 border border-slate-750">
                   <p className="text-[11px] font-semibold uppercase text-slate-400">Protein</p>
@@ -318,7 +318,7 @@ export const ClientDashboard: React.FC = () => {
         {/* Right 1 Col: Step Tracker & Check-In Card */}
         <div className="space-y-6">
           {/* Step Logger Card */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-xl">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">

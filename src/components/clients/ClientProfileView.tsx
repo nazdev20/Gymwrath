@@ -63,7 +63,7 @@ export const ClientProfileView: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       {/* Top Back & Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <button
@@ -229,7 +229,7 @@ export const ClientProfileView: React.FC = () => {
                   <span className="text-[10px] text-slate-400 uppercase font-semibold">Daily Calories</span>
                   <div className="text-2xl font-extrabold text-emerald-400">{clientTarget.caloriesKcal} kcal</div>
                 </div>
-                <div className="grid grid-cols-3 gap-2 text-center">
+                <div className="grid grid-cols-1 min-[380px]:grid-cols-3 gap-2 text-center">
                   <div className="p-2 bg-slate-850 rounded-lg border border-slate-750">
                     <p className="text-[10px] text-slate-400">Protein</p>
                     <p className="font-bold text-white text-sm">{clientTarget.proteinG}g</p>

@@ -371,7 +371,7 @@ export const ProgramBuilder: React.FC = () => {
               </button>
             </div>
 
-            <form onSubmit={handleSaveProgram} className="flex-1 overflow-y-auto p-6 space-y-5">
+            <form onSubmit={handleSaveProgram} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-semibold uppercase text-slate-300 mb-1">Program Title</label>

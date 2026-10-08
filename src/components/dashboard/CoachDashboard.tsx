@@ -83,12 +83,12 @@ export const CoachDashboard: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 border border-slate-800 rounded-2xl p-6 relative overflow-hidden">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
+      <div className="min-w-0 bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 relative overflow-hidden">
+        <div className="relative z-10 flex min-w-0 flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2 mb-1">
               <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
                 Coach Command Center
               </span>
@@ -96,7 +96,7 @@ export const CoachDashboard: React.FC = () => {
                 {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            <h1 className="break-words text-xl sm:text-3xl leading-tight font-extrabold text-white tracking-tight">
               Welcome back, {currentUser.fullName.split(' ')[0]} 👋
             </h1>
             <p className="text-sm text-slate-400 mt-1 max-w-2xl">
@@ -104,16 +104,16 @@ export const CoachDashboard: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex w-full flex-col items-stretch gap-2 sm:flex-row md:w-auto md:shrink-0">
             <button
               onClick={() => setActiveView('programs')}
-              className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm transition-colors flex items-center gap-2 shadow-lg shadow-emerald-500/20"
+              className="justify-center px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm transition-colors flex items-center gap-2 shadow-lg shadow-emerald-500/20"
             >
               <Plus className="w-4 h-4" /> Create Program
             </button>
             <button
               onClick={() => setActiveView('exercises')}
-              className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-white font-medium text-sm transition-colors flex items-center gap-2"
+              className="justify-center px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-white font-medium text-sm transition-colors flex items-center gap-2"
             >
               <Dumbbell className="w-4 h-4" /> Exercise DB
             </button>
@@ -122,8 +122,8 @@ export const CoachDashboard: React.FC = () => {
       </div>
 
       {/* Metrics Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+      <div className="grid grid-cols-1 min-[400px]:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="min-w-0 bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider">Active Clients</span>
             <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center">
@@ -134,7 +134,7 @@ export const CoachDashboard: React.FC = () => {
           <p className="text-xs text-slate-400 mt-1">Managed roster</p>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+        <div className="min-w-0 bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider">Pending Check-Ins</span>
             <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center">
@@ -145,7 +145,7 @@ export const CoachDashboard: React.FC = () => {
           <p className="text-xs text-slate-400 mt-1">Requires coach review</p>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+        <div className="min-w-0 bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider">Today's Workouts</span>
             <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
@@ -158,7 +158,7 @@ export const CoachDashboard: React.FC = () => {
           <p className="text-xs text-slate-400 mt-1">Prescribed for today</p>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+        <div className="min-w-0 bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider">Needs Attention</span>
             <div className="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center">

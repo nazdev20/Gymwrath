@@ -55,13 +55,13 @@ export const StepsTrackerView: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex min-w-0 flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+          <div className="flex min-w-0 items-center gap-2">
+            <div className="w-8 h-8 shrink-0 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
               <Footprints className="w-4 h-4" />
             </div>
-            <h1 className="text-2xl font-extrabold text-white">Daily Steps & NEAT Tracker</h1>
+            <h1 className="min-w-0 break-words text-xl sm:text-2xl leading-tight font-extrabold text-white">Daily Steps & NEAT Tracker</h1>
           </div>
           <p className="text-xs text-slate-400 mt-1">
             Manual step tracking logs, baseline activity trends, and daily compliance records.
@@ -69,12 +69,12 @@ export const StepsTrackerView: React.FC = () => {
         </div>
 
         {currentUser.role !== 'client' && (
-          <div className="flex items-center gap-2 text-xs">
+          <div className="flex w-full items-center gap-2 text-xs sm:w-auto">
             <span className="text-slate-400">Athlete:</span>
             <select
               value={selectedClientId}
               onChange={e => setSelectedClientId(e.target.value)}
-              className="px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-emerald-500"
+              className="min-w-0 flex-1 sm:flex-none sm:max-w-52 px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-emerald-500"
             >
               {clients.map(c => (
                 <option key={c.id} value={c.id}>{c.fullName}</option>
@@ -85,8 +85,8 @@ export const StepsTrackerView: React.FC = () => {
       </div>
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+      <div className="grid grid-cols-1 min-[360px]:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="min-w-0 bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider">Average Daily Steps</span>
             <TrendingUp className="w-4 h-4 text-emerald-400" />
@@ -95,7 +95,7 @@ export const StepsTrackerView: React.FC = () => {
           <p className="text-xs text-slate-400 mt-1">Across all logged days</p>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+        <div className="min-w-0 bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider">10k Goal Hit Rate</span>
             <Award className="w-4 h-4 text-amber-400" />
@@ -104,7 +104,7 @@ export const StepsTrackerView: React.FC = () => {
           <p className="text-xs text-slate-400 mt-1">{hitGoalCount} of {totalLogs} days &gt;= 10,000</p>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+        <div className="min-w-0 bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider">Personal Record</span>
             <Flame className="w-4 h-4 text-rose-400" />
@@ -113,7 +113,7 @@ export const StepsTrackerView: React.FC = () => {
           <p className="text-xs text-slate-400 mt-1">Single highest day</p>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+        <div className="min-w-0 bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider">Logged Entries</span>
             <Calendar className="w-4 h-4 text-blue-400" />
@@ -124,7 +124,7 @@ export const StepsTrackerView: React.FC = () => {
       </div>
 
       {/* Manual Step Logger Form */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+      <div className="min-w-0 bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-xl">
         <h2 className="text-base font-bold text-white mb-1">Log Daily Step Count</h2>
         <p className="text-xs text-slate-400 mb-4">Input your total daily steps as recorded by your phone or fitness wearable</p>
 
@@ -171,17 +171,17 @@ export const StepsTrackerView: React.FC = () => {
       </div>
 
       {/* History Grid */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-xl">
+      <div className="min-w-0 bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 space-y-4 shadow-xl">
         <h2 className="text-base font-bold text-white">Historical Step Records</h2>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
+        <div className="grid grid-cols-1 min-[360px]:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
           {clientSteps.map(rec => {
             const isHit = rec.stepCount >= 10000;
 
             return (
               <div
                 key={rec.id}
-                className={`p-3.5 rounded-xl border text-center transition-all ${
+                className={`min-w-0 p-2.5 sm:p-3.5 rounded-xl border text-center transition-all ${
                   isHit
                     ? 'bg-emerald-950/20 border-emerald-500/40'
                     : 'bg-slate-850 border-slate-750'

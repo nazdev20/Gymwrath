@@ -60,13 +60,13 @@ export const MessagesView: React.FC = () => {
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+      <div className="flex min-w-0 items-center justify-between">
+        <div className="min-w-0">
+          <div className="flex min-w-0 items-center gap-2">
+            <div className="w-8 h-8 shrink-0 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
               <MessageSquare className="w-4 h-4" />
             </div>
-            <h1 className="text-xl sm:text-2xl font-extrabold text-white">Direct Messaging & Chat</h1>
+            <h1 className="min-w-0 break-words text-xl sm:text-2xl leading-tight font-extrabold text-white">Direct Messaging & Chat</h1>
           </div>
           <p className="text-xs text-slate-400 mt-1">
             Real-time asynchronous communication between athlete and coaching team.
@@ -75,7 +75,7 @@ export const MessagesView: React.FC = () => {
       </div>
 
       {/* Main Chat Box */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl grid grid-cols-1 md:grid-cols-3 min-h-[520px] max-h-[78vh]">
+      <div className="min-w-0 bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl grid grid-cols-1 md:grid-cols-3 min-h-[50vh] max-h-[78vh] md:min-h-[520px]">
         {/* Left Sidebar (Contacts for Coach/Admin) */}
         {!isClient && (
           <div className={`border-r border-slate-800 bg-slate-900/80 flex flex-col ${
