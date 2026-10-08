@@ -1,13 +1,23 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-const DEFAULT_URL = 'https://cbcvhmvdaujhbquryaom.supabase.co';
-const DEFAULT_ANON_KEY = 'sb_publishable_hBItT31I4RBvcksW7tMRyw_kfEnFZbB';
-
 export interface SupabaseConfig {
   url: string;
   anonKey: string;
   isCustom: boolean;
   isOfflineMode: boolean;
+}
+
+function getEnvironmentConfig() {
+  const url = (process.env.NEXT_PUBLIC_SUPABASE_URL || '').trim().replace(/\/+$/, '');
+  const anonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '').trim();
+
+  if (!url || !anonKey) {
+    throw new Error(
+      'Missing Supabase environment variables. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.'
+    );
+  }
+
+  return { url, anonKey };
 }
 
 export function getSupabaseConfig(): SupabaseConfig {
@@ -25,11 +35,9 @@ export function getSupabaseConfig(): SupabaseConfig {
     // Ignore storage issues
   }
 
-  const envUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || '').trim();
-  const envKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '').trim();
-
-  const url = (customUrl.trim() || envUrl || DEFAULT_URL).replace(/\/+$/, '');
-  const anonKey = customKey.trim() || envKey || DEFAULT_ANON_KEY;
+  const env = getEnvironmentConfig();
+  const url = (customUrl.trim() || env.url).replace(/\/+$/, '');
+  const anonKey = customKey.trim() || env.anonKey;
 
   return {
     url,
@@ -64,6 +72,11 @@ export function setCustomSupabaseConfig(url: string, key: string, offline = fals
   const cleanUrl = url.trim().replace(/\/+$/, '');
   const cleanKey = key.trim();
 
+  if (!cleanUrl || !cleanKey) {
+    resetSupabaseConfig();
+    return;
+  }
+
   try {
     if (typeof window !== 'undefined' && window.localStorage) {
       window.localStorage.setItem('apex_supabase_url', cleanUrl);
@@ -72,8 +85,8 @@ export function setCustomSupabaseConfig(url: string, key: string, offline = fals
     }
   } catch {}
 
-  SUPABASE_URL = cleanUrl || DEFAULT_URL;
-  SUPABASE_ANON_KEY = cleanKey || DEFAULT_ANON_KEY;
+  SUPABASE_URL = cleanUrl;
+  SUPABASE_ANON_KEY = cleanKey;
 
   activeClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: {
@@ -94,11 +107,10 @@ export function resetSupabaseConfig() {
     }
   } catch {}
 
-  const envUrl = (metaEnv.VITE_SUPABASE_URL || '').trim();
-  const envKey = (metaEnv.VITE_SUPABASE_ANON_KEY || '').trim();
+  const env = getEnvironmentConfig();
 
-  SUPABASE_URL = (envUrl || DEFAULT_URL).replace(/\/+$/, '');
-  SUPABASE_ANON_KEY = envKey || DEFAULT_ANON_KEY;
+  SUPABASE_URL = env.url;
+  SUPABASE_ANON_KEY = env.anonKey;
 
   activeClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: {
@@ -154,14 +166,14 @@ export async function checkSupabaseConnection(
         tablesFound: ['profiles'],
         statusText: 'Connected & active',
       };
-    } else {
-      endpointIsReachable = false;
-      return {
-        connected: false,
-        endpoint: targetUrl,
-        error: `HTTP ${res.status}: ${res.statusText}`,
-      };
     }
+
+    endpointIsReachable = false;
+    return {
+      connected: false,
+      endpoint: targetUrl,
+      error: `HTTP ${res.status}: ${res.statusText}`,
+    };
   } catch (err: any) {
     endpointIsReachable = false;
     const errMsg = err?.message || String(err);
@@ -181,4 +193,3 @@ export async function checkSupabaseConnection(
     };
   }
 }
-
