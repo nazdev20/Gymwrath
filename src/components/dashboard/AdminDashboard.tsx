@@ -276,7 +276,7 @@ export const AdminDashboard: React.FC = () => {
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
                         <img
-                          src={p.avatarUrl}
+                          src={p.avatarUrl || undefined}
                           alt={p.fullName}
                           className="w-9 h-9 rounded-full object-cover ring-1 ring-slate-700"
                         />
