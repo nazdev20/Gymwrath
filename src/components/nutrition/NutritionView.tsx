@@ -46,6 +46,9 @@ export const NutritionView: React.FC = () => {
   const [selectedMeal, setSelectedMeal] = useState<MealSectionName>('Breakfast');
   const [selectedFoodId, setSelectedFoodId] = useState(foods[0]?.id || '');
   const [foodQuantity, setFoodQuantity] = useState<number>(100);
+  const [foodLogError, setFoodLogError] = useState<string | null>(null);
+  const [isSavingFoodLog, setIsSavingFoodLog] = useState(false);
+  const [deletingFoodLogId, setDeletingFoodLogId] = useState<string | null>(null);
 
   // Macro Target inputs
   const currentTarget = nutritionTargets.find(t => t.clientId === selectedClientId) || {
@@ -68,6 +71,7 @@ export const NutritionView: React.FC = () => {
   const [newFoodCategory, setNewFoodCategory] = useState<Food['category']>('Protein');
 
   const clients = allProfiles.filter(p => p.role === 'client');
+  const canManageFoodLogs = currentUser.role === 'admin' || currentUser.role === 'client';
 
   // Logs for selected date and client
   const clientLogs = foodLogs.filter(
@@ -79,28 +83,53 @@ export const NutritionView: React.FC = () => {
   const totalCarbs = clientLogs.reduce((sum, l) => sum + l.carbsG, 0);
   const totalFat = clientLogs.reduce((sum, l) => sum + l.fatG, 0);
 
-  const handleSaveFoodLog = (e: React.FormEvent) => {
+  const handleSaveFoodLog = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSavingFoodLog) return;
     const food = foods.find(f => f.id === selectedFoodId);
     if (!food) return;
 
     const multiplier = foodQuantity / (food.servingSize || 100);
 
-    logFoodItem({
-      clientId: selectedClientId,
-      foodId: food.id,
-      foodName: food.name,
-      mealName: selectedMeal,
-      logDate: selectedDate,
-      quantity: foodQuantity,
-      unit: food.servingUnit || 'g',
-      calories: Math.round(food.calories * multiplier),
-      proteinG: Math.round(food.proteinG * multiplier * 10) / 10,
-      carbsG: Math.round(food.carbsG * multiplier * 10) / 10,
-      fatG: Math.round(food.fatG * multiplier * 10) / 10
-    });
+    setFoodLogError(null);
+    setIsSavingFoodLog(true);
+    try {
+      const result = await logFoodItem({
+        clientId: selectedClientId,
+        foodId: food.id,
+        foodName: food.name,
+        mealName: selectedMeal,
+        logDate: selectedDate,
+        quantity: foodQuantity,
+        unit: food.servingUnit || 'g',
+        calories: Math.round(food.calories * multiplier),
+        proteinG: Math.round(food.proteinG * multiplier * 10) / 10,
+        carbsG: Math.round(food.carbsG * multiplier * 10) / 10,
+        fatG: Math.round(food.fatG * multiplier * 10) / 10
+      });
+      if (!result.success) {
+        setFoodLogError(result.error || 'Food entry was not saved.');
+        return;
+      }
+      setIsLogFoodOpen(false);
+    } catch (error) {
+      setFoodLogError(error instanceof Error ? error.message : 'Food entry was not saved.');
+    } finally {
+      setIsSavingFoodLog(false);
+    }
+  };
 
-    setIsLogFoodOpen(false);
+  const handleDeleteFoodLog = async (id: string) => {
+    setFoodLogError(null);
+    setDeletingFoodLogId(id);
+    try {
+      const result = await deleteFoodLogItem(id);
+      if (!result.success) setFoodLogError(result.error || 'Food entry was not deleted.');
+    } catch (error) {
+      setFoodLogError(error instanceof Error ? error.message : 'Food entry was not deleted.');
+    } finally {
+      setDeletingFoodLogId(null);
+    }
   };
 
   const handleSaveTarget = (e: React.FormEvent) => {
@@ -182,12 +211,12 @@ export const NutritionView: React.FC = () => {
             </>
           )}
 
-          <button
-            onClick={() => setIsLogFoodOpen(true)}
-            className="px-4 py-2 rounded-xl bg-blue-500 hover:bg-blue-400 text-slate-950 font-bold text-xs transition-colors flex items-center gap-1.5 shadow-lg shadow-blue-500/20"
-          >
-            <Plus className="w-4 h-4" /> Log Food / Meal
-          </button>
+          {canManageFoodLogs && <button
+              onClick={() => setIsLogFoodOpen(true)}
+              className="px-4 py-2 rounded-xl bg-blue-500 hover:bg-blue-400 text-slate-950 font-bold text-xs transition-colors flex items-center gap-1.5 shadow-lg shadow-blue-500/20"
+            >
+              <Plus className="w-4 h-4" /> Log Food / Meal
+            </button>}
         </div>
       </div>
 
@@ -283,14 +312,15 @@ export const NutritionView: React.FC = () => {
 
       {/* Meals Logged Section */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+        {foodLogError && <p role="alert" className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">{foodLogError}</p>}
         <div className="flex items-center justify-between">
           <h2 className="text-base font-bold text-white">Daily Meal Diary ({selectedDate})</h2>
-          <button
-            onClick={() => setIsLogFoodOpen(true)}
-            className="text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1"
-          >
-            <Plus className="w-3.5 h-3.5" /> Log Another Item
-          </button>
+          {canManageFoodLogs && <button
+              onClick={() => setIsLogFoodOpen(true)}
+              className="text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1"
+            >
+              <Plus className="w-3.5 h-3.5" /> Log Another Item
+            </button>}
         </div>
 
         {clientLogs.length === 0 ? (
@@ -325,12 +355,14 @@ export const NutritionView: React.FC = () => {
 
                         <div className="flex items-center gap-3">
                           <span className="font-mono font-bold text-white">{item.calories} kcal</span>
-                          <button
-                            onClick={() => deleteFoodLogItem(item.id)}
-                            className="text-slate-500 hover:text-rose-400 transition-colors p-1"
+                          {canManageFoodLogs && item.foodId !== 'legacy-daily-log' && <button
+                            onClick={() => void handleDeleteFoodLog(item.id)}
+                            disabled={deletingFoodLogId === item.id}
+                            className="text-slate-500 hover:text-rose-400 transition-colors p-1 disabled:opacity-50"
+                            aria-label={`Delete ${item.foodName}`}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
-                          </button>
+                          </button>}
                         </div>
                       </div>
                     ))}
@@ -343,12 +375,13 @@ export const NutritionView: React.FC = () => {
       </div>
 
       {/* Log Food Modal */}
-      {isLogFoodOpen && (
+      {isLogFoodOpen && canManageFoodLogs && (
         <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
           <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 text-white shadow-2xl space-y-4">
             <h3 className="text-base font-bold text-white">Log Food to Meal Diary</h3>
 
             <form onSubmit={handleSaveFoodLog} className="space-y-4">
+              {foodLogError && <p role="alert" className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">{foodLogError}</p>}
               <div>
                 <label className="block text-xs font-semibold uppercase text-slate-300 mb-1">Meal Period</label>
                 <select
@@ -411,9 +444,10 @@ export const NutritionView: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2 px-4 rounded-xl bg-blue-500 hover:bg-blue-400 text-slate-950 font-bold text-xs"
+                  disabled={isSavingFoodLog}
+                  className="flex-1 py-2 px-4 rounded-xl bg-blue-500 hover:bg-blue-400 text-slate-950 font-bold text-xs disabled:opacity-60"
                 >
-                  Save to Log
+                  {isSavingFoodLog ? 'Saving…' : 'Save to Log'}
                 </button>
               </div>
             </form>

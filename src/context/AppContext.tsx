@@ -108,8 +108,8 @@ interface AppContextType {
   addFood: (food: Omit<Food, 'id' | 'createdAt'>) => Food;
   setNutritionTarget: (target: Omit<NutritionTarget, 'id'>) => void;
   saveMealPlan: (plan: Omit<MealPlan, 'id' | 'createdAt' | 'updatedAt'>) => MealPlan;
-  logFoodItem: (item: Omit<FoodLogItem, 'id' | 'loggedAt'>) => void;
-  deleteFoodLogItem: (id: string) => void;
+  logFoodItem: (item: Omit<FoodLogItem, 'id' | 'loggedAt'>) => Promise<SupabaseWriteResult>;
+  deleteFoodLogItem: (id: string) => Promise<SupabaseWriteResult>;
   
   // Messaging Actions
   sendMessage: (recipientId: string, content: string) => Promise<{ success: boolean; error?: string }>;
@@ -666,18 +666,23 @@ export const AppProvider: React.FC<{
     return newPlan;
   };
 
-  const logFoodItem = (item: Omit<FoodLogItem, 'id' | 'loggedAt'>) => {
+  const logFoodItem = async (item: Omit<FoodLogItem, 'id' | 'loggedAt'>): Promise<SupabaseWriteResult> => {
     const newItem: FoodLogItem = {
       ...item,
-      id: `flog-${Date.now()}`,
+      id: crypto.randomUUID(),
       loggedAt: new Date().toISOString()
     };
+    const saved = await SupabaseService.saveFoodLog(newItem);
+    if (!saved.success) return saved;
     setFoodLogs(prev => [newItem, ...prev]);
-    SupabaseService.saveFoodLog(newItem);
+    return { success: true };
   };
 
-  const deleteFoodLogItem = (id: string) => {
+  const deleteFoodLogItem = async (id: string): Promise<SupabaseWriteResult> => {
+    const deleted = await SupabaseService.deleteFoodLog(id);
+    if (!deleted.success) return deleted;
     setFoodLogs(prev => prev.filter(f => f.id !== id));
+    return { success: true };
   };
 
   const sendMessage = async (recipientId: string, content: string): Promise<{ success: boolean; error?: string }> => {

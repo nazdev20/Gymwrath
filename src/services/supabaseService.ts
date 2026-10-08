@@ -316,31 +316,67 @@ export const SupabaseService = {
       }));
 
       // 10. Query Food Logs
-      const { data: dbLogs } = await supabase.from('daily_nutrition_logs').select(`
+      const { data: dbLogs, error: logsError } = await supabase.from('daily_nutrition_logs').select(`
         id,
         client_id,
         log_date,
         total_calories,
         total_protein_g,
         total_carbs_g,
-        total_fat_g
+        total_fat_g,
+        nutrition_log_meals (
+          id,
+          meal_name,
+          nutrition_log_foods (
+            id,
+            food_name,
+            quantity,
+            unit,
+            calories,
+            protein_g,
+            carbs_g,
+            fat_g,
+            created_at
+          )
+        )
       `);
 
-      const foodLogs: FoodLogItem[] = (dbLogs || []).map((l: any) => ({
-        id: l.id,
-        clientId: l.client_id,
-        logDate: l.log_date,
-        mealName: 'Lunch',
-        foodId: 'f-1',
-        foodName: 'Daily Nutrition Log Entry',
-        quantity: 1,
-        unit: 'portion',
-        calories: Number(l.total_calories) || 0,
-        proteinG: Number(l.total_protein_g) || 0,
-        carbsG: Number(l.total_carbs_g) || 0,
-        fatG: Number(l.total_fat_g) || 0,
-        loggedAt: l.log_date + 'T12:00:00.000Z'
-      }));
+      if (logsError) throw logsError;
+      const foodLogs: FoodLogItem[] = (dbLogs || []).flatMap((l: any) => {
+        const entries = (l.nutrition_log_meals || []).flatMap((meal: any) =>
+          (meal.nutrition_log_foods || []).map((food: any) => ({
+            id: food.id,
+            clientId: l.client_id,
+            logDate: l.log_date,
+            mealName: meal.meal_name as FoodLogItem['mealName'],
+            foodId: food.id,
+            foodName: food.food_name,
+            quantity: Number(food.quantity),
+            unit: food.unit,
+            calories: Number(food.calories) || 0,
+            proteinG: Number(food.protein_g) || 0,
+            carbsG: Number(food.carbs_g) || 0,
+            fatG: Number(food.fat_g) || 0,
+            loggedAt: food.created_at
+          }))
+        );
+        if (entries.length > 0) return entries;
+        return [{
+          id: l.id,
+          clientId: l.client_id,
+          logDate: l.log_date,
+          mealName: 'Lunch' as const,
+          foodId: 'legacy-daily-log',
+          foodName: 'Daily Nutrition Log Entry',
+          quantity: 1,
+          unit: 'portion',
+          calories: Number(l.total_calories) || 0,
+          proteinG: Number(l.total_protein_g) || 0,
+          carbsG: Number(l.total_carbs_g) || 0,
+          fatG: Number(l.total_fat_g) || 0,
+          loggedAt: l.log_date + 'T12:00:00.000Z'
+        }];
+      });
 
       // 11. Query Conversations & Messages
       const { data: dbConvs } = await supabase.from('conversations').select('*');
@@ -532,22 +568,49 @@ export const SupabaseService = {
   },
 
   // Insert or Upsert a food log entry
-  async saveFoodLog(log: FoodLogItem): Promise<boolean> {
-    if (getSupabaseConfig().isOfflineMode || getSupabaseReachableState() === false) return false;
+  async saveFoodLog(log: FoodLogItem): Promise<SupabaseWriteResult> {
+    if (getSupabaseConfig().isOfflineMode || getSupabaseReachableState() === false) {
+      return { success: false, error: 'Supabase is not configured or is unreachable.' };
+    }
     try {
-      const { error } = await supabase.from('daily_nutrition_logs').upsert({
-        id: log.id,
-        client_id: log.clientId,
-        log_date: log.logDate,
-        total_calories: log.calories,
-        total_protein_g: log.proteinG,
-        total_carbs_g: log.carbsG,
-        total_fat_g: log.fatG,
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'id' });
-      return !error;
-    } catch {
-      return false;
+      const { error } = await supabase.rpc('log_food_item', {
+        p_id: log.id,
+        p_client_id: log.clientId,
+        p_log_date: log.logDate,
+        p_meal_name: log.mealName,
+        p_food_name: log.foodName,
+        p_quantity: log.quantity,
+        p_unit: log.unit,
+        p_calories: log.calories,
+        p_protein_g: log.proteinG,
+        p_carbs_g: log.carbsG,
+        p_fat_g: log.fatG
+      });
+      if (error) {
+        console.error('Failed to save food log to Supabase:', error);
+        return { success: false, error: error.message };
+      }
+      return { success: true };
+    } catch (error) {
+      console.error('Failed to save food log to Supabase:', error);
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown Supabase error.' };
+    }
+  },
+
+  async deleteFoodLog(id: string): Promise<SupabaseWriteResult> {
+    if (getSupabaseConfig().isOfflineMode || getSupabaseReachableState() === false) {
+      return { success: false, error: 'Supabase is not configured or is unreachable.' };
+    }
+    try {
+      const { error } = await supabase.rpc('delete_food_log_item', { p_id: id });
+      if (error) {
+        console.error('Failed to delete food log from Supabase:', error);
+        return { success: false, error: error.message };
+      }
+      return { success: true };
+    } catch (error) {
+      console.error('Failed to delete food log from Supabase:', error);
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown Supabase error.' };
     }
   },
 

@@ -904,6 +904,133 @@ CREATE TABLE IF NOT EXISTS fitness.system_settings (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+CREATE OR REPLACE FUNCTION fitness.log_food_item(
+  p_id UUID,
+  p_client_id UUID,
+  p_log_date DATE,
+  p_meal_name TEXT,
+  p_food_name TEXT,
+  p_quantity NUMERIC,
+  p_unit TEXT,
+  p_calories NUMERIC,
+  p_protein_g NUMERIC,
+  p_carbs_g NUMERIC,
+  p_fat_g NUMERIC
+)
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+DECLARE
+  v_daily_log_id UUID;
+  v_meal_id UUID;
+  caller_role TEXT;
+BEGIN
+  caller_role := fitness.current_user_role();
+  IF auth.uid() IS NULL OR caller_role IS NULL OR NOT (
+    caller_role = 'admin'
+    OR (caller_role = 'client' AND p_client_id = auth.uid())
+  ) THEN
+    RAISE EXCEPTION 'You are not authorized to log food for this client';
+  END IF;
+  IF p_quantity <= 0 OR p_calories < 0 OR p_protein_g < 0 OR p_carbs_g < 0 OR p_fat_g < 0
+     OR nullif(trim(p_food_name), '') IS NULL OR nullif(trim(p_meal_name), '') IS NULL THEN
+    RAISE EXCEPTION 'Food log values are invalid';
+  END IF;
+
+  INSERT INTO fitness.daily_nutrition_logs (
+    client_id, log_date, total_calories, total_protein_g, total_carbs_g, total_fat_g
+  )
+  VALUES (p_client_id, p_log_date, p_calories, p_protein_g, p_carbs_g, p_fat_g)
+  ON CONFLICT (client_id, log_date) DO UPDATE SET
+    total_calories = fitness.daily_nutrition_logs.total_calories + EXCLUDED.total_calories,
+    total_protein_g = fitness.daily_nutrition_logs.total_protein_g + EXCLUDED.total_protein_g,
+    total_carbs_g = fitness.daily_nutrition_logs.total_carbs_g + EXCLUDED.total_carbs_g,
+    total_fat_g = fitness.daily_nutrition_logs.total_fat_g + EXCLUDED.total_fat_g,
+    updated_at = now()
+  RETURNING id INTO v_daily_log_id;
+
+  INSERT INTO fitness.nutrition_log_meals (daily_log_id, meal_name)
+  VALUES (v_daily_log_id, p_meal_name)
+  RETURNING id INTO v_meal_id;
+
+  INSERT INTO fitness.nutrition_log_foods (
+    id, log_meal_id, food_name, quantity, unit, calories, protein_g, carbs_g, fat_g
+  )
+  VALUES (
+    p_id, v_meal_id, trim(p_food_name), p_quantity, p_unit,
+    p_calories, p_protein_g, p_carbs_g, p_fat_g
+  );
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION fitness.delete_food_log_item(p_id UUID)
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+DECLARE
+  owner_id UUID;
+  v_daily_log_id UUID;
+  caller_role TEXT;
+BEGIN
+  SELECT dl.client_id, dl.id
+  INTO owner_id, v_daily_log_id
+  FROM fitness.nutrition_log_foods AS f
+  JOIN fitness.nutrition_log_meals AS m ON m.id = f.log_meal_id
+  JOIN fitness.daily_nutrition_logs AS dl ON dl.id = m.daily_log_id
+  WHERE f.id = p_id
+  FOR UPDATE OF dl;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Food log entry was not found';
+  END IF;
+
+  caller_role := fitness.current_user_role();
+  IF auth.uid() IS NULL OR caller_role IS NULL OR NOT (
+    caller_role = 'admin'
+    OR (caller_role = 'client' AND owner_id = auth.uid())
+  ) THEN
+    RAISE EXCEPTION 'You are not authorized to delete this food log entry';
+  END IF;
+
+  DELETE FROM fitness.nutrition_log_foods WHERE id = p_id;
+  DELETE FROM fitness.nutrition_log_meals AS m
+  WHERE m.daily_log_id = v_daily_log_id
+    AND NOT EXISTS (
+      SELECT 1 FROM fitness.nutrition_log_foods AS f WHERE f.log_meal_id = m.id
+    );
+  UPDATE fitness.daily_nutrition_logs AS dl SET
+    total_calories = COALESCE((
+      SELECT sum(f.calories)
+      FROM fitness.nutrition_log_meals AS m
+      JOIN fitness.nutrition_log_foods AS f ON f.log_meal_id = m.id
+      WHERE m.daily_log_id = v_daily_log_id
+    ), 0),
+    total_protein_g = COALESCE((
+      SELECT sum(f.protein_g)
+      FROM fitness.nutrition_log_meals AS m
+      JOIN fitness.nutrition_log_foods AS f ON f.log_meal_id = m.id
+      WHERE m.daily_log_id = v_daily_log_id
+    ), 0),
+    total_carbs_g = COALESCE((
+      SELECT sum(f.carbs_g)
+      FROM fitness.nutrition_log_meals AS m
+      JOIN fitness.nutrition_log_foods AS f ON f.log_meal_id = m.id
+      WHERE m.daily_log_id = v_daily_log_id
+    ), 0),
+    total_fat_g = COALESCE((
+      SELECT sum(f.fat_g)
+      FROM fitness.nutrition_log_meals AS m
+      JOIN fitness.nutrition_log_foods AS f ON f.log_meal_id = m.id
+      WHERE m.daily_log_id = v_daily_log_id
+    ), 0),
+    updated_at = now()
+  WHERE dl.id = v_daily_log_id;
+END;
+$$;
+
 -- --------------------------------------------------------------------
 -- INDEXES FOR PERFORMANCE
 -- --------------------------------------------------------------------
@@ -1095,6 +1222,10 @@ GRANT EXECUTE ON FUNCTION fitness.current_user_approval_status() TO authenticate
 GRANT EXECUTE ON FUNCTION fitness.is_admin() TO authenticated;
 GRANT EXECUTE ON FUNCTION fitness.is_coach_for_client(UUID) TO authenticated;
 GRANT EXECUTE ON FUNCTION fitness.can_access_workout(UUID) TO authenticated;
+REVOKE ALL ON FUNCTION fitness.log_food_item(UUID, UUID, DATE, TEXT, TEXT, NUMERIC, TEXT, NUMERIC, NUMERIC, NUMERIC, NUMERIC) FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION fitness.delete_food_log_item(UUID) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION fitness.log_food_item(UUID, UUID, DATE, TEXT, TEXT, NUMERIC, TEXT, NUMERIC, NUMERIC, NUMERIC, NUMERIC) TO authenticated;
+GRANT EXECUTE ON FUNCTION fitness.delete_food_log_item(UUID) TO authenticated;
 
 REVOKE ALL ON SCHEMA fitness FROM PUBLIC, anon;
 GRANT USAGE ON SCHEMA fitness TO authenticated;
