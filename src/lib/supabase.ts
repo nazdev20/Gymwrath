@@ -1,7 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-const metaEnv = (import.meta as any).env || {};
-
 const DEFAULT_URL = 'https://cbcvhmvdaujhbquryaom.supabase.co';
 const DEFAULT_ANON_KEY = 'sb_publishable_hBItT31I4RBvcksW7tMRyw_kfEnFZbB';
 
@@ -27,8 +25,8 @@ export function getSupabaseConfig(): SupabaseConfig {
     // Ignore storage issues
   }
 
-  const envUrl = (metaEnv.VITE_SUPABASE_URL || '').trim();
-  const envKey = (metaEnv.VITE_SUPABASE_ANON_KEY || '').trim();
+  const envUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || '').trim();
+  const envKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '').trim();
 
   const url = (customUrl.trim() || envUrl || DEFAULT_URL).replace(/\/+$/, '');
   const anonKey = customKey.trim() || envKey || DEFAULT_ANON_KEY;
