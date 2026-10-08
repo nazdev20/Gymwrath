@@ -4,11 +4,19 @@ import { createSupabaseServerClient } from '../../../../src/lib/supabase/server'
 
 export const runtime = 'nodejs';
 
+function requestOrigin(request: Request): string {
+  const forwardedHost = request.headers.get('x-forwarded-host')?.split(',')[0]?.trim();
+  const host = forwardedHost || request.headers.get('host');
+  const forwardedProtocol = request.headers.get('x-forwarded-proto')?.split(',')[0]?.trim();
+  const protocol = forwardedProtocol || new URL(request.url).protocol.replace(/:$/, '');
+  return host ? new URL(`${protocol}://${host}`).origin : new URL(request.url).origin;
+}
+
 export async function POST(request: Request) {
   const origin = request.headers.get('origin');
   let isSameOrigin = false;
   try {
-    if (origin) isSameOrigin = new URL(origin).origin === new URL(request.url).origin;
+    if (origin) isSameOrigin = new URL(origin).origin === requestOrigin(request);
   } catch {
     isSameOrigin = false;
   }
@@ -49,7 +57,7 @@ export async function POST(request: Request) {
       console.error('Admin authorization lookup failed:', callerError);
       return NextResponse.json({ error: `Unable to verify administrator access: ${callerError.message}` }, { status: 500 });
     }
-    if (!caller || caller.role !== 'admin' || caller.approval_status !== 'active' || !caller.is_active) {
+    if (!caller || caller.role !== 'admin' || !['approved', 'not_applicable'].includes(caller.approval_status) || !caller.is_active) {
       return NextResponse.json({ error: 'Administrator access is required.' }, { status: 403 });
     }
 
