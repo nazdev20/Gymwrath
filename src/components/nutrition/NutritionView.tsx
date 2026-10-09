@@ -243,10 +243,10 @@ export const NutritionView: React.FC = () => {
             <div className="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400">
               <Utensils className="w-4 h-4" />
             </div>
-            <h1 className="text-2xl font-extrabold text-white">Nutrition & Macro Coaching</h1>
+            <h1 className="text-2xl font-extrabold text-white">Fuel the Target</h1>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Track daily macronutrient intake, build tailored meal plans, and monitor nutrition compliance.
+            Fuel with intention. Track calories, protein, and meals against the plan your coach set.
           </p>
         </div>
 
@@ -291,7 +291,7 @@ export const NutritionView: React.FC = () => {
               onClick={() => setIsLogFoodOpen(true)}
               className="px-4 py-2 rounded-xl bg-blue-500 hover:bg-blue-400 text-slate-950 font-bold text-xs transition-colors flex items-center gap-1.5 shadow-lg shadow-blue-500/20"
             >
-              <Plus className="w-4 h-4" /> Log Food / Meal
+              <Plus className="w-4 h-4" /> Log Food
             </button>}
         </div>
       </div>
@@ -310,7 +310,7 @@ export const NutritionView: React.FC = () => {
           </div>
 
           <span className="text-xs text-slate-400">
-            Target Budget: <strong className="text-white">{currentTarget.caloriesKcal} kcal</strong> (P: {currentTarget.proteinG}g • C: {currentTarget.carbsG}g • F: {currentTarget.fatG}g)
+            Daily Target: <strong className="text-white">{currentTarget.caloriesKcal} kcal</strong> (P: {currentTarget.proteinG}g • C: {currentTarget.carbsG}g • F: {currentTarget.fatG}g)
           </span>
         </div>
 
