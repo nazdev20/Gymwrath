@@ -96,12 +96,13 @@ export const ProgressAnalyticsView: React.FC = () => {
     .filter(checkIn => checkIn.clientId === currentUser.id && checkIn.checkInDate <= todayKey)
     .sort((a, b) => b.checkInDate.localeCompare(a.checkInDate));
   const latestCheckIn = myCheckIns[0];
-  const weightHistory = [...myCheckIns]
+  const latestCheckInWithWeight = myCheckIns.find(checkIn => checkIn.weightKg > 0);
+  const weightHistory = myCheckIns
     .filter(checkIn => checkIn.weightKg > 0)
     .slice(0, 8)
     .reverse();
 
-  const currentWeight = latestCheckIn?.weightKg || currentUser.currentWeightKg;
+  const currentWeight = latestCheckInWithWeight?.weightKg || currentUser.currentWeightKg;
   const targetWeight = currentUser.targetWeightKg;
   const nutritionTarget = nutritionTargets
     .filter(target => target.clientId === currentUser.id)
@@ -219,8 +220,14 @@ export const ProgressAnalyticsView: React.FC = () => {
             <span>Latest check-in</span>
             <CalendarCheck className="h-4 w-4 text-amber-400" />
           </div>
-          <p className="mt-2 text-2xl font-extrabold text-white">{latestCheckIn ? `${latestCheckIn.weightKg} kg` : '—'}</p>
-          <p className="mt-1 text-xs text-slate-500">{latestCheckIn ? formatShortDate(latestCheckIn.checkInDate) : 'No check-in logged yet'}</p>
+          <p className="mt-2 text-2xl font-extrabold text-white">{latestCheckInWithWeight ? `${latestCheckInWithWeight.weightKg} kg` : '—'}</p>
+          <p className="mt-1 text-xs text-slate-500">
+            {latestCheckInWithWeight
+              ? formatShortDate(latestCheckInWithWeight.checkInDate)
+              : latestCheckIn
+                ? 'Latest check-in has no weight recorded'
+                : 'No check-in logged yet'}
+          </p>
         </div>
       </section>
 
