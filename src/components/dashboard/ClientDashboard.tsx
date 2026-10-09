@@ -117,6 +117,10 @@ export const ClientDashboard: React.FC = () => {
     const completedDate = workout.completedAt ? toLocalDateKey(new Date(workout.completedAt)) : workout.scheduledDate;
     return completedDate >= weekStartStr && completedDate <= todayStr;
   });
+  // Count distinct calendar days, not workouts, so multiple sessions on one day do not inflate consistency.
+  const weeklyTrainingDays = new Set(weeklyCompletedWorkouts.map(workout =>
+    workout.completedAt ? toLocalDateKey(new Date(workout.completedAt)) : workout.scheduledDate
+  )).size;
   const weeklySteps = stepRecords.filter(record =>
     record.clientId === currentUser.id && record.logDate >= weekStartStr && record.logDate <= todayStr
   );
@@ -222,7 +226,7 @@ export const ClientDashboard: React.FC = () => {
             View progress report →
           </button>
         </div>
-        <div className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
             <div className="flex items-center justify-between text-xs text-slate-400">
               <span>Sessions completed</span>
@@ -230,6 +234,14 @@ export const ClientDashboard: React.FC = () => {
             </div>
             <p className="mt-2 text-2xl font-extrabold text-white">{weeklyCompletedWorkouts.length}</p>
             <p className="mt-1 text-xs text-slate-500">In the last 7 days</p>
+          </div>
+          <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
+            <div className="flex items-center justify-between text-xs text-slate-400">
+              <span>Training days</span>
+              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+            </div>
+            <p className="mt-2 text-2xl font-extrabold text-white">{weeklyTrainingDays}<span className="ml-1 text-sm font-semibold text-slate-400">/ 7</span></p>
+            <p className="mt-1 text-xs text-slate-500">Distinct days with a saved session</p>
           </div>
           <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
             <div className="flex items-center justify-between text-xs text-slate-400">
