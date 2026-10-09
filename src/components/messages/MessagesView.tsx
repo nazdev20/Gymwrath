@@ -17,7 +17,9 @@ export const MessagesView: React.FC = () => {
     sendMessage,
     selectedClientId,
     setSelectedClientId,
-    getAssignedClients
+    getAssignedClients,
+    loadFromSupabase,
+    supabaseAuthUserId
   } = useApp();
 
   const isClient = currentUser.role === 'client';
@@ -37,6 +39,17 @@ export const MessagesView: React.FC = () => {
   const [inputContent, setInputContent] = useState('');
   const [sendError, setSendError] = useState<string | null>(null);
   const [isSending, setIsSending] = useState(false);
+
+  // Refresh persisted messages when the DM view opens so it also recovers messages
+  // received before the realtime subscription was ready.
+  useEffect(() => {
+    if (supabaseAuthUserId) {
+      void loadFromSupabase(supabaseAuthUserId);
+    }
+    // loadFromSupabase is recreated by the context provider; run only when the authenticated
+    // session changes or this view mounts, not on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [supabaseAuthUserId]);
 
   // Profiles and assignments load asynchronously after authentication. Keep the
   // selected chat in sync so a client does not get stuck with an empty partner ID.
