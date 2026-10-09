@@ -14,7 +14,8 @@ import {
   Clock,
   Sparkles,
   Award,
-  ChevronRight
+  ChevronRight,
+  X
 } from 'lucide-react';
 
 export const ClientDashboard: React.FC = () => {
@@ -33,6 +34,8 @@ export const ClientDashboard: React.FC = () => {
   } = useApp();
 
   const coach = getCoachForCurrentClient();
+  // Local component state resets when navigating away and returning to the dashboard.
+  const [showMission, setShowMission] = useState(true);
   const toLocalDateKey = (date: Date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -166,7 +169,17 @@ export const ClientDashboard: React.FC = () => {
   return (
     <div className="min-w-0 space-y-6">
       {/* Welcome Banner */}
+      {showMission && (
       <div className="min-w-0 bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 relative overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setShowMission(false)}
+          aria-label="Dismiss today's mission"
+          title="Dismiss for this visit"
+          className="absolute right-3 top-3 z-20 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+        >
+          <X className="h-4 w-4" />
+        </button>
         <div className="relative z-10 flex min-w-0 flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -214,6 +227,7 @@ export const ClientDashboard: React.FC = () => {
           )}
         </div>
       </div>
+      )}
 
       {/* Weekly Summary: a concise report of logged activity */}
       <section className="space-y-3">
