@@ -12,7 +12,6 @@ import {
   Utensils,
   MessageSquare,
   ShieldCheck,
-  Database,
   X
 } from 'lucide-react';
 
@@ -80,7 +79,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen = false, onCloseM
         { id: 'exercises', label: 'Exercise Library', icon: <Dumbbell className="w-5 h-5" /> },
         { id: 'programs', label: 'Programs & Templates', icon: <BookOpen className="w-5 h-5" /> },
         { id: 'nutrition', label: 'Food & Nutrition DB', icon: <Utensils className="w-5 h-5" /> },
-        { id: 'database', label: 'Database & Schema', icon: <Database className="w-5 h-5" />, badge: 'Supabase', badgeColor: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' }
+        { id: 'database', label: 'Database & Schema', icon: <ShieldCheck className="w-5 h-5" />, badge: 'Admin', badgeColor: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' }
       ];
     }
 
@@ -95,7 +94,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen = false, onCloseM
         { id: 'steps', label: 'Step Tracking Hub', icon: <Footprints className="w-5 h-5" /> },
         { id: 'nutrition', label: 'Nutrition & Meal Plans', icon: <Utensils className="w-5 h-5" /> },
         { id: 'messages', label: 'Direct Messages', icon: <MessageSquare className="w-5 h-5" />, badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined, badgeColor: 'bg-emerald-500 text-slate-950 font-bold' },
-        { id: 'database', label: 'Database & Schema', icon: <Database className="w-5 h-5" />, badge: 'Supabase', badgeColor: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' }
       ];
     }
 
@@ -109,7 +107,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen = false, onCloseM
       { id: 'progress', label: 'Progress & Analytics', icon: <TrendingUp className="w-5 h-5" /> },
       { id: 'exercises', label: 'Exercise Form Library', icon: <Dumbbell className="w-5 h-5" /> },
       { id: 'messages', label: 'Coach Chat', icon: <MessageSquare className="w-5 h-5" />, badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined, badgeColor: 'bg-emerald-500 text-slate-950 font-bold' },
-      { id: 'database', label: 'Database & Schema', icon: <Database className="w-5 h-5" />, badge: 'Supabase', badgeColor: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' }
     ];
   };
 
