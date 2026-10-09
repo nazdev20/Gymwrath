@@ -46,6 +46,7 @@ export const NutritionView: React.FC = () => {
   const [selectedMeal, setSelectedMeal] = useState<MealSectionName>('Breakfast');
   const [selectedFoodId, setSelectedFoodId] = useState(foods[0]?.id || '');
   const [foodQuantity, setFoodQuantity] = useState<number>(100);
+  const [foodSearch, setFoodSearch] = useState('');
   const [foodLogError, setFoodLogError] = useState<string | null>(null);
   const [isSavingFoodLog, setIsSavingFoodLog] = useState(false);
   const [deletingFoodLogId, setDeletingFoodLogId] = useState<string | null>(null);
@@ -82,6 +83,10 @@ export const NutritionView: React.FC = () => {
   const clients = allProfiles.filter(p => p.role === 'client');
   const canManageFoodLogs = currentUser.role === 'admin' || currentUser.role === 'client';
   const canCreateFoods = Boolean(currentUser.id);
+  const filteredFoods = foods.filter(food => {
+    const query = foodSearch.trim().toLocaleLowerCase();
+    return !query || [food.name, food.brand || '', food.barcode || ''].some(value => value.toLocaleLowerCase().includes(query));
+  });
 
   useEffect(() => {
     if (foods.length > 0 && !foods.some(food => food.id === selectedFoodId)) {
@@ -104,7 +109,10 @@ export const NutritionView: React.FC = () => {
     e.preventDefault();
     if (isSavingFoodLog) return;
     const food = foods.find(f => f.id === selectedFoodId);
-    if (!food) return;
+    if (!food) {
+      setFoodLogError('Choose a food item from the matching results before saving.');
+      return;
+    }
 
     const multiplier = foodQuantity / (food.servingSize || 100);
 
@@ -204,6 +212,7 @@ export const NutritionView: React.FC = () => {
 
       setSelectedFoodId(result.food.id);
       setFoodQuantity(result.food.servingSize);
+      setFoodSearch('');
       setIsAddCustomFoodOpen(false);
       if (customFoodReturnToLog) setIsLogFoodOpen(true);
       setNewFoodName('');
@@ -478,19 +487,43 @@ export const NutritionView: React.FC = () => {
                     + Create Custom Food
                   </button>
                 </div>
+                <input
+                  type="search"
+                  value={foodSearch}
+                  onChange={e => {
+                    const query = e.target.value;
+                    setFoodSearch(query);
+                    const exactMatch = foods.find(food =>
+                      food.barcode && food.barcode.toLocaleLowerCase() === query.trim().toLocaleLowerCase()
+                    );
+                    if (exactMatch) {
+                      setSelectedFoodId(exactMatch.id);
+                      setFoodQuantity(exactMatch.servingSize);
+                    }
+                  }}
+                  onKeyDown={e => {
+                    // A connected barcode scanner may submit an Enter key after its value.
+                    if (e.key === 'Enter') e.preventDefault();
+                  }}
+                  placeholder="Search food, brand or barcode"
+                  className="w-full mb-2 px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-blue-500"
+                />
                 <select
-                  value={selectedFoodId}
+                  value={filteredFoods.some(food => food.id === selectedFoodId) ? selectedFoodId : ''}
                   onChange={e => {
                     const nextFoodId = e.target.value;
                     const nextFood = foods.find(food => food.id === nextFoodId);
                     setSelectedFoodId(nextFoodId);
                     setFoodQuantity(nextFood?.servingSize || 1);
                   }}
+                  required
                   className="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-blue-500"
                 >
-                  {foods.map(f => (
+                  {filteredFoods.length === 0 ? (
+                    <option value="">No matching food found</option>
+                  ) : filteredFoods.map(f => (
                     <option key={f.id} value={f.id}>
-                      {f.name} ({f.calories} kcal / {f.servingSize} {f.servingUnit})
+                      {f.name} {f.brand ? '— ' + f.brand : ''} ({f.calories} kcal / {f.servingSize} {f.servingUnit})
                     </option>
                   ))}
                 </select>
