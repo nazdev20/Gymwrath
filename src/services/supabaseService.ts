@@ -669,6 +669,42 @@ export const SupabaseService = {
     }
   },
 
+  // Update only fields a signed-in user may edit on their own profile.
+  // Account role, approval status, activation state, and email are deliberately excluded.
+  async updateOwnProfile(profile: Partial<Profile>): Promise<boolean> {
+    if (getSupabaseConfig().isOfflineMode || getSupabaseReachableState() === false) return false;
+    try {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user || (profile.id && profile.id !== user.id)) return false;
+
+      const payload: Record<string, unknown> = { updated_at: new Date().toISOString() };
+      if (profile.fullName !== undefined) {
+        const nameParts = profile.fullName.trim().split(/\\s+/);
+        payload.first_name = nameParts.shift() || '';
+        payload.last_name = nameParts.join(' ');
+      }
+      if (profile.avatarUrl !== undefined) payload.avatar_url = profile.avatarUrl;
+      if (profile.phone !== undefined) payload.phone = profile.phone;
+      if (profile.bio !== undefined) payload.bio = profile.bio;
+      if (profile.heightCm !== undefined) payload.height_cm = profile.heightCm;
+      if (profile.currentWeightKg !== undefined) payload.current_weight_kg = profile.currentWeightKg;
+      if (profile.targetWeightKg !== undefined) payload.target_weight_kg = profile.targetWeightKg;
+      if (profile.goals !== undefined) {
+        payload.fitness_goals = profile.goals.split(',').map(goal => goal.trim()).filter(Boolean);
+      }
+
+      const { error } = await supabase.from('profiles').update(payload).eq('id', user.id);
+      if (error) {
+        console.error('Failed to update own profile:', error);
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error('Failed to update own profile:', error);
+      return false;
+    }
+  },
+
   // Insert or Upsert a single profile to Supabase
   async saveProfile(profile: Partial<Profile>): Promise<boolean> {
     if (getSupabaseConfig().isOfflineMode || getSupabaseReachableState() === false) return false;
