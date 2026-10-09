@@ -78,10 +78,10 @@ export const WorkoutCalendarView: React.FC = () => {
             <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
               <CalendarIcon className="w-4 h-4" />
             </div>
-            <h1 className="text-2xl font-extrabold text-white">Workout Training Calendar</h1>
+            <h1 className="text-2xl font-extrabold text-white">Training Schedule</h1>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Browse upcoming training days, log completed exercises, and inspect past performance notes.
+            Every rep has a target. Review assigned sessions, log completed sets, and inspect your training history.
           </p>
         </div>
 
