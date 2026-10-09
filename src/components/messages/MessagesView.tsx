@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import {
   MessageSquare,
@@ -36,6 +36,26 @@ export const MessagesView: React.FC = () => {
 
   const [inputContent, setInputContent] = useState('');
   const [sendError, setSendError] = useState<string | null>(null);
+  const [isSending, setIsSending] = useState(false);
+
+  // Profiles and assignments load asynchronously after authentication. Keep the
+  // selected chat in sync so a client does not get stuck with an empty partner ID.
+  useEffect(() => {
+    if (isClient) {
+      if (assignedCoach && activePartnerId !== assignedCoach.id) {
+        setActivePartnerId(assignedCoach.id);
+      }
+      return;
+    }
+
+    const selectedClient = availableClients.find(client => client.id === selectedClientId);
+    const currentPartnerExists = availableClients.some(client => client.id === activePartnerId);
+    if (selectedClient && selectedClient.id !== activePartnerId) {
+      setActivePartnerId(selectedClient.id);
+    } else if (!currentPartnerExists && availableClients[0]) {
+      setActivePartnerId(availableClients[0].id);
+    }
+  }, [isClient, assignedCoach?.id, activePartnerId, selectedClientId, availableClients]);
 
   const activePartner = allProfiles.find(p => p.id === activePartnerId);
 
@@ -47,15 +67,29 @@ export const MessagesView: React.FC = () => {
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputContent.trim() || !activePartnerId) return;
-
-    setSendError(null);
-    const result = await sendMessage(activePartnerId, inputContent.trim());
-    if (!result.success) {
-      setSendError(result.error || 'Message was not sent.');
+    const messageContent = inputContent.trim();
+    if (!messageContent || isSending) return;
+    if (!activePartnerId) {
+      setSendError(isClient
+        ? 'Your coach is not loaded yet. Refresh the page; if this continues, ask the admin to confirm your coach assignment.'
+        : 'Select a client before sending a message.');
       return;
     }
-    setInputContent('');
+
+    setIsSending(true);
+    setSendError(null);
+    try {
+      const result = await sendMessage(activePartnerId, messageContent);
+      if (!result.success) {
+        setSendError(result.error || 'Message was not sent. Please try again.');
+        return;
+      }
+      setInputContent('');
+    } catch (error) {
+      setSendError(error instanceof Error ? error.message : 'Message was not sent. Please try again.');
+    } finally {
+      setIsSending(false);
+    }
   };
 
   const handleSelectPartner = (clientId: string) => {
@@ -241,7 +275,8 @@ export const MessagesView: React.FC = () => {
             />
             <button
               type="submit"
-              disabled={!inputContent.trim()}
+              disabled={!inputContent.trim() || !activePartnerId || isSending}
+              aria-label={isSending ? 'Sending message' : 'Send message'}
               className="p-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 transition-colors shadow-md min-w-[42px] min-h-[42px] flex items-center justify-center"
             >
               <Send className="w-4 h-4" />
