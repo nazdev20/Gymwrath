@@ -377,7 +377,7 @@ export const SupabaseService = {
           checkInDate: c.due_date,
           status: c.status,
           submittedAt: c.submitted_at || c.created_at,
-          weightKg: c.weight_kg || resp.weightKg || 70,
+          weightKg: Number(c.weight_kg ?? resp.weightKg ?? 0),
           sleepRating: resp.sleepRating || 8,
           stressRating: resp.stressRating || 5,
           energyRating: resp.energyRating || 7,
