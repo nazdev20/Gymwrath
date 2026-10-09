@@ -22,7 +22,7 @@ const PILLARS = [
     number: '03',
     title: 'Prove the progress.',
     description: 'Review your history, recognize real personal records, and set the next target.',
-    icon: ChartNoAxesCombined
+    icon: TrendingUp
   }
 ];
 
