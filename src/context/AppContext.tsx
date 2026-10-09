@@ -82,7 +82,7 @@ interface AppContextType {
   signOutFromSupabase: () => Promise<SupabaseAuthResult>;
 
   // Actions
-  updateProfile: (updated: Partial<Profile>) => void;
+  updateProfile: (updated: Partial<Profile>) => Promise<boolean>;
   approveUser: (userId: string, assignedCoachId: string) => Promise<SupabaseWriteResult>;
   suspendUser: (userId: string) => void;
   activateUser: (userId: string) => void;
@@ -97,7 +97,7 @@ interface AppContextType {
   
   // Workout Actions
   scheduleWorkout: (workout: Omit<ScheduledWorkout, 'id'>) => ScheduledWorkout;
-  logWorkoutCompletion: (workoutId: string, loggedData: LoggedExercise[], overallRpe?: number, clientFeedback?: string) => void;
+  logWorkoutCompletion: (workoutId: string, loggedData: LoggedExercise[], overallRpe?: number, clientFeedback?: string) => Promise<SupabaseWriteResult>;
   
   // Check-In Actions
   submitCheckIn: (checkInData: Omit<CheckIn, 'id' | 'status' | 'submittedAt'>) => Promise<SupabaseWriteResult>;
@@ -346,9 +346,12 @@ export const AppProvider: React.FC<{
 
   const currentUser = allProfiles.find(p => p.id === currentUserId) || GUEST_PROFILE;
 
-  const updateProfile = (updated: Partial<Profile>) => {
-    setAllProfiles(prev => prev.map(p => (p.id === currentUser.id ? { ...p, ...updated } : p)));
-    SupabaseService.saveProfile({ ...currentUser, ...updated });
+  const updateProfile = async (updated: Partial<Profile>): Promise<boolean> => {
+    const nextProfile = { ...currentUser, ...updated };
+    const saved = await SupabaseService.saveProfile(nextProfile);
+    if (!saved) return false;
+    setAllProfiles(prev => prev.map(p => (p.id === currentUser.id ? nextProfile : p)));
+    return true;
   };
 
   const approveUser = async (userId: string, assignedCoachId: string): Promise<SupabaseWriteResult> => {
@@ -549,28 +552,29 @@ export const AppProvider: React.FC<{
     return newWorkout;
   };
 
-  const logWorkoutCompletion = (
+  const logWorkoutCompletion = async (
     workoutId: string,
     loggedData: LoggedExercise[],
     overallRpe?: number,
     clientFeedback?: string
-  ) => {
-    setScheduledWorkouts(prev => prev.map(w => {
-      if (w.id === workoutId) {
-        return {
-          ...w,
-          status: 'completed',
-          completedAt: new Date().toISOString(),
-          overallRpe: overallRpe || 8,
-          clientFeedback,
-          loggedData
-        };
-      }
-      return w;
-    }));
-
+  ): Promise<SupabaseWriteResult> => {
     const workout = scheduledWorkouts.find(w => w.id === workoutId);
-    if (workout && workout.coachId) {
+    if (!workout) return { success: false, error: 'Workout session not found. Refresh and try again.' };
+
+    const saved = await SupabaseService.saveWorkoutCompletion(workout, loggedData, overallRpe, clientFeedback);
+    if (!saved.success) return saved;
+
+    const completedAt = new Date().toISOString();
+    setScheduledWorkouts(prev => prev.map(w => w.id === workoutId ? {
+      ...w,
+      status: 'completed',
+      completedAt,
+      overallRpe: overallRpe ?? 8,
+      clientFeedback,
+      loggedData
+    } : w));
+
+    if (workout.coachId) {
       setNotifications(prev => [
         {
           id: `notif-comp-${Date.now()}`,
@@ -580,11 +584,13 @@ export const AppProvider: React.FC<{
           type: 'workout_completed',
           linkTarget: { view: 'calendar' },
           isRead: false,
-          createdAt: new Date().toISOString()
+          createdAt: completedAt
         },
         ...prev
       ]);
     }
+
+    return saved;
   };
 
   const submitCheckIn = async (checkInData: Omit<CheckIn, 'id' | 'status' | 'submittedAt'>): Promise<SupabaseWriteResult> => {
