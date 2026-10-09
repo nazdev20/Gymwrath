@@ -978,7 +978,9 @@ DECLARE
   v_meal_id UUID;
   caller_role TEXT;
 BEGIN
-  caller_role := fitness.current_user_role();
+  SELECT p.role INTO caller_role
+  FROM fitness.profiles AS p
+  WHERE p.id = auth.uid();
   IF auth.uid() IS NULL OR caller_role IS NULL OR NOT (
     caller_role = 'admin'
     OR (caller_role = 'client' AND p_client_id = auth.uid())
@@ -1038,7 +1040,9 @@ BEGIN
     RAISE EXCEPTION 'Food log entry was not found';
   END IF;
 
-  caller_role := fitness.current_user_role();
+  SELECT p.role INTO caller_role
+  FROM fitness.profiles AS p
+  WHERE p.id = auth.uid();
   IF auth.uid() IS NULL OR caller_role IS NULL OR NOT (
     caller_role = 'admin'
     OR (caller_role = 'client' AND owner_id = auth.uid())
