@@ -151,3 +151,112 @@
 :root.theme-light [class~="bg-slate-950/80"] {
   background-color: rgb(15 23 42 / 0.68) !important;
 }
+
+
+/*
+ * GymWrath UI refinement
+ * A more purposeful, utility-first feel: calmer panels, quieter controls,
+ * fewer decorative gradients, and consistent interactive states.
+ */
+
+:root {
+  --gw-radius-card: 14px;
+  --gw-radius-control: 10px;
+  --gw-border-dark: #343438;
+  --gw-shadow-dark: 0 1px 2px rgb(0 0 0 / 0.18);
+  --gw-shadow-light: 0 1px 2px rgb(15 23 42 / 0.045);
+}
+
+/* Pull large surfaces back from the repeated extra-rounded template look. */
+:root [class~="rounded-2xl"][class~="border"][class~="border-slate-800"][class~="bg-slate-900"],
+:root [class~="rounded-2xl"][class~="border"][class~="border-slate-800"][class~="bg-slate-850"] {
+  border-radius: var(--gw-radius-card) !important;
+  box-shadow: var(--gw-shadow-dark);
+}
+
+:root.theme-light [class~="rounded-2xl"][class~="border"][class~="border-slate-800"][class~="bg-slate-900"],
+:root.theme-light [class~="rounded-2xl"][class~="border"][class~="border-slate-800"][class~="bg-slate-850"] {
+  box-shadow: var(--gw-shadow-light);
+}
+
+/* A tighter, shared control shape with clear interaction feedback. */
+button[class~="rounded-xl"],
+button[class~="rounded-2xl"],
+a[class~="rounded-xl"],
+a[class~="rounded-2xl"] {
+  border-radius: var(--gw-radius-control);
+  transition-duration: 150ms;
+}
+
+button {
+  text-underline-offset: 3px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+button[class~="shadow-lg"],
+button[class~="shadow-xl"],
+button[class~="shadow-2xl"] {
+  box-shadow: none !important;
+}
+
+input,
+select,
+textarea {
+  border-radius: var(--gw-radius-control);
+}
+
+input::placeholder,
+textarea::placeholder {
+  opacity: 0.72;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #d93646;
+  outline-offset: 2px;
+}
+
+/* Use restrained flat surfaces for page banners instead of default-looking gradients. */
+:root [class~="bg-gradient-to-r"][class~="from-slate-900"][class~="to-slate-900"] {
+  background-image: none !important;
+  background-color: var(--color-slate-900);
+}
+
+/* Tone down oversized glow effects used on action buttons and logo accents. */
+:root [class~="shadow-emerald-500/20"],
+:root [class~="shadow-emerald-500/5"] {
+  --tw-shadow: 0 1px 2px rgb(0 0 0 / 0.12);
+  box-shadow: var(--tw-shadow);
+}
+
+:root.theme-light {
+  --gw-border-dark: #e2e8f0;
+}
+
+:root.theme-light [class~="bg-gradient-to-r"][class~="from-slate-900"][class~="to-slate-900"] {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+}
+
+/* Primary red actions retain readable contrast on the light theme. */
+:root.theme-light [class~="bg-emerald-500"][class~="text-slate-950"] {
+  color: #ffffff !important;
+}
+
+/* Keep dropdowns and form controls crisp in both themes. */
+:root.theme-light input,
+:root.theme-light select,
+:root.theme-light textarea {
+  border-color: #cbd5e1;
+}
+
+:root.theme-light button[class~="border-slate-700"],
+:root.theme-light a[class~="border-slate-700"] {
+  border-color: #cbd5e1;
+}
