@@ -163,7 +163,7 @@ export const ProgramBuilder: React.FC = () => {
             <h1 className="text-2xl font-extrabold text-white">Build the Plan</h1>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Build multi-week periodized training blocks and assign them directly to client schedules.
+            Turn the target into a repeatable plan. Build the sessions, assign the work, and measure follow-through.
           </p>
         </div>
 
