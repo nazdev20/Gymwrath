@@ -170,7 +170,7 @@ export const AppProvider: React.FC<{
   // Supabase Loading & Connectivity State
   const [isLoadingSupabase, setIsLoadingSupabase] = useState<boolean>(false);
   const [isSupabaseConnected, setIsSupabaseConnected] = useState<boolean>(false);
-  const [supabaseAuthUserId, setSupabaseAuthUserId] = useState<string | null>(null);
+  const [supabaseAuthUserId, setSupabaseAuthUserId] = useState<string | null>(initialUserId || null);
 
   // Navigation & Modals
   const [activeView, setActiveView] = useState<AppView>('dashboard');
