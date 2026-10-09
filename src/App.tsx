@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Navbar } from './components/layout/Navbar';
 import { Sidebar } from './components/layout/Sidebar';
@@ -28,6 +28,32 @@ const MainLayout: React.FC = () => {
   const { currentUser, activeView, selectedClientId } = useApp();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [themeMode, setThemeMode] = useState<'dark' | 'light' | 'system'>('dark');
+
+  useEffect(() => {
+    const savedTheme = window.localStorage.getItem('gymwrath-theme');
+    if (savedTheme === 'dark' || savedTheme === 'light' || savedTheme === 'system') {
+      setThemeMode(savedTheme);
+    }
+  }, []);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
+    const applyTheme = () => {
+      const useLightTheme = themeMode === 'light' || (themeMode === 'system' && mediaQuery.matches);
+      document.documentElement.classList.toggle('theme-light', useLightTheme);
+      document.documentElement.style.colorScheme = useLightTheme ? 'light' : 'dark';
+    };
+
+    applyTheme();
+    if (themeMode === 'system') mediaQuery.addEventListener('change', applyTheme);
+    return () => mediaQuery.removeEventListener('change', applyTheme);
+  }, [themeMode]);
+
+  const handleThemeModeChange = (mode: 'dark' | 'light' | 'system') => {
+    window.localStorage.setItem('gymwrath-theme', mode);
+    setThemeMode(mode);
+  };
 
   const renderCurrentView = () => {
     // If a client is selected for deep drill-down
@@ -83,6 +109,8 @@ const MainLayout: React.FC = () => {
         onToggleSidebar={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         isMobileMenuOpen={isMobileMenuOpen}
         onOpenAuth={() => setIsAuthModalOpen(true)}
+        themeMode={themeMode}
+        onThemeModeChange={handleThemeModeChange}
       />
 
       <div className="flex w-full min-w-0 flex-1 overflow-hidden">
