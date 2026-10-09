@@ -267,3 +267,58 @@ textarea:focus-visible {
 :root.theme-light a[class~="border-slate-700"] {
   border-color: #cbd5e1;
 }
+
+
+/* Final interaction pass: make action hierarchy consistent with GymWrath branding. */
+:root button[class~="bg-emerald-500"] {
+  color: #ffffff !important;
+}
+
+:root button[class~="bg-blue-500"],
+:root button[class~="bg-purple-500"] {
+  background-color: var(--color-emerald-500) !important;
+  border-color: var(--color-emerald-600) !important;
+  color: #ffffff !important;
+}
+
+:root button[class~="hover:bg-blue-400"]:hover,
+:root button[class~="hover:bg-purple-400"]:hover,
+:root button[class~="hover:bg-emerald-400"]:hover {
+  background-color: var(--color-emerald-600) !important;
+  border-color: var(--color-emerald-600) !important;
+}
+
+:root button[class~="rounded-xl"][class*="px-"][class*="py-"] {
+  transition-property: color, background-color, border-color, box-shadow, transform;
+  transition-duration: 150ms;
+  transition-timing-function: ease-out;
+}
+
+:root button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+:root button[class~="hover:border-slate-700"],
+:root button[class~="hover:border-slate-800"] {
+  transition-property: color, background-color, border-color, transform;
+  transition-duration: 150ms;
+}
+
+/* Only interactive cards lift slightly; static information panels stay still. */
+:root div[class~="hover:border-slate-700"][class~="rounded-2xl"] {
+  transition: border-color 150ms ease-out, transform 150ms ease-out;
+}
+
+:root div[class~="hover:border-slate-700"][class~="rounded-2xl"]:hover {
+  transform: translateY(-1px);
+}
+
+:root.theme-light button[class~="bg-blue-500"],
+:root.theme-light button[class~="bg-purple-500"],
+:root.theme-light button[class~="bg-emerald-500"] {
+  color: #ffffff !important;
+}
+
+:root.theme-light button[class~="bg-slate-800"] {
+  border-color: #cbd5e1;
+}
