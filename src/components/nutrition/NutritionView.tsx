@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Food } from '../../types';
 import {
@@ -64,14 +64,30 @@ export const NutritionView: React.FC = () => {
 
   // Custom Food inputs
   const [newFoodName, setNewFoodName] = useState('');
+  const [newFoodBrand, setNewFoodBrand] = useState('');
+  const [newFoodBarcode, setNewFoodBarcode] = useState('');
+  const [newFoodType, setNewFoodType] = useState<NonNullable<Food['foodType']>>('generic');
+  const [newFoodServingSize, setNewFoodServingSize] = useState(100);
+  const [newFoodServingUnit, setNewFoodServingUnit] = useState('g');
   const [newFoodCalories, setNewFoodCalories] = useState(150);
   const [newFoodProtein, setNewFoodProtein] = useState(20);
   const [newFoodCarbs, setNewFoodCarbs] = useState(10);
   const [newFoodFat, setNewFoodFat] = useState(3);
   const [newFoodCategory, setNewFoodCategory] = useState<Food['category']>('Protein');
+  const [customFoodError, setCustomFoodError] = useState<string | null>(null);
+  const [isSavingCustomFood, setIsSavingCustomFood] = useState(false);
+  const [customFoodReturnToLog, setCustomFoodReturnToLog] = useState(false);
 
   const clients = allProfiles.filter(p => p.role === 'client');
   const canManageFoodLogs = currentUser.role === 'admin' || currentUser.role === 'client';
+  const canCreateFoods = Boolean(currentUser.id);
+
+  useEffect(() => {
+    if (foods.length > 0 && !foods.some(food => food.id === selectedFoodId)) {
+      setSelectedFoodId(foods[0].id);
+      setFoodQuantity(foods[0].servingSize || 1);
+    }
+  }, [foods, selectedFoodId]);
 
   // Logs for selected date and client
   const clientLogs = foodLogs.filter(
@@ -147,27 +163,64 @@ export const NutritionView: React.FC = () => {
     setIsSetTargetOpen(false);
   };
 
-  const handleSaveCustomFood = (e: React.FormEvent) => {
+  const handleSaveCustomFood = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newFoodName.trim()) return;
+    if (isSavingCustomFood) return;
+    if (!newFoodName.trim()) {
+      setCustomFoodError('Enter a food name.');
+      return;
+    }
+    if (!Number.isFinite(newFoodServingSize) || newFoodServingSize <= 0 || !newFoodServingUnit.trim()) {
+      setCustomFoodError('Enter a valid serving size and unit.');
+      return;
+    }
 
-    const created = addFood({
-      name: newFoodName.trim(),
-      category: newFoodCategory,
-      servingSize: 100,
-      servingUnit: 'g',
-      calories: newFoodCalories,
-      proteinG: newFoodProtein,
-      carbsG: newFoodCarbs,
-      fatG: newFoodFat,
-      fiberG: 0,
-      isGlobal: currentUser.role === 'admin',
-      createdBy: currentUser.id
-    });
+    setCustomFoodError(null);
+    setIsSavingCustomFood(true);
+    try {
+      const result = await addFood({
+        name: newFoodName.trim(),
+        brand: newFoodBrand.trim() || undefined,
+        barcode: newFoodBarcode.trim() || undefined,
+        foodType: newFoodType,
+        category: newFoodCategory,
+        servingSize: newFoodServingSize,
+        servingUnit: newFoodServingUnit.trim(),
+        calories: newFoodCalories,
+        proteinG: newFoodProtein,
+        carbsG: newFoodCarbs,
+        fatG: newFoodFat,
+        fiberG: 0,
+        notes: undefined,
+        isGlobal: true,
+        createdBy: currentUser.id
+      });
 
-    setSelectedFoodId(created.id);
-    setIsAddCustomFoodOpen(false);
-    setNewFoodName('');
+      if (!result.success || !result.food) {
+        setCustomFoodError(result.error || 'Food item was not saved.');
+        return;
+      }
+
+      setSelectedFoodId(result.food.id);
+      setFoodQuantity(result.food.servingSize);
+      setIsAddCustomFoodOpen(false);
+      if (customFoodReturnToLog) setIsLogFoodOpen(true);
+      setNewFoodName('');
+      setNewFoodBrand('');
+      setNewFoodBarcode('');
+      setNewFoodType('generic');
+      setNewFoodServingSize(100);
+      setNewFoodServingUnit('g');
+      setNewFoodCalories(150);
+      setNewFoodProtein(20);
+      setNewFoodCarbs(10);
+      setNewFoodFat(3);
+      setCustomFoodReturnToLog(false);
+    } catch (error) {
+      setCustomFoodError(error instanceof Error ? error.message : 'Food item was not saved.');
+    } finally {
+      setIsSavingCustomFood(false);
+    }
   };
 
   return (
@@ -187,6 +240,18 @@ export const NutritionView: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
+          {canCreateFoods && (
+            <button
+              onClick={() => {
+                setCustomFoodError(null);
+                setCustomFoodReturnToLog(false);
+                setIsAddCustomFoodOpen(true);
+              }}
+              className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-xs font-semibold text-white transition-colors flex items-center gap-1.5"
+            >
+              <Plus className="w-4 h-4 text-orange-400" /> Add Food
+            </button>
+          )}
           {currentUser.role !== 'client' && (
             <>
               <div className="flex items-center gap-2 text-xs">
@@ -401,6 +466,8 @@ export const NutritionView: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => {
+                      setCustomFoodError(null);
+                      setCustomFoodReturnToLog(true);
                       setIsLogFoodOpen(false);
                       setIsAddCustomFoodOpen(true);
                     }}
@@ -411,25 +478,31 @@ export const NutritionView: React.FC = () => {
                 </div>
                 <select
                   value={selectedFoodId}
-                  onChange={e => setSelectedFoodId(e.target.value)}
+                  onChange={e => {
+                    const nextFoodId = e.target.value;
+                    const nextFood = foods.find(food => food.id === nextFoodId);
+                    setSelectedFoodId(nextFoodId);
+                    setFoodQuantity(nextFood?.servingSize || 1);
+                  }}
                   className="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-blue-500"
                 >
                   {foods.map(f => (
                     <option key={f.id} value={f.id}>
-                      {f.name} ({f.calories} kcal / 100g)
+                      {f.name} ({f.calories} kcal / {f.servingSize} {f.servingUnit})
                     </option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase text-slate-300 mb-1">Portion (Grams)</label>
+                <label className="block text-xs font-semibold uppercase text-slate-300 mb-1">Quantity ({foods.find(f => f.id === selectedFoodId)?.servingUnit || 'servings'})</label>
                 <input
                   type="number"
-                  min={1}
+                  min={0.01}
+                  step={0.01}
                   required
                   value={foodQuantity}
-                  onChange={e => setFoodQuantity(parseInt(e.target.value, 10) || 100)}
+                  onChange={e => setFoodQuantity(parseFloat(e.target.value) || 0)}
                   className="w-full px-3.5 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-mono focus:outline-none focus:border-blue-500"
                 />
               </div>
@@ -530,19 +603,65 @@ export const NutritionView: React.FC = () => {
       {isAddCustomFoodOpen && (
         <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
           <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 text-white shadow-2xl space-y-4">
-            <h3 className="text-base font-bold text-white">Create Food Item (per 100g)</h3>
+            <h3 className="text-base font-bold text-white">Add Food to Shared Catalog</h3>
+            <p className="text-[11px] leading-relaxed text-slate-400">Enter nutrition values for the serving shown below. Barcodes are optional—skip them for home-cooked meals, restaurant dishes, and fast food.</p>
 
             <form onSubmit={handleSaveCustomFood} className="space-y-4">
+              {customFoodError && <p role="alert" className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">{customFoodError}</p>}
               <div>
                 <label className="block text-xs font-semibold uppercase text-slate-300 mb-1">Food Name</label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Greek Yogurt 0% Fat"
+                  maxLength={160}
+                  placeholder="e.g. Cooked white rice or 1 pc chicken burger"
                   value={newFoodName}
                   onChange={e => setNewFoodName(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-blue-500"
                 />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold uppercase text-slate-300 mb-1">Food Type</label>
+                  <select
+                    value={newFoodType}
+                    onChange={e => setNewFoodType(e.target.value as NonNullable<Food['foodType']>)}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-blue-500"
+                  >
+                    <option value="packaged">Packaged Product</option>
+                    <option value="home_cooked">Home-Cooked</option>
+                    <option value="restaurant">Restaurant Meal</option>
+                    <option value="fast_food">Fast Food</option>
+                    <option value="generic">Generic Ingredient</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold uppercase text-slate-300 mb-1">Brand / Restaurant (Optional)</label>
+                  <input
+                    type="text"
+                    maxLength={120}
+                    placeholder="e.g. Jollibee"
+                    value={newFoodBrand}
+                    onChange={e => setNewFoodBrand(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase text-slate-300 mb-1">Barcode (Optional)</label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  maxLength={80}
+                  placeholder="Scan or enter barcode; leave blank if none"
+                  value={newFoodBarcode}
+                  onChange={e => setNewFoodBarcode(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-mono focus:outline-none focus:border-blue-500"
+                />
+                <p className="text-[10px] text-slate-500 mt-1">Barcode is stored as text to preserve leading zeroes. You can add food manually without one.</p>
               </div>
 
               <div>
@@ -564,14 +683,45 @@ export const NutritionView: React.FC = () => {
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold uppercase text-slate-300 mb-1">Serving Size</label>
+                  <input
+                    type="number"
+                    min={0.01}
+                    step={0.01}
+                    required
+                    value={newFoodServingSize}
+                    onChange={e => setNewFoodServingSize(parseFloat(e.target.value) || 0)}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-mono focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold uppercase text-slate-300 mb-1">Serving Unit</label>
+                  <input
+                    type="text"
+                    required
+                    maxLength={32}
+                    placeholder="g, ml, piece, burger, order"
+                    value={newFoodServingUnit}
+                    onChange={e => setNewFoodServingUnit(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <p className="text-[11px] font-semibold uppercase text-slate-300 mb-2">Nutrition per {newFoodServingSize || '?'} {newFoodServingUnit.trim() || 'unit'}</p>
+                <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[11px] font-semibold uppercase text-slate-400 mb-1">Calories (kcal)</label>
                   <input
                     type="number"
+                    min={0}
+                    step={1}
                     required
                     value={newFoodCalories}
-                    onChange={e => setNewFoodCalories(parseInt(e.target.value, 10) || 0)}
+                    onChange={e => setNewFoodCalories(parseFloat(e.target.value) || 0)}
                     className="w-full px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-mono"
                   />
                 </div>
@@ -579,9 +729,11 @@ export const NutritionView: React.FC = () => {
                   <label className="block text-[11px] font-semibold uppercase text-slate-400 mb-1">Protein (g)</label>
                   <input
                     type="number"
+                    min={0}
+                    step={0.1}
                     required
                     value={newFoodProtein}
-                    onChange={e => setNewFoodProtein(parseInt(e.target.value, 10) || 0)}
+                    onChange={e => setNewFoodProtein(parseFloat(e.target.value) || 0)}
                     className="w-full px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-mono"
                   />
                 </div>
@@ -589,9 +741,11 @@ export const NutritionView: React.FC = () => {
                   <label className="block text-[11px] font-semibold uppercase text-slate-400 mb-1">Carbs (g)</label>
                   <input
                     type="number"
+                    min={0}
+                    step={0.1}
                     required
                     value={newFoodCarbs}
-                    onChange={e => setNewFoodCarbs(parseInt(e.target.value, 10) || 0)}
+                    onChange={e => setNewFoodCarbs(parseFloat(e.target.value) || 0)}
                     className="w-full px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-mono"
                   />
                 </div>
@@ -599,27 +753,35 @@ export const NutritionView: React.FC = () => {
                   <label className="block text-[11px] font-semibold uppercase text-slate-400 mb-1">Fat (g)</label>
                   <input
                     type="number"
+                    min={0}
+                    step={0.1}
                     required
                     value={newFoodFat}
-                    onChange={e => setNewFoodFat(parseInt(e.target.value, 10) || 0)}
+                    onChange={e => setNewFoodFat(parseFloat(e.target.value) || 0)}
                     className="w-full px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-mono"
                   />
+                </div>
                 </div>
               </div>
 
               <div className="pt-2 flex gap-2">
                 <button
                   type="button"
-                  onClick={() => setIsAddCustomFoodOpen(false)}
+                  onClick={() => {
+                    setIsAddCustomFoodOpen(false);
+                    if (customFoodReturnToLog) setIsLogFoodOpen(true);
+                    setCustomFoodReturnToLog(false);
+                  }}
                   className="flex-1 py-2 px-4 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-300 text-xs font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2 px-4 rounded-xl bg-blue-500 hover:bg-blue-400 text-slate-950 font-bold text-xs"
+                  disabled={isSavingCustomFood}
+                  className="flex-1 py-2 px-4 rounded-xl bg-blue-500 hover:bg-blue-400 text-slate-950 font-bold text-xs disabled:opacity-60"
                 >
-                  Save Food
+                  {isSavingCustomFood ? 'Saving…' : 'Save Food'}
                 </button>
               </div>
             </form>
