@@ -44,6 +44,8 @@ export const AdminDashboard: React.FC = () => {
   // Approval modal state
   const [approvingUserId, setApprovingUserId] = useState<string | null>(null);
   const [selectedCoachId, setSelectedCoachId] = useState<string>('');
+  const [isApproving, setIsApproving] = useState(false);
+  const [approvalError, setApprovalError] = useState<string | null>(null);
 
   const coaches = allProfiles.filter(p => p.role === 'coach' && p.status === 'active');
   const pendingUsers = allProfiles.filter(p => p.status === 'pending');
@@ -58,16 +60,28 @@ export const AdminDashboard: React.FC = () => {
   });
 
   const handleOpenApprove = (userId: string) => {
+    setApprovalError(null);
     setApprovingUserId(userId);
     if (coaches.length > 0) {
       setSelectedCoachId(coaches[0].id);
     }
   };
 
-  const handleConfirmApprove = () => {
-    if (approvingUserId && selectedCoachId) {
-      approveUser(approvingUserId, selectedCoachId);
+  const handleConfirmApprove = async () => {
+    if (!approvingUserId || !selectedCoachId || isApproving) return;
+    setIsApproving(true);
+    setApprovalError(null);
+    try {
+      const result = await approveUser(approvingUserId, selectedCoachId);
+      if (!result.success) {
+        setApprovalError(result.error || 'Unable to save the coach assignment.');
+        return;
+      }
       setApprovingUserId(null);
+    } catch (error) {
+      setApprovalError(error instanceof Error ? error.message : 'Unable to save the coach assignment.');
+    } finally {
+      setIsApproving(false);
     }
   };
 
@@ -399,18 +413,22 @@ export const AdminDashboard: React.FC = () => {
               </select>
             </div>
 
+            {approvalError && <p role="alert" className="text-sm text-rose-300">{approvalError}</p>}
+
             <div className="pt-3 flex gap-2">
               <button
                 onClick={() => setApprovingUserId(null)}
-                className="flex-1 py-2 px-4 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-300 text-xs font-semibold"
+                disabled={isApproving}
+                className="flex-1 py-2 px-4 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-300 text-xs font-semibold disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmApprove}
-                className="flex-1 py-2 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs"
+                disabled={isApproving || !selectedCoachId}
+                className="flex-1 py-2 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs disabled:opacity-50"
               >
-                Confirm & Activate
+                {isApproving ? 'Saving assignment…' : 'Confirm & Activate'}
               </button>
             </div>
           </div>
