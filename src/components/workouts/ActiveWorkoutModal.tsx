@@ -427,7 +427,7 @@ const ActiveWorkoutSession: React.FC<{ workout: ScheduledWorkout }> = ({ workout
             onClick={() => setActiveWorkoutModalId(null)}
             className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-300 text-xs font-semibold order-2 sm:order-1 transition-colors min-h-[40px]"
           >
-            {saveWorkoutWarning ? 'Close' : 'Close / Save Draft'}
+            {saveWorkoutWarning ? 'Close' : 'Close session'}
           </button>
 
           <button
