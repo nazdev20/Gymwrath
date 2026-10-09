@@ -169,13 +169,13 @@
 
 /* Pull large surfaces back from the repeated extra-rounded template look. */
 :root [class~="rounded-2xl"][class~="border"][class~="border-slate-800"][class~="bg-slate-900"],
-:root [class~="rounded-2xl"][class~="border"][class~="border-slate-800"][class~="bg-slate-850"] {
+:root [class~="rounded-2xl"][class~="border"][class~="border-slate-750"][class~="bg-slate-850"] {
   border-radius: var(--gw-radius-card) !important;
   box-shadow: var(--gw-shadow-dark);
 }
 
 :root.theme-light [class~="rounded-2xl"][class~="border"][class~="border-slate-800"][class~="bg-slate-900"],
-:root.theme-light [class~="rounded-2xl"][class~="border"][class~="border-slate-800"][class~="bg-slate-850"] {
+:root.theme-light [class~="rounded-2xl"][class~="border"][class~="border-slate-750"][class~="bg-slate-850"] {
   box-shadow: var(--gw-shadow-light);
 }
 
@@ -199,6 +199,13 @@ button:disabled {
 button[class~="shadow-lg"],
 button[class~="shadow-xl"],
 button[class~="shadow-2xl"] {
+  box-shadow: none !important;
+}
+
+/* Keep gradient fills for decorative artwork out of action controls. */
+button[class*="bg-gradient-to-"] {
+  background-image: none !important;
+  background-color: var(--color-emerald-500);
   box-shadow: none !important;
 }
 
