@@ -13,6 +13,9 @@ import {
   MuscleGroup,
   Program,
   ScheduledWorkout,
+  WorkoutExercise,
+  PrescribedSet,
+  LoggedExercise,
   CheckIn,
   CheckInFrequency,
   ProgramDayOfWeek,
@@ -46,6 +49,8 @@ export interface DatabaseLoadResult {
 export interface SupabaseWriteResult {
   success: boolean;
   error?: string;
+  warning?: string;
+  persisted?: boolean;
   scheduleId?: string;
   conversationId?: string;
 }
@@ -194,9 +199,10 @@ export const SupabaseService = {
         phone: p.phone,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
         createdAt: p.created_at || new Date().toISOString(),
-        goals: p.fitness_goals ? p.fitness_goals.join(', ') : 'Improve overall strength and fitness',
+        goals: Array.isArray(p.fitness_goals) ? p.fitness_goals.join(', ') : '',
         heightCm: p.height_cm,
-        currentWeightKg: p.current_weight_kg
+        currentWeightKg: p.current_weight_kg,
+        targetWeightKg: p.target_weight_kg == null ? undefined : Number(p.target_weight_kg)
       }));
 
       const profileMap = new Map<string, Profile>();
@@ -257,16 +263,107 @@ export const SupabaseService = {
         )
       `);
 
-      const scheduledWorkouts: ScheduledWorkout[] = (dbWorkouts || []).map((w: any) => ({
-        id: w.id,
-        clientId: w.client_id,
-        coachId: w.coach_id,
-        title: w.workouts?.name || 'Assigned Workout',
-        scheduledDate: w.scheduled_date,
-        status: (w.status as any) || 'scheduled',
-        exercises: [],
-        description: w.notes
-      }));
+      const [
+        { data: dbWorkoutExercises },
+        { data: dbSetTemplates },
+        { data: dbCompletions },
+        { data: dbCompletedSets }
+      ] = await Promise.all([
+        supabase.from('workout_exercises').select('*'),
+        supabase.from('exercise_set_templates').select('*'),
+        supabase.from('workout_completions').select('*').order('completed_at', { ascending: false }),
+        supabase.from('completed_exercise_sets').select('*')
+      ]);
+
+      const exerciseNameById = new Map<string, string>(
+        (dbExercises || []).map((exercise: any) => [exercise.id, exercise.name])
+      );
+      const templatesByWorkoutExercise = new Map<string, any[]>();
+      (dbSetTemplates || []).forEach((set: any) => {
+        const existing = templatesByWorkoutExercise.get(set.workout_exercise_id) || [];
+        existing.push(set);
+        templatesByWorkoutExercise.set(set.workout_exercise_id, existing);
+      });
+
+      const workoutExercisesByWorkout = new Map<string, WorkoutExercise[]>();
+      (dbWorkoutExercises || []).forEach((exercise: any) => {
+        const prescribedSets: PrescribedSet[] = (templatesByWorkoutExercise.get(exercise.id) || [])
+          .sort((a: any, b: any) => a.set_number - b.set_number)
+          .map((set: any) => ({
+            setNumber: set.set_number,
+            reps: set.target_reps == null ? '8-10' : String(set.target_reps),
+            targetWeightKg: set.target_weight == null ? undefined : Number(set.target_weight),
+            restSeconds: set.rest_period_sec || 90
+          }));
+        const mappedExercise: WorkoutExercise = {
+          id: exercise.id,
+          exerciseId: exercise.exercise_id,
+          exerciseName: exerciseNameById.get(exercise.exercise_id) || 'Exercise',
+          orderIndex: exercise.order_index || 0,
+          sets: prescribedSets,
+          notes: exercise.notes || undefined
+        };
+        const existing = workoutExercisesByWorkout.get(exercise.workout_id) || [];
+        existing.push(mappedExercise);
+        workoutExercisesByWorkout.set(exercise.workout_id, existing);
+      });
+      workoutExercisesByWorkout.forEach(items => items.sort((a, b) => a.orderIndex - b.orderIndex));
+
+      const completionByAssignment = new Map<string, any>();
+      (dbCompletions || []).forEach((completion: any) => {
+        if (!completionByAssignment.has(completion.assignment_id)) {
+          completionByAssignment.set(completion.assignment_id, completion);
+        }
+      });
+      const setsByCompletion = new Map<string, any[]>();
+      (dbCompletedSets || []).forEach((set: any) => {
+        const existing = setsByCompletion.get(set.completion_id) || [];
+        existing.push(set);
+        setsByCompletion.set(set.completion_id, existing);
+      });
+
+      const mapLoggedExercises = (completionId?: string): LoggedExercise[] => {
+        if (!completionId) return [];
+        const grouped = new Map<string, LoggedExercise>();
+        (setsByCompletion.get(completionId) || [])
+          .sort((a: any, b: any) => a.set_number - b.set_number)
+          .forEach((set: any) => {
+            if (!grouped.has(set.exercise_id)) {
+              grouped.set(set.exercise_id, {
+                exerciseId: set.exercise_id,
+                exerciseName: exerciseNameById.get(set.exercise_id) || 'Exercise',
+                clientNotes: set.notes || '',
+                sets: []
+              });
+            }
+            grouped.get(set.exercise_id)!.sets.push({
+              setNumber: set.set_number,
+              actualReps: Number(set.actual_reps) || 0,
+              actualWeightKg: Number(set.actual_weight) || 0,
+              completed: Boolean(set.completed)
+            });
+          });
+        return Array.from(grouped.values());
+      };
+
+      const scheduledWorkouts: ScheduledWorkout[] = (dbWorkouts || []).map((w: any) => {
+        const completion = completionByAssignment.get(w.id);
+        return {
+          id: w.id,
+          clientId: w.client_id,
+          coachId: w.coach_id,
+          title: w.workouts?.name || 'Assigned Workout',
+          scheduledDate: w.scheduled_date,
+          status: completion ? 'completed' : (w.status as any) || 'scheduled',
+          exercises: workoutExercisesByWorkout.get(w.workout_id) || [],
+          description: w.notes || w.workouts?.description || undefined,
+          completedAt: completion?.completed_at,
+          loggedData: completion ? mapLoggedExercises(completion.id) : undefined,
+          overallRpe: completion?.perceived_difficulty == null ? undefined : Number(completion.perceived_difficulty),
+          clientFeedback: completion?.notes || undefined,
+          actualDurationMin: completion?.duration_min == null ? undefined : Number(completion.duration_min)
+        };
+      });
 
       // 6. Query Check-Ins
       const { data: dbCheckIns } = await supabase.from('check_ins').select('*');
@@ -523,6 +620,55 @@ export const SupabaseService = {
     }
   },
 
+  // Persist an assigned workout and its actual set performance.
+  async saveWorkoutCompletion(
+    workout: ScheduledWorkout,
+    loggedData: LoggedExercise[],
+    overallRpe?: number,
+    clientFeedback?: string
+  ): Promise<SupabaseWriteResult> {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(workout.id);
+
+    // Locally created one-off sessions use temporary IDs and cannot reference database assignments.
+    if (!isUuid || getSupabaseConfig().isOfflineMode) {
+      return {
+        success: true,
+        warning: 'This session is not linked to a saved Supabase assignment, so its log is available only in the current session.',
+        persisted: false
+      };
+    }
+    if (getSupabaseReachableState() === false) {
+      return { success: false, error: 'Supabase is unreachable. Reconnect before logging this assigned workout.' };
+    }
+
+    try {
+      const { error } = await supabase.rpc('log_workout_completion', {
+        p_assignment_id: workout.id,
+        p_perceived_difficulty: overallRpe == null ? null : Math.round(overallRpe),
+        p_notes: clientFeedback?.trim() || null,
+        p_sets: loggedData.map(exercise => ({
+          exerciseId: exercise.exerciseId,
+          exerciseName: exercise.exerciseName,
+          clientNotes: exercise.clientNotes || null,
+          sets: exercise.sets.map(set => ({
+            setNumber: set.setNumber,
+            actualReps: set.actualReps,
+            actualWeightKg: set.actualWeightKg,
+            completed: set.completed
+          }))
+        }))
+      });
+      if (error) {
+        console.error('Failed to save workout completion:', error);
+        return { success: false, error: error.message };
+      }
+      return { success: true, persisted: true };
+    } catch (error) {
+      console.error('Failed to save workout completion:', error);
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown Supabase error.' };
+    }
+  },
+
   // Insert or Upsert a single profile to Supabase
   async saveProfile(profile: Partial<Profile>): Promise<boolean> {
     if (getSupabaseConfig().isOfflineMode || getSupabaseReachableState() === false) return false;
@@ -545,6 +691,10 @@ export const SupabaseService = {
         onboarding_completed: true,
         height_cm: profile.heightCm,
         current_weight_kg: profile.currentWeightKg,
+        target_weight_kg: profile.targetWeightKg ?? null,
+        fitness_goals: profile.goals
+          ? profile.goals.split(',').map((goal: string) => goal.trim()).filter(Boolean)
+          : [],
         is_active: profile.status === 'active',
         updated_at: new Date().toISOString()
       };
