@@ -62,9 +62,8 @@ export const AdminDashboard: React.FC = () => {
   const handleOpenApprove = (userId: string) => {
     setApprovalError(null);
     setApprovingUserId(userId);
-    if (coaches.length > 0) {
-      setSelectedCoachId(coaches[0].id);
-    }
+    const client = allProfiles.find(profile => profile.id === userId);
+    setSelectedCoachId(client?.assignedCoachId || coaches[0]?.id || '');
   };
 
   const handleConfirmApprove = async () => {
@@ -343,12 +342,22 @@ export const AdminDashboard: React.FC = () => {
 
                     <td className="px-5 py-4 text-right whitespace-nowrap">
                       <div className="flex items-center justify-end gap-2">
-                        {p.status === 'pending' && (
+                        {p.role === 'client' && p.status !== 'suspended' && (
                           <button
                             onClick={() => handleOpenApprove(p.id)}
                             className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-colors flex items-center gap-1 shadow-sm"
                           >
-                            <Check className="w-3.5 h-3.5" /> Approve & Assign
+                            <Check className="w-3.5 h-3.5" />
+                            {p.status === 'pending' ? 'Approve & Assign' : p.assignedCoachId ? 'Change Coach' : 'Assign Coach'}
+                          </button>
+                        )}
+
+                        {p.status === 'pending' && p.role === 'coach' && (
+                          <button
+                            onClick={() => activateUser(p.id)}
+                            className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-colors flex items-center gap-1 shadow-sm"
+                          >
+                            <Check className="w-3.5 h-3.5" /> Approve Coach
                           </button>
                         )}
 
@@ -385,7 +394,7 @@ export const AdminDashboard: React.FC = () => {
           <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 text-white shadow-2xl space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <UserCheck className="w-5 h-5 text-emerald-400" /> Approve Client Account
+                <UserCheck className="w-5 h-5 text-emerald-400" /> Assign Primary Coach
               </h3>
               <button onClick={() => setApprovingUserId(null)} className="text-slate-400 hover:text-white">
                 <X className="w-5 h-5" />
@@ -393,7 +402,7 @@ export const AdminDashboard: React.FC = () => {
             </div>
 
             <p className="text-xs text-slate-400">
-              Select the primary coach to assign to this client upon approving their registration.
+              Select the client's primary coach. Pending clients will be approved when this assignment is saved.
             </p>
 
             <div>
@@ -428,7 +437,7 @@ export const AdminDashboard: React.FC = () => {
                 disabled={isApproving || !selectedCoachId}
                 className="flex-1 py-2 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs disabled:opacity-50"
               >
-                {isApproving ? 'Saving assignment…' : 'Confirm & Activate'}
+                {isApproving ? 'Saving assignment…' : 'Save Coach Assignment'}
               </button>
             </div>
           </div>
