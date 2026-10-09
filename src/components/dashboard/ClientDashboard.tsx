@@ -33,7 +33,17 @@ export const ClientDashboard: React.FC = () => {
   } = useApp();
 
   const coach = getCoachForCurrentClient();
-  const todayStr = new Date().toISOString().slice(0, 10);
+  const toLocalDateKey = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+  const today = new Date();
+  const todayStr = toLocalDateKey(today);
+  const weekStart = new Date(today);
+  weekStart.setDate(weekStart.getDate() - 6);
+  const weekStartStr = toLocalDateKey(weekStart);
 
   // Today's workout
   const todayWorkout = scheduledWorkouts.find(
@@ -79,6 +89,53 @@ export const ClientDashboard: React.FC = () => {
     .filter(c => c.clientId === currentUser.id)
     .sort((a, b) => new Date(b.checkInDate).getTime() - new Date(a.checkInDate).getTime())[0];
 
+  const weeklyCompletedWorkouts = scheduledWorkouts.filter(workout => {
+    if (workout.clientId !== currentUser.id || workout.status !== 'completed') return false;
+    const completedDate = workout.completedAt ? toLocalDateKey(new Date(workout.completedAt)) : workout.scheduledDate;
+    return completedDate >= weekStartStr && completedDate <= todayStr;
+  });
+  const weeklySteps = stepRecords.filter(record =>
+    record.clientId === currentUser.id && record.logDate >= weekStartStr && record.logDate <= todayStr
+  );
+  const weeklyAverageSteps = weeklySteps.length
+    ? Math.round(weeklySteps.reduce((sum, record) => sum + record.stepCount, 0) / weeklySteps.length)
+    : 0;
+  const weeklyNutritionDays = new Set(
+    foodLogs
+      .filter(log => log.clientId === currentUser.id && log.logDate >= weekStartStr && log.logDate <= todayStr)
+      .map(log => log.logDate)
+  ).size;
+
+  const latestCompletedWorkout = scheduledWorkouts
+    .filter(workout => workout.clientId === currentUser.id && workout.status === 'completed')
+    .sort((a, b) => (b.completedAt || b.scheduledDate).localeCompare(a.completedAt || a.scheduledDate))[0];
+
+  const latestWorkoutPersonalRecords = (() => {
+    if (!latestCompletedWorkout?.loggedData?.length) return [];
+    const latestDate = latestCompletedWorkout.completedAt || latestCompletedWorkout.scheduledDate;
+    const earlierWorkouts = scheduledWorkouts.filter(workout =>
+      workout.clientId === currentUser.id &&
+      workout.status === 'completed' &&
+      workout.id !== latestCompletedWorkout.id &&
+      (workout.completedAt || workout.scheduledDate) < latestDate
+    );
+    const bestByExercise = new Map<string, number>();
+    earlierWorkouts.forEach(workout => (workout.loggedData || []).forEach(exercise => {
+      exercise.sets.filter(set => set.completed && set.actualWeightKg > 0).forEach(set => {
+        bestByExercise.set(exercise.exerciseId, Math.max(bestByExercise.get(exercise.exerciseId) || 0, set.actualWeightKg));
+      });
+    }));
+    return latestCompletedWorkout.loggedData.flatMap(exercise => {
+      const previousBest = bestByExercise.get(exercise.exerciseId) || 0;
+      const bestSet = exercise.sets
+        .filter(set => set.completed && set.actualWeightKg > previousBest && set.actualWeightKg > 0)
+        .sort((a, b) => b.actualWeightKg - a.actualWeightKg)[0];
+      return bestSet && previousBest > 0
+        ? [{ exerciseName: exercise.exerciseName, weight: bestSet.actualWeightKg, reps: bestSet.actualReps }]
+        : [];
+    });
+  })();
+
   return (
     <div className="min-w-0 space-y-6">
       {/* Welcome Banner */}
@@ -87,26 +144,25 @@ export const ClientDashboard: React.FC = () => {
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2 mb-1">
               <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                Athlete Today's Hub
+                Today's Mission
               </span>
               <span className="text-xs text-slate-400">
                 {new Date().toLocaleDateString('en-US', {
                   weekday: 'long',
                   month: 'long',
-                  day: 'numeric',
-                  timeZone: 'UTC'
+                  day: 'numeric'
                 })}
               </span>
             </div>
             <h1 className="break-words text-xl sm:text-3xl leading-tight font-extrabold text-white tracking-tight">
-              Ready to train, {currentUser.fullName.split(' ')[0]}? 🔥
+              Ready to lock in, {currentUser.fullName.split(' ')[0]}?
             </h1>
             <p className="text-sm text-slate-400 mt-1 max-w-xl">
               {todayWorkout
                 ? todayWorkout.status === 'completed'
-                  ? 'Great job! You crushed today\'s training session.'
-                  : `Your session "${todayWorkout.title}" is ready. Log your weights and sets when you train.`
-                : 'Today is a scheduled recovery day. Hit your step and hydration goals!'}
+                  ? 'Work logged. Review your next target and keep the progress measurable.'
+                  : `Your session "${todayWorkout.title}" is ready. Follow the plan, log each set, and own the result.`
+                : 'No session is assigned today. Recovery is part of the plan—move, refuel, and come back ready.'}
             </p>
           </div>
 
@@ -132,6 +188,68 @@ export const ClientDashboard: React.FC = () => {
         </div>
       </div>
 
+      {/* Weekly Summary: a concise report of logged activity */}
+      <section className="space-y-3">
+        <div className="flex flex-wrap items-end justify-between gap-2">
+          <div>
+            <h2 className="text-sm font-bold uppercase tracking-wider text-white">Weekly report</h2>
+            <p className="mt-1 text-xs text-slate-400">Work logged. The target is getting closer.</p>
+          </div>
+          <button onClick={() => setActiveView('progress')} className="text-xs font-semibold text-emerald-400 hover:text-emerald-300">
+            View progress report →
+          </button>
+        </div>
+        <div className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-3">
+          <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
+            <div className="flex items-center justify-between text-xs text-slate-400">
+              <span>Sessions completed</span>
+              <Dumbbell className="h-4 w-4 text-emerald-400" />
+            </div>
+            <p className="mt-2 text-2xl font-extrabold text-white">{weeklyCompletedWorkouts.length}</p>
+            <p className="mt-1 text-xs text-slate-500">In the last 7 days</p>
+          </div>
+          <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
+            <div className="flex items-center justify-between text-xs text-slate-400">
+              <span>Average steps</span>
+              <Footprints className="h-4 w-4 text-emerald-400" />
+            </div>
+            <p className="mt-2 text-2xl font-extrabold text-white">{weeklyAverageSteps.toLocaleString()}</p>
+            <p className="mt-1 text-xs text-slate-500">{weeklySteps.length} logged days</p>
+          </div>
+          <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
+            <div className="flex items-center justify-between text-xs text-slate-400">
+              <span>Nutrition days logged</span>
+              <Utensils className="h-4 w-4 text-orange-400" />
+            </div>
+            <p className="mt-2 text-2xl font-extrabold text-white">{weeklyNutritionDays}<span className="ml-1 text-sm font-semibold text-slate-400">/ 7</span></p>
+            <p className="mt-1 text-xs text-slate-500">At least one meal entry</p>
+          </div>
+        </div>
+      </section>
+
+      {latestWorkoutPersonalRecords.length > 0 && (
+        <section className="rounded-xl border border-emerald-500/30 bg-slate-900 p-4 sm:p-5">
+          <div className="flex items-start gap-3">
+            <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-2 text-emerald-400">
+              <Award className="h-5 w-5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-bold uppercase tracking-wider text-emerald-400">New personal record</p>
+              <h2 className="mt-1 text-base font-extrabold text-white">The bar just moved.</h2>
+              <p className="mt-1 text-xs text-slate-400">A saved set beat your previous recorded best. Target hit—set the bar higher.</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {latestWorkoutPersonalRecords.map(record => (
+                  <span key={record.exerciseName} className="rounded-lg border border-slate-700 bg-slate-850 px-3 py-2 text-xs text-slate-200">
+                    <strong className="text-white">{record.exerciseName}</strong>
+                    <span className="ml-2 font-mono text-emerald-400">{record.weight} kg × {record.reps}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Main Grid: Workout Card & Step Logger */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left 2 Cols: Today's Workout Card */}
@@ -144,7 +262,7 @@ export const ClientDashboard: React.FC = () => {
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-white">Today's Workout</h2>
-                  <p className="text-xs text-slate-400">Prescribed programming for today</p>
+                  <p className="text-xs text-slate-400">Every rep has a target.</p>
                 </div>
               </div>
 
