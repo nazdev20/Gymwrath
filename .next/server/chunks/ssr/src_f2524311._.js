@@ -4560,6 +4560,8 @@ CREATE POLICY progress_photos_client_insert ON fitness.progress_photos
 CREATE POLICY progress_photos_client_delete ON fitness.progress_photos
   FOR DELETE TO authenticated
   USING (client_id = auth.uid() AND fitness.current_user_role() = 'client');
+
+NOTIFY pgrst, 'reload schema';
 `;
 }),
 "[project]/src/App.tsx [app-ssr] (ecmascript)", ((__turbopack_context__) => {

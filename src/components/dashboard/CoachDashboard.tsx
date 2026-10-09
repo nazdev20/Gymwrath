@@ -93,7 +93,13 @@ export const CoachDashboard: React.FC = () => {
                 Coach Command Center
               </span>
               <span className="text-xs text-slate-400">
-                {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+                {new Date().toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+                  timeZone: 'UTC'
+                })}
               </span>
             </div>
             <h1 className="break-words text-xl sm:text-3xl leading-tight font-extrabold text-white tracking-tight">

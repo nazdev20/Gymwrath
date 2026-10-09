@@ -322,7 +322,9 @@ export const AdminDashboard: React.FC = () => {
                     </td>
 
                     <td className="px-5 py-4 whitespace-nowrap text-xs text-slate-400 font-mono">
-                      {new Date(p.createdAt).toLocaleDateString()}
+                      {new Date(p.createdAt).toLocaleDateString('en-US', {
+                        timeZone: 'UTC'
+                      })}
                     </td>
 
                     <td className="px-5 py-4 text-right whitespace-nowrap">

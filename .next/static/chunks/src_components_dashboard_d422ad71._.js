@@ -98,11 +98,12 @@ const CoachDashboard = ()=>{
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                             className: "text-xs text-slate-400",
-                                            children: new Date().toLocaleDateString(undefined, {
+                                            children: new Date().toLocaleDateString('en-US', {
                                                 weekday: 'long',
                                                 month: 'long',
                                                 day: 'numeric',
-                                                year: 'numeric'
+                                                year: 'numeric',
+                                                timeZone: 'UTC'
                                             })
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
@@ -124,7 +125,7 @@ const CoachDashboard = ()=>{
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                    lineNumber: 99,
+                                    lineNumber: 105,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -140,7 +141,7 @@ const CoachDashboard = ()=>{
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                            lineNumber: 103,
+                                            lineNumber: 109,
                                             columnNumber: 24
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         " awaiting feedback and ",
@@ -152,14 +153,14 @@ const CoachDashboard = ()=>{
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                            lineNumber: 103,
+                                            lineNumber: 109,
                                             columnNumber: 175
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         " under your guidance."
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                    lineNumber: 102,
+                                    lineNumber: 108,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
@@ -179,14 +180,14 @@ const CoachDashboard = ()=>{
                                             className: "w-4 h-4"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                            lineNumber: 112,
+                                            lineNumber: 118,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         " Create Program"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                    lineNumber: 108,
+                                    lineNumber: 114,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -197,20 +198,20 @@ const CoachDashboard = ()=>{
                                             className: "w-4 h-4"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                            lineNumber: 118,
+                                            lineNumber: 124,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         " Exercise DB"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                    lineNumber: 114,
+                                    lineNumber: 120,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                            lineNumber: 107,
+                            lineNumber: 113,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
@@ -238,7 +239,7 @@ const CoachDashboard = ()=>{
                                         children: "Active Clients"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                        lineNumber: 128,
+                                        lineNumber: 134,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -247,18 +248,18 @@ const CoachDashboard = ()=>{
                                             className: "w-4 h-4"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                            lineNumber: 130,
+                                            lineNumber: 136,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                        lineNumber: 129,
+                                        lineNumber: 135,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                lineNumber: 127,
+                                lineNumber: 133,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -266,7 +267,7 @@ const CoachDashboard = ()=>{
                                 children: myClients.filter((c)=>c.status === 'active').length
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                lineNumber: 133,
+                                lineNumber: 139,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -274,13 +275,13 @@ const CoachDashboard = ()=>{
                                 children: "Managed roster"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                lineNumber: 134,
+                                lineNumber: 140,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                        lineNumber: 126,
+                        lineNumber: 132,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -294,7 +295,7 @@ const CoachDashboard = ()=>{
                                         children: "Pending Check-Ins"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                        lineNumber: 139,
+                                        lineNumber: 145,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -303,18 +304,18 @@ const CoachDashboard = ()=>{
                                             className: "w-4 h-4"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                            lineNumber: 141,
+                                            lineNumber: 147,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                        lineNumber: 140,
+                                        lineNumber: 146,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                lineNumber: 138,
+                                lineNumber: 144,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -322,7 +323,7 @@ const CoachDashboard = ()=>{
                                 children: pendingCheckins.length
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                lineNumber: 144,
+                                lineNumber: 150,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -330,13 +331,13 @@ const CoachDashboard = ()=>{
                                 children: "Requires coach review"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                lineNumber: 145,
+                                lineNumber: 151,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                        lineNumber: 137,
+                        lineNumber: 143,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -350,7 +351,7 @@ const CoachDashboard = ()=>{
                                         children: "Today's Workouts"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                        lineNumber: 150,
+                                        lineNumber: 156,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -359,18 +360,18 @@ const CoachDashboard = ()=>{
                                             className: "w-4 h-4"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                            lineNumber: 152,
+                                            lineNumber: 158,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                        lineNumber: 151,
+                                        lineNumber: 157,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                lineNumber: 149,
+                                lineNumber: 155,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -378,7 +379,7 @@ const CoachDashboard = ()=>{
                                 children: scheduledWorkouts.filter((w)=>w.scheduledDate === todayStr && (currentUser.role === 'admin' || w.coachId === currentUser.id)).length
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                lineNumber: 155,
+                                lineNumber: 161,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -386,13 +387,13 @@ const CoachDashboard = ()=>{
                                 children: "Prescribed for today"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                lineNumber: 158,
+                                lineNumber: 164,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                        lineNumber: 148,
+                        lineNumber: 154,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -406,7 +407,7 @@ const CoachDashboard = ()=>{
                                         children: "Needs Attention"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                        lineNumber: 163,
+                                        lineNumber: 169,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -415,18 +416,18 @@ const CoachDashboard = ()=>{
                                             className: "w-4 h-4"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                            lineNumber: 165,
+                                            lineNumber: 171,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                        lineNumber: 164,
+                                        lineNumber: 170,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                lineNumber: 162,
+                                lineNumber: 168,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -434,7 +435,7 @@ const CoachDashboard = ()=>{
                                 children: clientsNeedingAttention.length
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                lineNumber: 168,
+                                lineNumber: 174,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -442,19 +443,19 @@ const CoachDashboard = ()=>{
                                 children: "Check-in or unread message"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                lineNumber: 169,
+                                lineNumber: 175,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                        lineNumber: 161,
+                        lineNumber: 167,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                lineNumber: 125,
+                lineNumber: 131,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             pendingCheckins.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -470,7 +471,7 @@ const CoachDashboard = ()=>{
                                         className: "w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                        lineNumber: 178,
+                                        lineNumber: 184,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
@@ -482,13 +483,13 @@ const CoachDashboard = ()=>{
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                        lineNumber: 179,
+                                        lineNumber: 185,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                lineNumber: 177,
+                                lineNumber: 183,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -500,19 +501,19 @@ const CoachDashboard = ()=>{
                                         className: "w-3.5 h-3.5"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                        lineNumber: 187,
+                                        lineNumber: 193,
                                         columnNumber: 24
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                lineNumber: 183,
+                                lineNumber: 189,
                                 columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                        lineNumber: 176,
+                        lineNumber: 182,
                         columnNumber: 11
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -531,7 +532,7 @@ const CoachDashboard = ()=>{
                                                 className: "w-10 h-10 rounded-full object-cover shrink-0 ring-1 ring-amber-500/40"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                lineNumber: 200,
+                                                lineNumber: 206,
                                                 columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -542,7 +543,7 @@ const CoachDashboard = ()=>{
                                                         children: (client === null || client === void 0 ? void 0 : client.fullName) || 'Client'
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                        lineNumber: 206,
+                                                        lineNumber: 212,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -557,7 +558,7 @@ const CoachDashboard = ()=>{
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                                lineNumber: 208,
+                                                                lineNumber: 214,
                                                                 columnNumber: 33
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             " • Energy: ",
@@ -566,7 +567,7 @@ const CoachDashboard = ()=>{
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                        lineNumber: 207,
+                                                        lineNumber: 213,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -578,19 +579,19 @@ const CoachDashboard = ()=>{
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                        lineNumber: 210,
+                                                        lineNumber: 216,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                lineNumber: 205,
+                                                lineNumber: 211,
                                                 columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                        lineNumber: 199,
+                                        lineNumber: 205,
                                         columnNumber: 19
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -602,25 +603,25 @@ const CoachDashboard = ()=>{
                                         children: "Review Now"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                        lineNumber: 214,
+                                        lineNumber: 220,
                                         columnNumber: 19
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, ci.id, true, {
                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                lineNumber: 195,
+                                lineNumber: 201,
                                 columnNumber: 17
                             }, ("TURBOPACK compile-time value", void 0));
                         })
                     }, void 0, false, {
                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                        lineNumber: 191,
+                        lineNumber: 197,
                         columnNumber: 11
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                lineNumber: 175,
+                lineNumber: 181,
                 columnNumber: 9
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -636,7 +637,7 @@ const CoachDashboard = ()=>{
                                         children: "Client Management Roster"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                        lineNumber: 234,
+                                        lineNumber: 240,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -644,13 +645,13 @@ const CoachDashboard = ()=>{
                                         children: "Overview of assigned athletes, goals, and training compliance"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                        lineNumber: 235,
+                                        lineNumber: 241,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                lineNumber: 233,
+                                lineNumber: 239,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -663,7 +664,7 @@ const CoachDashboard = ()=>{
                                                 className: "w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                lineNumber: 241,
+                                                lineNumber: 247,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -674,13 +675,13 @@ const CoachDashboard = ()=>{
                                                 className: "pl-9 pr-4 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 w-44 sm:w-56"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                lineNumber: 242,
+                                                lineNumber: 248,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                        lineNumber: 240,
+                                        lineNumber: 246,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -696,7 +697,7 @@ const CoachDashboard = ()=>{
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                lineNumber: 253,
+                                                lineNumber: 259,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -709,7 +710,7 @@ const CoachDashboard = ()=>{
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                lineNumber: 259,
+                                                lineNumber: 265,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -718,25 +719,25 @@ const CoachDashboard = ()=>{
                                                 children: "Active"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                lineNumber: 265,
+                                                lineNumber: 271,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                        lineNumber: 252,
+                                        lineNumber: 258,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                lineNumber: 238,
+                                lineNumber: 244,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                        lineNumber: 232,
+                        lineNumber: 238,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -753,7 +754,7 @@ const CoachDashboard = ()=>{
                                                 children: "Client Profile"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                lineNumber: 280,
+                                                lineNumber: 286,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -761,7 +762,7 @@ const CoachDashboard = ()=>{
                                                 children: "Goals / Notes"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                lineNumber: 281,
+                                                lineNumber: 287,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -769,7 +770,7 @@ const CoachDashboard = ()=>{
                                                 children: "Weight Progress"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                lineNumber: 282,
+                                                lineNumber: 288,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -777,7 +778,7 @@ const CoachDashboard = ()=>{
                                                 children: "Check-In Status"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                lineNumber: 283,
+                                                lineNumber: 289,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -785,7 +786,7 @@ const CoachDashboard = ()=>{
                                                 children: "Today's Workout"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                lineNumber: 284,
+                                                lineNumber: 290,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -793,18 +794,18 @@ const CoachDashboard = ()=>{
                                                 children: "Actions"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                lineNumber: 285,
+                                                lineNumber: 291,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                        lineNumber: 279,
+                                        lineNumber: 285,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0))
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                    lineNumber: 278,
+                                    lineNumber: 284,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -822,12 +823,12 @@ const CoachDashboard = ()=>{
                                                             className: "w-6 h-6 text-slate-400"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                            lineNumber: 294,
+                                                            lineNumber: 300,
                                                             columnNumber: 25
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                        lineNumber: 293,
+                                                        lineNumber: 299,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -835,7 +836,7 @@ const CoachDashboard = ()=>{
                                                         children: "No clients in roster"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                        lineNumber: 296,
+                                                        lineNumber: 302,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -843,7 +844,7 @@ const CoachDashboard = ()=>{
                                                         children: myClients.length === 0 ? 'No clients have registered or been assigned yet. You can register a client or sync data directly from your Supabase PostgreSQL database.' : 'No clients match your search/filter criteria.'
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                        lineNumber: 297,
+                                                        lineNumber: 303,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -854,28 +855,28 @@ const CoachDashboard = ()=>{
                                                             children: "Database & Schema View"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                            lineNumber: 303,
+                                                            lineNumber: 309,
                                                             columnNumber: 25
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                        lineNumber: 302,
+                                                        lineNumber: 308,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                lineNumber: 292,
+                                                lineNumber: 298,
                                                 columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0))
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                            lineNumber: 291,
+                                            lineNumber: 297,
                                             columnNumber: 19
                                         }, ("TURBOPACK compile-time value", void 0))
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                        lineNumber: 290,
+                                        lineNumber: 296,
                                         columnNumber: 17
                                     }, ("TURBOPACK compile-time value", void 0)) : filteredClients.map((client)=>{
                                         const checkinStatus = getClientCheckInStatus(client);
@@ -894,7 +895,7 @@ const CoachDashboard = ()=>{
                                                                 className: "w-10 h-10 rounded-full object-cover ring-1 ring-slate-700"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                                lineNumber: 323,
+                                                                lineNumber: 329,
                                                                 columnNumber: 27
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -907,7 +908,7 @@ const CoachDashboard = ()=>{
                                                                                 children: client.fullName
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                                                lineNumber: 330,
+                                                                                lineNumber: 336,
                                                                                 columnNumber: 31
                                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                                             client.status !== 'active' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -915,13 +916,13 @@ const CoachDashboard = ()=>{
                                                                                 children: client.status
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                                                lineNumber: 334,
+                                                                                lineNumber: 340,
                                                                                 columnNumber: 33
                                                                             }, ("TURBOPACK compile-time value", void 0))
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                                        lineNumber: 329,
+                                                                        lineNumber: 335,
                                                                         columnNumber: 29
                                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -929,24 +930,24 @@ const CoachDashboard = ()=>{
                                                                         children: client.email
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                                        lineNumber: 339,
+                                                                        lineNumber: 345,
                                                                         columnNumber: 29
                                                                     }, ("TURBOPACK compile-time value", void 0))
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                                lineNumber: 328,
+                                                                lineNumber: 334,
                                                                 columnNumber: 27
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                        lineNumber: 322,
+                                                        lineNumber: 328,
                                                         columnNumber: 25
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                    lineNumber: 321,
+                                                    lineNumber: 327,
                                                     columnNumber: 23
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -957,12 +958,12 @@ const CoachDashboard = ()=>{
                                                         children: client.goals || 'No specific goals recorded'
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                        lineNumber: 346,
+                                                        lineNumber: 352,
                                                         columnNumber: 25
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                    lineNumber: 345,
+                                                    lineNumber: 351,
                                                     columnNumber: 23
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -978,7 +979,7 @@ const CoachDashboard = ()=>{
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                                lineNumber: 354,
+                                                                lineNumber: 360,
                                                                 columnNumber: 27
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             client.startingWeightKg && client.currentWeightKg && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -993,18 +994,18 @@ const CoachDashboard = ()=>{
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                                lineNumber: 356,
+                                                                lineNumber: 362,
                                                                 columnNumber: 29
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                        lineNumber: 353,
+                                                        lineNumber: 359,
                                                         columnNumber: 25
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                    lineNumber: 352,
+                                                    lineNumber: 358,
                                                     columnNumber: 23
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1014,12 +1015,12 @@ const CoachDashboard = ()=>{
                                                         children: checkinStatus.label
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                        lineNumber: 366,
+                                                        lineNumber: 372,
                                                         columnNumber: 25
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                    lineNumber: 365,
+                                                    lineNumber: 371,
                                                     columnNumber: 23
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1031,7 +1032,7 @@ const CoachDashboard = ()=>{
                                                                 children: todayWorkout.title
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                                lineNumber: 375,
+                                                                lineNumber: 381,
                                                                 columnNumber: 29
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1039,25 +1040,25 @@ const CoachDashboard = ()=>{
                                                                 children: todayWorkout.status
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                                lineNumber: 378,
+                                                                lineNumber: 384,
                                                                 columnNumber: 29
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                        lineNumber: 374,
+                                                        lineNumber: 380,
                                                         columnNumber: 27
                                                     }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                         className: "text-xs text-slate-400",
                                                         children: "Rest Day / None"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                        lineNumber: 385,
+                                                        lineNumber: 391,
                                                         columnNumber: 27
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                    lineNumber: 372,
+                                                    lineNumber: 378,
                                                     columnNumber: 23
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1074,7 +1075,7 @@ const CoachDashboard = ()=>{
                                                                 children: "Profile"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                                lineNumber: 392,
+                                                                lineNumber: 398,
                                                                 columnNumber: 27
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1088,52 +1089,52 @@ const CoachDashboard = ()=>{
                                                                     className: "w-4 h-4"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                                    lineNumber: 409,
+                                                                    lineNumber: 415,
                                                                     columnNumber: 29
                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                                lineNumber: 401,
+                                                                lineNumber: 407,
                                                                 columnNumber: 27
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                        lineNumber: 391,
+                                                        lineNumber: 397,
                                                         columnNumber: 25
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                                    lineNumber: 390,
+                                                    lineNumber: 396,
                                                     columnNumber: 23
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, client.id, true, {
                                             fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                            lineNumber: 319,
+                                            lineNumber: 325,
                                             columnNumber: 21
                                         }, ("TURBOPACK compile-time value", void 0));
                                     })
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                                    lineNumber: 288,
+                                    lineNumber: 294,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                            lineNumber: 277,
+                            lineNumber: 283,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0))
                     }, void 0, false, {
                         fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                        lineNumber: 276,
+                        lineNumber: 282,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/dashboard/CoachDashboard.tsx",
-                lineNumber: 231,
+                lineNumber: 237,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0))
         ]
@@ -1236,10 +1237,11 @@ const ClientDashboard = ()=>{
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                             className: "text-xs text-slate-400",
-                                            children: new Date().toLocaleDateString(undefined, {
+                                            children: new Date().toLocaleDateString('en-US', {
                                                 weekday: 'long',
                                                 month: 'long',
-                                                day: 'numeric'
+                                                day: 'numeric',
+                                                timeZone: 'UTC'
                                             })
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
@@ -1261,7 +1263,7 @@ const ClientDashboard = ()=>{
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                    lineNumber: 96,
+                                    lineNumber: 101,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1269,7 +1271,7 @@ const ClientDashboard = ()=>{
                                     children: todayWorkout ? todayWorkout.status === 'completed' ? 'Great job! You crushed today\'s training session.' : 'Your session "'.concat(todayWorkout.title, '" is ready. Log your weights and sets when you train.') : 'Today is a scheduled recovery day. Hit your step and hydration goals!'
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                    lineNumber: 99,
+                                    lineNumber: 104,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
@@ -1287,7 +1289,7 @@ const ClientDashboard = ()=>{
                                     className: "w-10 h-10 rounded-full object-cover ring-1 ring-emerald-500/50"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                    lineNumber: 110,
+                                    lineNumber: 115,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1297,7 +1299,7 @@ const ClientDashboard = ()=>{
                                             children: "Your Coach"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                            lineNumber: 116,
+                                            lineNumber: 121,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1305,7 +1307,7 @@ const ClientDashboard = ()=>{
                                             children: coach.fullName
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                            lineNumber: 117,
+                                            lineNumber: 122,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1316,26 +1318,26 @@ const ClientDashboard = ()=>{
                                                     className: "w-3 h-3"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                    lineNumber: 122,
+                                                    lineNumber: 127,
                                                     columnNumber: 19
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 " Send message"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                            lineNumber: 118,
+                                            lineNumber: 123,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                    lineNumber: 115,
+                                    lineNumber: 120,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                            lineNumber: 109,
+                            lineNumber: 114,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
@@ -1370,12 +1372,12 @@ const ClientDashboard = ()=>{
                                                             className: "w-5 h-5"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                            lineNumber: 138,
+                                                            lineNumber: 143,
                                                             columnNumber: 19
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 137,
+                                                        lineNumber: 142,
                                                         columnNumber: 17
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1385,7 +1387,7 @@ const ClientDashboard = ()=>{
                                                                 children: "Today's Workout"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                lineNumber: 141,
+                                                                lineNumber: 146,
                                                                 columnNumber: 19
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1393,19 +1395,19 @@ const ClientDashboard = ()=>{
                                                                 children: "Prescribed programming for today"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                lineNumber: 142,
+                                                                lineNumber: 147,
                                                                 columnNumber: 19
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 140,
+                                                        lineNumber: 145,
                                                         columnNumber: 17
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                lineNumber: 136,
+                                                lineNumber: 141,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             todayWorkout && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1413,13 +1415,13 @@ const ClientDashboard = ()=>{
                                                 children: todayWorkout.status === 'completed' ? '✓ Completed' : 'Scheduled'
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                lineNumber: 147,
+                                                lineNumber: 152,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                        lineNumber: 135,
+                                        lineNumber: 140,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     todayWorkout ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1433,7 +1435,7 @@ const ClientDashboard = ()=>{
                                                         children: todayWorkout.title
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 162,
+                                                        lineNumber: 167,
                                                         columnNumber: 19
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     todayWorkout.description && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1441,7 +1443,7 @@ const ClientDashboard = ()=>{
                                                         children: todayWorkout.description
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 164,
+                                                        lineNumber: 169,
                                                         columnNumber: 21
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1456,7 +1458,7 @@ const ClientDashboard = ()=>{
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                lineNumber: 169,
+                                                                lineNumber: 174,
                                                                 columnNumber: 21
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1474,7 +1476,7 @@ const ClientDashboard = ()=>{
                                                                                         children: idx + 1
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                                        lineNumber: 179,
+                                                                                        lineNumber: 184,
                                                                                         columnNumber: 29
                                                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1482,13 +1484,13 @@ const ClientDashboard = ()=>{
                                                                                         children: we.exerciseName
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                                        lineNumber: 182,
+                                                                                        lineNumber: 187,
                                                                                         columnNumber: 29
                                                                                     }, ("TURBOPACK compile-time value", void 0))
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                                lineNumber: 178,
+                                                                                lineNumber: 183,
                                                                                 columnNumber: 27
                                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1501,31 +1503,31 @@ const ClientDashboard = ()=>{
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                                lineNumber: 184,
+                                                                                lineNumber: 189,
                                                                                 columnNumber: 27
                                                                             }, ("TURBOPACK compile-time value", void 0))
                                                                         ]
                                                                     }, we.id, true, {
                                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                        lineNumber: 174,
+                                                                        lineNumber: 179,
                                                                         columnNumber: 25
                                                                     }, ("TURBOPACK compile-time value", void 0));
                                                                 })
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                lineNumber: 172,
+                                                                lineNumber: 177,
                                                                 columnNumber: 21
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 168,
+                                                        lineNumber: 173,
                                                         columnNumber: 19
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                lineNumber: 161,
+                                                lineNumber: 166,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1540,7 +1542,7 @@ const ClientDashboard = ()=>{
                                                                     className: "w-4 h-4"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                    lineNumber: 200,
+                                                                    lineNumber: 205,
                                                                     columnNumber: 25
                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                 " View / Edit Logged Workout"
@@ -1551,7 +1553,7 @@ const ClientDashboard = ()=>{
                                                                     className: "w-4 h-4 fill-current"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                    lineNumber: 204,
+                                                                    lineNumber: 209,
                                                                     columnNumber: 25
                                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                                 " Start & Log Workout Now"
@@ -1559,7 +1561,7 @@ const ClientDashboard = ()=>{
                                                         }, void 0, true)
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 194,
+                                                        lineNumber: 199,
                                                         columnNumber: 19
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1568,19 +1570,19 @@ const ClientDashboard = ()=>{
                                                         children: "View Schedule"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 208,
+                                                        lineNumber: 213,
                                                         columnNumber: 19
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                lineNumber: 193,
+                                                lineNumber: 198,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                        lineNumber: 160,
+                                        lineNumber: 165,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         className: "text-center py-10 px-4 rounded-xl bg-slate-850/50 border border-slate-800",
@@ -1589,7 +1591,7 @@ const ClientDashboard = ()=>{
                                                 className: "w-10 h-10 mx-auto mb-2 text-slate-600"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                lineNumber: 218,
+                                                lineNumber: 223,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -1597,7 +1599,7 @@ const ClientDashboard = ()=>{
                                                 children: "Active Recovery Day"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                lineNumber: 219,
+                                                lineNumber: 224,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1605,7 +1607,7 @@ const ClientDashboard = ()=>{
                                                 children: "No workout scheduled for today. Focus on mobility, hydration, and hitting your daily step target."
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                lineNumber: 220,
+                                                lineNumber: 225,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1614,19 +1616,19 @@ const ClientDashboard = ()=>{
                                                 children: "Browse Program Calendar"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                lineNumber: 223,
+                                                lineNumber: 228,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                        lineNumber: 217,
+                                        lineNumber: 222,
                                         columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                lineNumber: 134,
+                                lineNumber: 139,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1644,12 +1646,12 @@ const ClientDashboard = ()=>{
                                                             className: "w-5 h-5"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                            lineNumber: 238,
+                                                            lineNumber: 243,
                                                             columnNumber: 19
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 237,
+                                                        lineNumber: 242,
                                                         columnNumber: 17
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1659,7 +1661,7 @@ const ClientDashboard = ()=>{
                                                                 children: "Today's Nutrition Budget"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                lineNumber: 241,
+                                                                lineNumber: 246,
                                                                 columnNumber: 19
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1667,19 +1669,19 @@ const ClientDashboard = ()=>{
                                                                 children: "Macro targets prescribed by your coach"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                lineNumber: 242,
+                                                                lineNumber: 247,
                                                                 columnNumber: 19
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 240,
+                                                        lineNumber: 245,
                                                         columnNumber: 17
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                lineNumber: 236,
+                                                lineNumber: 241,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1691,19 +1693,19 @@ const ClientDashboard = ()=>{
                                                         className: "w-3.5 h-3.5"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 249,
+                                                        lineNumber: 254,
                                                         columnNumber: 33
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                lineNumber: 245,
+                                                lineNumber: 250,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                        lineNumber: 235,
+                                        lineNumber: 240,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1719,7 +1721,7 @@ const ClientDashboard = ()=>{
                                                                 children: "Calories"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                lineNumber: 258,
+                                                                lineNumber: 263,
                                                                 columnNumber: 19
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1730,7 +1732,7 @@ const ClientDashboard = ()=>{
                                                                         children: consumedCalories
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                        lineNumber: 260,
+                                                                        lineNumber: 265,
                                                                         columnNumber: 21
                                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                                     " / ",
@@ -1739,13 +1741,13 @@ const ClientDashboard = ()=>{
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                lineNumber: 259,
+                                                                lineNumber: 264,
                                                                 columnNumber: 19
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 257,
+                                                        lineNumber: 262,
                                                         columnNumber: 17
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1757,18 +1759,18 @@ const ClientDashboard = ()=>{
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                            lineNumber: 264,
+                                                            lineNumber: 269,
                                                             columnNumber: 19
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 263,
+                                                        lineNumber: 268,
                                                         columnNumber: 17
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                lineNumber: 256,
+                                                lineNumber: 261,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1782,7 +1784,7 @@ const ClientDashboard = ()=>{
                                                                 children: "Protein"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                lineNumber: 274,
+                                                                lineNumber: 279,
                                                                 columnNumber: 19
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1799,13 +1801,13 @@ const ClientDashboard = ()=>{
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                        lineNumber: 276,
+                                                                        lineNumber: 281,
                                                                         columnNumber: 51
                                                                     }, ("TURBOPACK compile-time value", void 0))
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                lineNumber: 275,
+                                                                lineNumber: 280,
                                                                 columnNumber: 19
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1817,18 +1819,18 @@ const ClientDashboard = ()=>{
                                                                     }
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                    lineNumber: 279,
+                                                                    lineNumber: 284,
                                                                     columnNumber: 21
                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                lineNumber: 278,
+                                                                lineNumber: 283,
                                                                 columnNumber: 19
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 273,
+                                                        lineNumber: 278,
                                                         columnNumber: 17
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1839,7 +1841,7 @@ const ClientDashboard = ()=>{
                                                                 children: "Carbs"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                lineNumber: 288,
+                                                                lineNumber: 293,
                                                                 columnNumber: 19
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1856,13 +1858,13 @@ const ClientDashboard = ()=>{
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                        lineNumber: 290,
+                                                                        lineNumber: 295,
                                                                         columnNumber: 49
                                                                     }, ("TURBOPACK compile-time value", void 0))
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                lineNumber: 289,
+                                                                lineNumber: 294,
                                                                 columnNumber: 19
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1874,18 +1876,18 @@ const ClientDashboard = ()=>{
                                                                     }
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                    lineNumber: 293,
+                                                                    lineNumber: 298,
                                                                     columnNumber: 21
                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                lineNumber: 292,
+                                                                lineNumber: 297,
                                                                 columnNumber: 19
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 287,
+                                                        lineNumber: 292,
                                                         columnNumber: 17
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1896,7 +1898,7 @@ const ClientDashboard = ()=>{
                                                                 children: "Fats"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                lineNumber: 302,
+                                                                lineNumber: 307,
                                                                 columnNumber: 19
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1913,13 +1915,13 @@ const ClientDashboard = ()=>{
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                        lineNumber: 304,
+                                                                        lineNumber: 309,
                                                                         columnNumber: 47
                                                                     }, ("TURBOPACK compile-time value", void 0))
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                lineNumber: 303,
+                                                                lineNumber: 308,
                                                                 columnNumber: 19
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1931,42 +1933,42 @@ const ClientDashboard = ()=>{
                                                                     }
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                    lineNumber: 307,
+                                                                    lineNumber: 312,
                                                                     columnNumber: 21
                                                                 }, ("TURBOPACK compile-time value", void 0))
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                lineNumber: 306,
+                                                                lineNumber: 311,
                                                                 columnNumber: 19
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 301,
+                                                        lineNumber: 306,
                                                         columnNumber: 17
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                lineNumber: 271,
+                                                lineNumber: 276,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                        lineNumber: 254,
+                                        lineNumber: 259,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                lineNumber: 234,
+                                lineNumber: 239,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                        lineNumber: 133,
+                        lineNumber: 138,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1987,12 +1989,12 @@ const ClientDashboard = ()=>{
                                                             className: "w-5 h-5"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                            lineNumber: 325,
+                                                            lineNumber: 330,
                                                             columnNumber: 19
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 324,
+                                                        lineNumber: 329,
                                                         columnNumber: 17
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2002,7 +2004,7 @@ const ClientDashboard = ()=>{
                                                                 children: "Daily Steps"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                lineNumber: 328,
+                                                                lineNumber: 333,
                                                                 columnNumber: 19
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2010,19 +2012,19 @@ const ClientDashboard = ()=>{
                                                                 children: "Manual step entry"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                                lineNumber: 329,
+                                                                lineNumber: 334,
                                                                 columnNumber: 19
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 327,
+                                                        lineNumber: 332,
                                                         columnNumber: 17
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                lineNumber: 323,
+                                                lineNumber: 328,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2031,13 +2033,13 @@ const ClientDashboard = ()=>{
                                                 children: "History →"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                lineNumber: 332,
+                                                lineNumber: 337,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                        lineNumber: 322,
+                                        lineNumber: 327,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2048,7 +2050,7 @@ const ClientDashboard = ()=>{
                                                 children: "Today's Step Count"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                lineNumber: 341,
+                                                lineNumber: 346,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2056,7 +2058,7 @@ const ClientDashboard = ()=>{
                                                 children: todayStepRecord ? todayStepRecord.stepCount.toLocaleString() : '0'
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                lineNumber: 342,
+                                                lineNumber: 347,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2064,13 +2066,13 @@ const ClientDashboard = ()=>{
                                                 children: "Target: 10,000 steps"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                lineNumber: 345,
+                                                lineNumber: 350,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                        lineNumber: 340,
+                                        lineNumber: 345,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
@@ -2090,7 +2092,7 @@ const ClientDashboard = ()=>{
                                                         className: "flex-1 px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-emerald-500 font-mono"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 351,
+                                                        lineNumber: 356,
                                                         columnNumber: 17
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2099,13 +2101,13 @@ const ClientDashboard = ()=>{
                                                         children: "Save"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 360,
+                                                        lineNumber: 365,
                                                         columnNumber: 17
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                lineNumber: 350,
+                                                lineNumber: 355,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             stepSuccessMsg && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2115,26 +2117,26 @@ const ClientDashboard = ()=>{
                                                         className: "w-3.5 h-3.5"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 369,
+                                                        lineNumber: 374,
                                                         columnNumber: 19
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     " Step record saved for today!"
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                lineNumber: 368,
+                                                lineNumber: 373,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                        lineNumber: 349,
+                                        lineNumber: 354,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                lineNumber: 321,
+                                lineNumber: 326,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2149,12 +2151,12 @@ const ClientDashboard = ()=>{
                                                     className: "w-5 h-5"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                    lineNumber: 379,
+                                                    lineNumber: 384,
                                                     columnNumber: 17
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                lineNumber: 378,
+                                                lineNumber: 383,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2164,7 +2166,7 @@ const ClientDashboard = ()=>{
                                                         children: "Check-In"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 382,
+                                                        lineNumber: 387,
                                                         columnNumber: 17
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2172,19 +2174,19 @@ const ClientDashboard = ()=>{
                                                         children: "Weight, measurements & photos"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 383,
+                                                        lineNumber: 388,
                                                         columnNumber: 17
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                lineNumber: 381,
+                                                lineNumber: 386,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                        lineNumber: 377,
+                                        lineNumber: 382,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2198,7 +2200,7 @@ const ClientDashboard = ()=>{
                                                         children: "Check-in Day:"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 389,
+                                                        lineNumber: 394,
                                                         columnNumber: 17
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2206,13 +2208,13 @@ const ClientDashboard = ()=>{
                                                         children: currentUser.checkInDay || 'Sunday'
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 390,
+                                                        lineNumber: 395,
                                                         columnNumber: 17
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                lineNumber: 388,
+                                                lineNumber: 393,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2223,7 +2225,7 @@ const ClientDashboard = ()=>{
                                                         children: "Latest Submission:"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 393,
+                                                        lineNumber: 398,
                                                         columnNumber: 17
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2231,13 +2233,13 @@ const ClientDashboard = ()=>{
                                                         children: latestCheckIn ? latestCheckIn.checkInDate : 'None yet'
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 394,
+                                                        lineNumber: 399,
                                                         columnNumber: 17
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                lineNumber: 392,
+                                                lineNumber: 397,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             latestCheckIn && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2248,7 +2250,7 @@ const ClientDashboard = ()=>{
                                                         children: "Coach Feedback:"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 400,
+                                                        lineNumber: 405,
                                                         columnNumber: 19
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2256,19 +2258,19 @@ const ClientDashboard = ()=>{
                                                         children: latestCheckIn.status === 'reviewed' ? '✓ Feedback Received' : 'Pending Review'
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                        lineNumber: 401,
+                                                        lineNumber: 406,
                                                         columnNumber: 19
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                lineNumber: 399,
+                                                lineNumber: 404,
                                                 columnNumber: 17
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                        lineNumber: 387,
+                                        lineNumber: 392,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2279,32 +2281,32 @@ const ClientDashboard = ()=>{
                                                 className: "w-4 h-4"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                                lineNumber: 412,
+                                                lineNumber: 417,
                                                 columnNumber: 15
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             " Submit Check-In"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                        lineNumber: 408,
+                                        lineNumber: 413,
                                         columnNumber: 13
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                                lineNumber: 376,
+                                lineNumber: 381,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                        lineNumber: 319,
+                        lineNumber: 324,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/dashboard/ClientDashboard.tsx",
-                lineNumber: 131,
+                lineNumber: 136,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0))
         ]
@@ -3263,7 +3265,9 @@ const AdminDashboard = ()=>{
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
                                                     className: "px-5 py-4 whitespace-nowrap text-xs text-slate-400 font-mono",
-                                                    children: new Date(p.createdAt).toLocaleDateString()
+                                                    children: new Date(p.createdAt).toLocaleDateString('en-US', {
+                                                        timeZone: 'UTC'
+                                                    })
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/dashboard/AdminDashboard.tsx",
                                                     lineNumber: 324,
@@ -3282,14 +3286,14 @@ const AdminDashboard = ()=>{
                                                                         className: "w-3.5 h-3.5"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/dashboard/AdminDashboard.tsx",
-                                                                        lineNumber: 335,
+                                                                        lineNumber: 337,
                                                                         columnNumber: 29
                                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                                     " Approve & Assign"
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/dashboard/AdminDashboard.tsx",
-                                                                lineNumber: 331,
+                                                                lineNumber: 333,
                                                                 columnNumber: 27
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             p.status === 'active' && p.role !== 'admin' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -3298,7 +3302,7 @@ const AdminDashboard = ()=>{
                                                                 children: "Suspend"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/dashboard/AdminDashboard.tsx",
-                                                                lineNumber: 340,
+                                                                lineNumber: 342,
                                                                 columnNumber: 27
                                                             }, ("TURBOPACK compile-time value", void 0)),
                                                             p.status === 'suspended' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -3307,18 +3311,18 @@ const AdminDashboard = ()=>{
                                                                 children: "Activate"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/dashboard/AdminDashboard.tsx",
-                                                                lineNumber: 349,
+                                                                lineNumber: 351,
                                                                 columnNumber: 27
                                                             }, ("TURBOPACK compile-time value", void 0))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/dashboard/AdminDashboard.tsx",
-                                                        lineNumber: 329,
+                                                        lineNumber: 331,
                                                         columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/dashboard/AdminDashboard.tsx",
-                                                    lineNumber: 328,
+                                                    lineNumber: 330,
                                                     columnNumber: 21
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
@@ -3365,14 +3369,14 @@ const AdminDashboard = ()=>{
                                             className: "w-5 h-5 text-emerald-400"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/dashboard/AdminDashboard.tsx",
-                                            lineNumber: 372,
+                                            lineNumber: 374,
                                             columnNumber: 17
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         " Approve Client Account"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/dashboard/AdminDashboard.tsx",
-                                    lineNumber: 371,
+                                    lineNumber: 373,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -3382,18 +3386,18 @@ const AdminDashboard = ()=>{
                                         className: "w-5 h-5"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/dashboard/AdminDashboard.tsx",
-                                        lineNumber: 375,
+                                        lineNumber: 377,
                                         columnNumber: 17
                                     }, ("TURBOPACK compile-time value", void 0))
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/dashboard/AdminDashboard.tsx",
-                                    lineNumber: 374,
+                                    lineNumber: 376,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/dashboard/AdminDashboard.tsx",
-                            lineNumber: 370,
+                            lineNumber: 372,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3401,7 +3405,7 @@ const AdminDashboard = ()=>{
                             children: "Select the primary coach to assign to this client upon approving their registration."
                         }, void 0, false, {
                             fileName: "[project]/src/components/dashboard/AdminDashboard.tsx",
-                            lineNumber: 379,
+                            lineNumber: 381,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3411,7 +3415,7 @@ const AdminDashboard = ()=>{
                                     children: "Assign Primary Coach"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/dashboard/AdminDashboard.tsx",
-                                    lineNumber: 384,
+                                    lineNumber: 386,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -3428,18 +3432,18 @@ const AdminDashboard = ()=>{
                                             ]
                                         }, c.id, true, {
                                             fileName: "[project]/src/components/dashboard/AdminDashboard.tsx",
-                                            lineNumber: 393,
+                                            lineNumber: 395,
                                             columnNumber: 19
                                         }, ("TURBOPACK compile-time value", void 0)))
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/dashboard/AdminDashboard.tsx",
-                                    lineNumber: 387,
+                                    lineNumber: 389,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/dashboard/AdminDashboard.tsx",
-                            lineNumber: 383,
+                            lineNumber: 385,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3451,7 +3455,7 @@ const AdminDashboard = ()=>{
                                     children: "Cancel"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/dashboard/AdminDashboard.tsx",
-                                    lineNumber: 401,
+                                    lineNumber: 403,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -3460,24 +3464,24 @@ const AdminDashboard = ()=>{
                                     children: "Confirm & Activate"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/dashboard/AdminDashboard.tsx",
-                                    lineNumber: 407,
+                                    lineNumber: 409,
                                     columnNumber: 15
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/dashboard/AdminDashboard.tsx",
-                            lineNumber: 400,
+                            lineNumber: 402,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/dashboard/AdminDashboard.tsx",
-                    lineNumber: 369,
+                    lineNumber: 371,
                     columnNumber: 11
                 }, ("TURBOPACK compile-time value", void 0))
             }, void 0, false, {
                 fileName: "[project]/src/components/dashboard/AdminDashboard.tsx",
-                lineNumber: 368,
+                lineNumber: 370,
                 columnNumber: 9
             }, ("TURBOPACK compile-time value", void 0))
         ]

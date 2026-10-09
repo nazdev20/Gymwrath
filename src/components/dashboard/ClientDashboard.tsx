@@ -90,7 +90,12 @@ export const ClientDashboard: React.FC = () => {
                 Athlete Today's Hub
               </span>
               <span className="text-xs text-slate-400">
-                {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
+                {new Date().toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  month: 'long',
+                  day: 'numeric',
+                  timeZone: 'UTC'
+                })}
               </span>
             </div>
             <h1 className="break-words text-xl sm:text-3xl leading-tight font-extrabold text-white tracking-tight">

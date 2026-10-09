@@ -239,7 +239,7 @@ const SupabaseConfigModal = (param)=>{
                             lineNumber: 58,
                             columnNumber: 280
                         }, ("TURBOPACK compile-time value", void 0)),
-                        " schema in Supabase API settings and apply the SQL shown in the Database Schema view. Never place the service-role key in a public environment variable."
+                        " schema in Supabase API settings and apply the latest SQL shown in the Database Schema view; it refreshes PostgREST's schema cache. Never place the service-role key in a public environment variable."
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/database/SupabaseConfigModal.tsx",
