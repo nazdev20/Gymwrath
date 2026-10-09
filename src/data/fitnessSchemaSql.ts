@@ -234,6 +234,30 @@ export const SCHEMA_TABLES: SchemaTableDefinition[] = [
 
   // 3. Nutrition
   {
+    name: 'food_catalog',
+    module: 'Nutrition',
+    description: 'Shared food catalog contributed to by authenticated users; barcode is optional',
+    columns: [
+      { name: 'id', type: 'UUID', isPk: true },
+      { name: 'name', type: 'TEXT' },
+      { name: 'brand', type: 'TEXT', nullable: true },
+      { name: 'category', type: 'TEXT' },
+      { name: 'food_type', type: 'TEXT', description: 'packaged | home_cooked | restaurant | fast_food | generic' },
+      { name: 'barcode', type: 'TEXT', nullable: true, description: 'Optional barcode; blank for foods without packaging' },
+      { name: 'serving_size', type: 'NUMERIC' },
+      { name: 'serving_unit', type: 'TEXT', description: 'g | ml | piece | burger | slice | order, etc.' },
+      { name: 'calories', type: 'NUMERIC' },
+      { name: 'protein_g', type: 'NUMERIC' },
+      { name: 'carbs_g', type: 'NUMERIC' },
+      { name: 'fat_g', type: 'NUMERIC' },
+      { name: 'fiber_g', type: 'NUMERIC' },
+      { name: 'notes', type: 'TEXT', nullable: true },
+      { name: 'created_by', type: 'UUID', isFk: true, fkTarget: 'profiles.id', nullable: true },
+      { name: 'created_at', type: 'TIMESTAMPTZ' },
+      { name: 'updated_at', type: 'TIMESTAMPTZ' }
+    ]
+  },
+  {
     name: 'nutrition_plans',
     module: 'Nutrition',
     description: 'Prescribed dietary macro targets and meal templates',
@@ -695,6 +719,33 @@ CREATE TABLE IF NOT EXISTS fitness.completed_exercise_sets (
 -- --------------------------------------------------------------------
 -- 3. NUTRITION
 -- --------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS fitness.food_catalog (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL CHECK (length(btrim(name)) > 0),
+  brand TEXT,
+  category TEXT NOT NULL DEFAULT 'Other'
+    CHECK (category IN ('Protein','Carbohydrates','Fats','Dairy','Fruits','Vegetables','Snacks','Beverages','Other')),
+  food_type TEXT NOT NULL DEFAULT 'generic'
+    CHECK (food_type IN ('packaged','home_cooked','restaurant','fast_food','generic')),
+  barcode TEXT NULL CHECK (barcode IS NULL OR (length(btrim(barcode)) > 0 AND barcode = btrim(barcode))),
+  serving_size NUMERIC NOT NULL DEFAULT 100 CHECK (serving_size > 0),
+  serving_unit TEXT NOT NULL DEFAULT 'g' CHECK (length(btrim(serving_unit)) > 0),
+  calories NUMERIC NOT NULL DEFAULT 0 CHECK (calories >= 0),
+  protein_g NUMERIC NOT NULL DEFAULT 0 CHECK (protein_g >= 0),
+  carbs_g NUMERIC NOT NULL DEFAULT 0 CHECK (carbs_g >= 0),
+  fat_g NUMERIC NOT NULL DEFAULT 0 CHECK (fat_g >= 0),
+  fiber_g NUMERIC NOT NULL DEFAULT 0 CHECK (fiber_g >= 0),
+  notes TEXT,
+  created_by UUID REFERENCES fitness.profiles(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE UNIQUE INDEX IF NOT EXISTS food_catalog_barcode_unique
+  ON fitness.food_catalog (lower(btrim(barcode)))
+  WHERE barcode IS NOT NULL AND btrim(barcode) <> '';
+CREATE INDEX IF NOT EXISTS food_catalog_name_search_idx
+  ON fitness.food_catalog (lower(name));
+
 CREATE TABLE IF NOT EXISTS fitness.nutrition_plans (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   coach_id UUID NOT NULL REFERENCES fitness.profiles(id) ON DELETE CASCADE,
@@ -1299,6 +1350,11 @@ BEGIN
     'workout_completions:completions_coach_update',
     'completed_exercise_sets:completed_sets_read_participants',
     'completed_exercise_sets:completed_sets_client_write',
+    'food_catalog:food_catalog_authenticated_read',
+    'food_catalog:food_catalog_authenticated_insert',
+    'food_catalog:food_catalog_users_update_own',
+    'food_catalog:food_catalog_users_delete_own',
+    'food_catalog:food_catalog_admins_manage_all',
     'nutrition_plans:nutrition_plans_read_authorized',
     'nutrition_plans:nutrition_plans_coach_write',
     'nutrition_plan_meals:nutrition_meals_read_authorized',
@@ -1609,6 +1665,24 @@ CREATE POLICY completed_sets_client_write ON fitness.completed_exercise_sets
       WHERE wc.id = completion_id AND wc.client_id = auth.uid()
     )
   );
+
+CREATE POLICY food_catalog_authenticated_read ON fitness.food_catalog
+  FOR SELECT TO authenticated
+  USING (true);
+CREATE POLICY food_catalog_authenticated_insert ON fitness.food_catalog
+  FOR INSERT TO authenticated
+  WITH CHECK (auth.uid() IS NOT NULL AND created_by = auth.uid());
+CREATE POLICY food_catalog_users_update_own ON fitness.food_catalog
+  FOR UPDATE TO authenticated
+  USING (created_by = auth.uid())
+  WITH CHECK (created_by = auth.uid());
+CREATE POLICY food_catalog_users_delete_own ON fitness.food_catalog
+  FOR DELETE TO authenticated
+  USING (created_by = auth.uid());
+CREATE POLICY food_catalog_admins_manage_all ON fitness.food_catalog
+  FOR ALL TO authenticated
+  USING (fitness.is_admin())
+  WITH CHECK (fitness.is_admin());
 
 CREATE POLICY nutrition_plans_read_authorized ON fitness.nutrition_plans
   FOR SELECT TO authenticated
