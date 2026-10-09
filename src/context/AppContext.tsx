@@ -83,10 +83,10 @@ interface AppContextType {
 
   // Actions
   updateProfile: (updated: Partial<Profile>) => void;
-  approveUser: (userId: string, assignedCoachId: string) => void;
+  approveUser: (userId: string, assignedCoachId: string) => Promise<SupabaseWriteResult>;
   suspendUser: (userId: string) => void;
   activateUser: (userId: string) => void;
-  assignCoach: (clientId: string, coachId: string) => void;
+  assignCoach: (clientId: string, coachId: string) => Promise<SupabaseWriteResult>;
   
   // Exercise & Program Actions
   addExercise: (exercise: Omit<Exercise, 'id' | 'createdAt'>) => Promise<{ success: boolean; error?: string; warning?: string }>;
@@ -351,25 +351,20 @@ export const AppProvider: React.FC<{
     SupabaseService.saveProfile({ ...currentUser, ...updated });
   };
 
-  const approveUser = (userId: string, assignedCoachId: string) => {
-    setAllProfiles(prev => prev.map(p => {
-      if (p.id === userId) {
-        const updated = {
-          ...p,
-          status: 'active' as AccountStatus,
-          assignedCoachId
-        };
-        SupabaseService.saveProfile(updated);
-        return updated;
-      }
-      return p;
-    }));
+  const approveUser = async (userId: string, assignedCoachId: string): Promise<SupabaseWriteResult> => {
+    const saved = await SupabaseService.assignClientToCoach(userId, assignedCoachId, true);
+    if (!saved.success) return saved;
+
+    setAllProfiles(prev => prev.map(p => p.id === userId
+      ? { ...p, status: 'active' as AccountStatus, assignedCoachId }
+      : p
+    ));
 
     const targetUser = allProfiles.find(p => p.id === userId);
     const coachUser = allProfiles.find(p => p.id === assignedCoachId);
     if (targetUser && coachUser) {
       const convId = `conv-${coachUser.id}-${targetUser.id}`;
-      if (!conversations.some(c => c.id === convId)) {
+      if (!conversations.some(c => c.clientId === targetUser.id && c.coachId === coachUser.id)) {
         const newConv: Conversation = {
           id: convId,
           clientId: targetUser.id,
@@ -385,9 +380,8 @@ export const AppProvider: React.FC<{
         };
         setConversations(prev => [newConv, ...prev]);
 
-        // Add welcome message
         const welcomeMsg: Message = {
-          id: `msg-${Date.now()}`,
+          id: crypto.randomUUID(),
           conversationId: convId,
           senderId: coachUser.id,
           recipientId: targetUser.id,
@@ -398,7 +392,7 @@ export const AppProvider: React.FC<{
           createdAt: new Date().toISOString()
         };
         setMessages(prev => [...prev, welcomeMsg]);
-        SupabaseService.saveMessage(welcomeMsg);
+        void SupabaseService.saveMessage(welcomeMsg);
       }
 
       setNotifications(prev => [
@@ -415,6 +409,8 @@ export const AppProvider: React.FC<{
         ...prev
       ]);
     }
+
+    return { success: true };
   };
 
   const suspendUser = (userId: string) => {
@@ -429,10 +425,11 @@ export const AppProvider: React.FC<{
     if (target) SupabaseService.saveProfile({ ...target, status: 'active' });
   };
 
-  const assignCoach = (clientId: string, coachId: string) => {
-    setAllProfiles(prev => prev.map(p => (p.id === clientId ? { ...p, assignedCoachId: coachId } : p)));
-    const target = allProfiles.find(p => p.id === clientId);
-    if (target) SupabaseService.saveProfile({ ...target, assignedCoachId: coachId });
+  const assignCoach = async (clientId: string, coachId: string): Promise<SupabaseWriteResult> => {
+    const saved = await SupabaseService.assignClientToCoach(clientId, coachId);
+    if (!saved.success) return saved;
+    setAllProfiles(prev => prev.map(p => p.id === clientId ? { ...p, assignedCoachId: coachId } : p));
+    return { success: true };
   };
 
   const addExercise = async (exercise: Omit<Exercise, 'id' | 'createdAt'>): Promise<{ success: boolean; error?: string; warning?: string }> => {
