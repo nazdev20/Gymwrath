@@ -159,20 +159,23 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </div>
 
-            {/* Database / Supabase Status Pill */}
-            <button
-              onClick={() => setActiveView('database')}
-              className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
-                isSupabaseConnected
-                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20'
-                  : 'bg-amber-500/10 border-amber-500/30 text-amber-300 hover:bg-amber-500/20'
-              }`}
-              title={isSupabaseConnected ? 'Supabase Database Connected' : 'Supabase Host Unreachable - Click to configure'}
-            >
-              <Database className="w-3.5 h-3.5" />
-              <span>{isSupabaseConnected ? 'DB Active' : 'DB Config'}</span>
-              <span className={`w-1.5 h-1.5 rounded-full ${isSupabaseConnected ? 'bg-emerald-400' : 'bg-amber-400 animate-pulse'}`} />
-            </button>
+            {/* Database controls are restricted to administrators. */}
+            {currentUser.role === 'admin' && (
+              {/* Database / Supabase Status Pill */}
+              <button
+                onClick={() => setActiveView('database')}
+                className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+                  isSupabaseConnected
+                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20'
+                    : 'bg-amber-500/10 border-amber-500/30 text-amber-300 hover:bg-amber-500/20'
+                }`}
+                title={isSupabaseConnected ? 'Supabase Database Connected' : 'Supabase Host Unreachable - Click to configure'}
+              >
+                <Database className="w-3.5 h-3.5" />
+                <span>{isSupabaseConnected ? 'DB Active' : 'DB Config'}</span>
+                <span className={`w-1.5 h-1.5 rounded-full ${isSupabaseConnected ? 'bg-emerald-400' : 'bg-amber-400 animate-pulse'}`} />
+              </button>
+            )}
 
             {/* Notification Bell */}
             <div className="relative">
