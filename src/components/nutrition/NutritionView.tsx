@@ -73,6 +73,7 @@ export const NutritionView: React.FC = () => {
   const [newFoodProtein, setNewFoodProtein] = useState(20);
   const [newFoodCarbs, setNewFoodCarbs] = useState(10);
   const [newFoodFat, setNewFoodFat] = useState(3);
+  const [newFoodFiber, setNewFoodFiber] = useState(2);
   const [newFoodCategory, setNewFoodCategory] = useState<Food['category']>('Protein');
   const [customFoodError, setCustomFoodError] = useState<string | null>(null);
   const [isSavingCustomFood, setIsSavingCustomFood] = useState(false);
@@ -190,7 +191,7 @@ export const NutritionView: React.FC = () => {
         proteinG: newFoodProtein,
         carbsG: newFoodCarbs,
         fatG: newFoodFat,
-        fiberG: 0,
+        fiberG: newFoodFiber,
         notes: undefined,
         isGlobal: true,
         createdBy: currentUser.id
@@ -215,6 +216,7 @@ export const NutritionView: React.FC = () => {
       setNewFoodProtein(20);
       setNewFoodCarbs(10);
       setNewFoodFat(3);
+      setNewFoodFiber(2);
       setCustomFoodReturnToLog(false);
     } catch (error) {
       setCustomFoodError(error instanceof Error ? error.message : 'Food item was not saved.');
@@ -656,12 +658,12 @@ export const NutritionView: React.FC = () => {
                   inputMode="numeric"
                   autoComplete="off"
                   maxLength={80}
-                  placeholder="Scan or enter barcode; leave blank if none"
+                  placeholder="Enter barcode or use a connected scanner"
                   value={newFoodBarcode}
                   onChange={e => setNewFoodBarcode(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-mono focus:outline-none focus:border-blue-500"
                 />
-                <p className="text-[10px] text-slate-500 mt-1">Barcode is stored as text to preserve leading zeroes. You can add food manually without one.</p>
+                <p className="text-[10px] text-slate-500 mt-1">Barcode is stored as text to preserve leading zeroes. You can also add home-cooked or restaurant food without one.</p>
               </div>
 
               <div>
@@ -712,7 +714,7 @@ export const NutritionView: React.FC = () => {
 
               <div>
                 <p className="text-[11px] font-semibold uppercase text-slate-300 mb-2">Nutrition per {newFoodServingSize || '?'} {newFoodServingUnit.trim() || 'unit'}</p>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-[11px] font-semibold uppercase text-slate-400 mb-1">Calories (kcal)</label>
                   <input
@@ -758,6 +760,18 @@ export const NutritionView: React.FC = () => {
                     required
                     value={newFoodFat}
                     onChange={e => setNewFoodFat(parseFloat(e.target.value) || 0)}
+                    className="w-full px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold uppercase text-slate-400 mb-1">Fiber (g)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    step={0.1}
+                    required
+                    value={newFoodFiber}
+                    onChange={e => setNewFoodFiber(parseFloat(e.target.value) || 0)}
                     className="w-full px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-mono"
                   />
                 </div>
