@@ -34,9 +34,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => (
           GymWrath · Training with intention
         </div>
         <h1 className="max-w-3xl text-4xl font-black leading-[1.04] tracking-[-0.045em] text-white sm:text-5xl lg:text-6xl">
-          Every rep
-          <span className="block text-emerald-400">has a target.</span>
+          Channel the fire.
+          <span className="block text-emerald-400">Own the result.</span>
         </h1>
+        <p className="text-base font-bold text-white sm:text-lg">Every rep has a target.</p>
         <p className="max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
           Most people train to pass the time. You’re here because you have a target.
           Turn raw drive into focused work—with a plan to follow, progress you can measure,
@@ -58,8 +59,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => (
         <div className="absolute inset-y-0 left-0 w-1 bg-emerald-500" />
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">The GymWrath approach</p>
         <blockquote className="mt-5 max-w-md text-2xl font-extrabold leading-tight tracking-tight text-white sm:text-3xl">
-          Channel the fire.
-          <span className="block text-emerald-400">Own the result.</span>
+          Aggression with a plan.
         </blockquote>
         <p className="mt-5 max-w-md text-sm leading-relaxed text-slate-400">
           It isn’t blind anger. It’s focus: a deliberate set, an honest log, a considered recovery,
