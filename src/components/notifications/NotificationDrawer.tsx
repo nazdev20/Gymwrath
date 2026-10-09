@@ -48,6 +48,13 @@ export const NotificationDrawer: React.FC = () => {
     markNotificationRead(n.id);
     setIsNotificationsOpen(false);
 
+    // Message notifications should always open the DM view, even if an older
+    // notification row has no linkTarget metadata.
+    if (n.type === 'new_message') {
+      setActiveView('messages');
+      return;
+    }
+
     if (n.linkTarget) {
       if (n.linkTarget.view === 'checkins' && n.linkTarget.entityId && currentUser.role === 'coach') {
         setActiveView('checkins');
