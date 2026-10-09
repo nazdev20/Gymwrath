@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import {
   Bell,
-  Dumbbell,
   Menu,
   X,
   Database,
@@ -68,20 +67,15 @@ export const Navbar: React.FC<NavbarProps> = ({
               }}
               className="flex min-w-0 items-center gap-2 group text-left focus:outline-none"
             >
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform shrink-0">
-                <Dumbbell className="w-4 h-4 sm:w-5 sm:h-5 text-slate-950 font-bold" />
+              <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg border border-emerald-500/40 bg-emerald-500/10 transition-colors group-hover:bg-emerald-500/15">
+                <span aria-hidden="true" className="select-none font-black italic leading-none tracking-[-0.1em] text-sm sm:text-base text-emerald-400 pr-0.5">GW</span>
               </div>
               <div className="hidden min-w-0 min-[480px]:block">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-extrabold text-base sm:text-lg tracking-tight text-white truncate">
-                    GymWrath
-                  </span>
-                  <span className="hidden min-[480px]:inline text-[10px] text-emerald-400 px-1 py-0.2 rounded bg-emerald-950/80 border border-emerald-800/60 font-mono font-bold">
-                    PRO
-                  </span>
-                </div>
-                <span className="hidden sm:block text-[11px] text-slate-400 -mt-0.5 font-medium truncate">
-                  Training plans · Client progress · Nutrition
+                <span className="block truncate font-bold text-base sm:text-lg tracking-[-0.035em] text-white">
+                  GymWrath
+                </span>
+                <span className="hidden sm:block -mt-0.5 truncate text-[11px] font-medium tracking-wide text-slate-400">
+                  Training · Nutrition · Progress
                 </span>
               </div>
             </button>
