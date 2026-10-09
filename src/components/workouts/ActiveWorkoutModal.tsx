@@ -8,7 +8,8 @@ import {
   Clock,
   Play,
   Pause,
-  RotateCcw
+  RotateCcw,
+  Award
 } from 'lucide-react';
 
 export const ActiveWorkoutModal: React.FC = () => {
@@ -45,6 +46,9 @@ export const ActiveWorkoutModal: React.FC = () => {
 
   const [overallRpe, setOverallRpe] = useState<number>(workout.overallRpe || 8);
   const [clientFeedback, setClientFeedback] = useState<string>(workout.clientFeedback || '');
+  const [isSavingWorkout, setIsSavingWorkout] = useState(false);
+  const [saveWorkoutError, setSaveWorkoutError] = useState<string | null>(null);
+  const [saveWorkoutWarning, setSaveWorkoutWarning] = useState<string | null>(null);
 
   // Rest Timer State
   const [timerSeconds, setTimerSeconds] = useState<number>(90);
@@ -88,9 +92,42 @@ export const ActiveWorkoutModal: React.FC = () => {
     }
   };
 
-  const handleFinishWorkout = () => {
-    logWorkoutCompletion(workout.id, loggedExercises, overallRpe, clientFeedback);
-    setActiveWorkoutModalId(null);
+  const newPersonalRecords = loggedExercises.flatMap(exercise => {
+    const previousBest = scheduledWorkouts
+      .filter(previous => previous.clientId === workout.clientId && previous.status === 'completed' && previous.id !== workout.id)
+      .flatMap(previous => (previous.loggedData || [])
+        .filter(logged => logged.exerciseId === exercise.exerciseId)
+        .flatMap(logged => logged.sets.filter(set => set.completed && set.actualWeightKg > 0).map(set => set.actualWeightKg)))
+      .reduce((best, weight) => Math.max(best, weight), 0);
+    const bestCurrentSet = exercise.sets
+      .filter(set => set.completed && set.actualWeightKg > previousBest && set.actualWeightKg > 0)
+      .sort((a, b) => b.actualWeightKg - a.actualWeightKg)[0];
+    return previousBest > 0 && bestCurrentSet
+      ? [{ exerciseName: exercise.exerciseName, weight: bestCurrentSet.actualWeightKg, reps: bestCurrentSet.actualReps }]
+      : [];
+  });
+
+  const handleFinishWorkout = async () => {
+    if (isSavingWorkout) return;
+    setSaveWorkoutError(null);
+    setSaveWorkoutWarning(null);
+    setIsSavingWorkout(true);
+    try {
+      const result = await logWorkoutCompletion(workout.id, loggedExercises, overallRpe, clientFeedback);
+      if (!result.success) {
+        setSaveWorkoutError(result.error || 'Workout was not saved.');
+        return;
+      }
+      if (result.warning) {
+        setSaveWorkoutWarning(result.warning);
+        return;
+      }
+      setActiveWorkoutModalId(null);
+    } catch (error) {
+      setSaveWorkoutError(error instanceof Error ? error.message : 'Workout was not saved.');
+    } finally {
+      setIsSavingWorkout(false);
+    }
   };
 
   const totalSets = loggedExercises.reduce((sum, ex) => sum + ex.sets.length, 0);
@@ -192,6 +229,37 @@ export const ActiveWorkoutModal: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {timerSeconds === 0 && !timerRunning && (
+          <div role="status" className="flex items-center gap-2 border-b border-emerald-500/20 bg-emerald-500/10 px-4 py-2.5 text-xs font-semibold text-emerald-300">
+            <Clock className="h-4 w-4 shrink-0" />
+            Rest is over. Get back on the bar.
+          </div>
+        )}
+
+        {newPersonalRecords.length > 0 && (
+          <div className="flex items-start gap-2 border-b border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-xs">
+            <Award className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+            <div>
+              <p className="font-bold text-emerald-300">New PR on this session</p>
+              <p className="mt-0.5 text-slate-300">
+                {newPersonalRecords.map(record => `${record.exerciseName}: ${record.weight} kg × ${record.reps}`).join(' · ')}
+              </p>
+              <p className="mt-1 text-slate-400">Finish and save the workout to lock in the result.</p>
+            </div>
+          </div>
+        )}
+
+        {saveWorkoutError && (
+          <p role="alert" className="border-b border-rose-500/20 bg-rose-500/10 px-4 py-2.5 text-xs text-rose-300">{saveWorkoutError}</p>
+        )}
+        {saveWorkoutWarning && (
+          <div role="status" className="border-b border-amber-500/20 bg-amber-500/10 px-4 py-3 text-xs text-amber-200">
+            <p className="font-bold">Session completed in this browser</p>
+            <p className="mt-1">{saveWorkoutWarning}</p>
+            <p className="mt-1">Reopen or create an assigned workout to save it to your workout history.</p>
+          </div>
+        )}
 
         {/* Exercises Scrollable Body */}
         <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
@@ -354,14 +422,16 @@ export const ActiveWorkoutModal: React.FC = () => {
             onClick={() => setActiveWorkoutModalId(null)}
             className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-300 text-xs font-semibold order-2 sm:order-1 transition-colors min-h-[40px]"
           >
-            Close / Save Draft
+            {saveWorkoutWarning ? 'Close' : 'Close / Save Draft'}
           </button>
 
           <button
             onClick={handleFinishWorkout}
-            className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 order-1 sm:order-2 min-h-[44px]"
+            disabled={isSavingWorkout || Boolean(saveWorkoutWarning)}
+            className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 order-1 sm:order-2 min-h-[44px] disabled:cursor-wait disabled:opacity-60"
           >
-            <CheckCircle2 className="w-4 h-4" /> Finish & Log Workout
+            <CheckCircle2 className="w-4 h-4" />
+            {isSavingWorkout ? 'Saving session…' : newPersonalRecords.length > 0 ? 'Finish · New PR' : 'Finish & Log Workout'}
           </button>
         </div>
       </div>
