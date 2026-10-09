@@ -75,7 +75,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   GymWrath
                 </span>
                 <span className="hidden sm:block -mt-0.5 truncate text-[11px] font-medium tracking-wide text-slate-400">
-                  Training · Nutrition · Progress
+                  Channel the fire. Own the result.
                 </span>
               </div>
             </button>
