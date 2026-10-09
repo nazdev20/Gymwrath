@@ -55,7 +55,7 @@ export const SupabaseConfigModal: React.FC<SupabaseConfigModalProps> = ({ isOpen
         </div>
 
         <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 text-xs leading-relaxed text-slate-300">
-          Set <code className="text-amber-300">NEXT_PUBLIC_SUPABASE_URL</code>, <code className="text-amber-300">NEXT_PUBLIC_SUPABASE_ANON_KEY</code>, and the server-only <code className="text-amber-300">SUPABASE_SERVICE_ROLE_KEY</code> in the deployment environment. Expose the <code className="text-amber-300">fitness</code> schema in Supabase API settings and apply the SQL shown in the Database Schema view. Never place the service-role key in a public environment variable.
+          Set <code className="text-amber-300">NEXT_PUBLIC_SUPABASE_URL</code>, <code className="text-amber-300">NEXT_PUBLIC_SUPABASE_ANON_KEY</code>, and the server-only <code className="text-amber-300">SUPABASE_SERVICE_ROLE_KEY</code> in the deployment environment. Expose the <code className="text-amber-300">fitness</code> schema in Supabase API settings and apply the latest SQL shown in the Database Schema view; it refreshes PostgREST's schema cache. Never place the service-role key in a public environment variable.
         </div>
 
         {result && (

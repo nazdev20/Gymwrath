@@ -15,7 +15,7 @@ INITIAL_ADMIN_SETUP_TOKEN=a-long-random-one-time-setup-token
 
 `SUPABASE_SERVICE_ROLE_KEY` and `INITIAL_ADMIN_SETUP_TOKEN` are server-only secrets. Do not prefix them with `NEXT_PUBLIC_`, commit them, or send them to browser code.
 
-In Supabase, expose `fitness` under **Project Settings → API → Exposed schemas**, then run the SQL from GymWrath's **Database → SQL** view. The SQL creates the Auth-to-profile trigger, schema grants, and role-aware RLS policies. Review/migrate any existing profile rows before deploying: new profile IDs must match `auth.users.id`.
+In Supabase, expose `fitness` under **Project Settings → API → Exposed schemas**, then run the latest SQL from GymWrath's **Database → SQL** view. The SQL creates the Auth-to-profile trigger, schema grants, role-aware RLS policies, and notifies PostgREST to reload its schema cache. If an RPC reports that a function cannot be found in the schema cache, confirm `fitness` is exposed and apply the latest SQL. Review/migrate any existing profile rows before deploying: new profile IDs must match `auth.users.id`.
 
 ## Initial administrator
 
