@@ -47,13 +47,45 @@ export const CoachDashboard: React.FC = () => {
     c => c.status === 'submitted' && (currentUser.role === 'admin' || c.coachId === currentUser.id)
   );
 
-  // Clients with missed check-ins or no recent steps in 3 days
-  const todayStr = new Date().toISOString().slice(0, 10);
-  const clientsNeedingAttention = myClients.filter(client => {
-    const hasPendingCheckin = pendingCheckins.some(c => c.clientId === client.id);
-    const unreadMsgs = conversations.find(c => c.clientId === client.id)?.unreadCountCoach || 0;
-    return hasPendingCheckin || unreadMsgs > 0;
-  });
+  // Local calendar dates keep overdue-training and recent-activity checks aligned to the user's day.
+  const toLocalDateKey = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+  const today = new Date();
+  const todayStr = toLocalDateKey(today);
+  const stepCutoff = new Date(today);
+  stepCutoff.setDate(stepCutoff.getDate() - 2);
+  const stepCutoffStr = toLocalDateKey(stepCutoff);
+  const workoutCutoff = new Date(today);
+  workoutCutoff.setDate(workoutCutoff.getDate() - 6);
+  const workoutCutoffStr = toLocalDateKey(workoutCutoff);
+
+  const getAttentionReasons = (clientId: string) => {
+    const reasons: string[] = [];
+    if (pendingCheckins.some(checkIn => checkIn.clientId === clientId)) reasons.push('Check-in to review');
+    const unreadMessages = conversations.find(conversation => conversation.clientId === clientId)?.unreadCountCoach || 0;
+    if (unreadMessages > 0) reasons.push('Unread message');
+
+    const hasOverdueWorkout = scheduledWorkouts.some(workout =>
+      workout.clientId === clientId &&
+      workout.scheduledDate >= workoutCutoffStr &&
+      workout.scheduledDate <= todayStr &&
+      workout.status !== 'completed' &&
+      workout.status !== 'skipped'
+    );
+    if (hasOverdueWorkout) reasons.push('Workout needs follow-up');
+
+    const hasAnyStepHistory = stepRecords.some(record => record.clientId === clientId);
+    const hasRecentSteps = stepRecords.some(record => record.clientId === clientId && record.logDate >= stepCutoffStr && record.logDate <= todayStr);
+    if (hasAnyStepHistory && !hasRecentSteps) reasons.push('Step log is quiet');
+
+    return reasons;
+  };
+
+  const clientsNeedingAttention = myClients.filter(client => getAttentionReasons(client.id).length > 0);
 
   // Filter roster
   const filteredClients = myClients.filter(c => {
@@ -106,7 +138,7 @@ export const CoachDashboard: React.FC = () => {
               Welcome back, {currentUser.fullName.split(' ')[0]}
             </h1>
             <p className="text-sm text-slate-400 mt-1 max-w-2xl">
-              You have <span className="text-amber-400 font-semibold">{pendingCheckins.length} check-in{pendingCheckins.length === 1 ? '' : 's'}</span> to review and <span className="text-emerald-400 font-semibold">{myClients.length} clients</span> on your roster.
+              You have <span className="text-amber-400 font-semibold">{clientsNeedingAttention.length} follow-up{clientsNeedingAttention.length === 1 ? '' : 's'}</span> to work through and <span className="text-emerald-400 font-semibold">{myClients.length} clients</span> on your roster. Coach the process. Measure the outcome.
             </p>
           </div>
 
@@ -172,9 +204,63 @@ export const CoachDashboard: React.FC = () => {
             </div>
           </div>
           <div className="text-2xl font-extrabold text-purple-400">{clientsNeedingAttention.length}</div>
-          <p className="text-xs text-slate-400 mt-1">Check-in or unread message</p>
+          <p className="text-xs text-slate-400 mt-1">Check-in, unread message, overdue session, or quiet step log</p>
         </div>
       </div>
+
+      {/* Coach Attention Queue */}
+      <section className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
+        <div className="flex flex-col gap-2 border-b border-slate-800 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="font-bold text-white">Coach Attention Queue</h2>
+            <p className="mt-1 text-xs text-slate-400">Coach the process. Measure the outcome.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-1 font-mono text-xs font-bold text-amber-400">{clientsNeedingAttention.length} follow-up{clientsNeedingAttention.length === 1 ? '' : 's'}</span>
+            <button
+              onClick={() => { setStatusFilter('attention'); setActiveView('clients'); setSelectedClientId(null); }}
+              className="text-xs font-semibold text-emerald-400 hover:text-emerald-300"
+            >
+              View roster →
+            </button>
+          </div>
+        </div>
+        {clientsNeedingAttention.length ? (
+          <div className="divide-y divide-slate-800">
+            {clientsNeedingAttention.slice(0, 5).map(client => (
+              <div key={client.id} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex min-w-0 items-center gap-3">
+                  <img src={client.avatarUrl || undefined} alt="" className="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-slate-700" />
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-white">{client.fullName}</p>
+                    <p className="mt-1 text-xs leading-relaxed text-amber-400">{getAttentionReasons(client.id).join(' · ')}</p>
+                  </div>
+                </div>
+                <div className="flex shrink-0 gap-2">
+                  <button
+                    onClick={() => { setSelectedClientId(client.id); setActiveView('clients'); }}
+                    className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-700"
+                  >
+                    View client
+                  </button>
+                  <button
+                    onClick={() => { setSelectedClientId(client.id); setActiveView('messages'); }}
+                    aria-label={`Message ${client.fullName}`}
+                    className="flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-400 transition-colors hover:bg-emerald-500/20"
+                  >
+                    <MessageSquare className="h-3.5 w-3.5" /> Message
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="p-5">
+            <p className="text-sm font-semibold text-slate-300">No follow-ups are waiting.</p>
+            <p className="mt-1 text-xs text-slate-500">Keep the plan clear, review progress, and stay ahead of the next check-in.</p>
+          </div>
+        )}
+      </section>
 
       {/* Attention Board (Check-Ins to Review) */}
       {pendingCheckins.length > 0 && (
