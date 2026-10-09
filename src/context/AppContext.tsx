@@ -152,6 +152,8 @@ export const AppProvider: React.FC<{
   initialProfile?: Profile | null;
 }> = ({ children, initialUserId = null, initialProfile = null }) => {
   const [allProfiles, setAllProfiles] = useState<Profile[]>(initialProfile ? [initialProfile] : []);
+  const allProfilesRef = useRef(allProfiles);
+  allProfilesRef.current = allProfiles;
   const [currentUserId, setCurrentUserId] = useState<string>(initialUserId || '');
   
   const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -288,7 +290,7 @@ export const AppProvider: React.FC<{
 
           if (!row?.id || (row.sender_id !== supabaseAuthUserId && row.recipient_id !== supabaseAuthUserId)) return;
 
-          const sender = allProfiles.find(profile => profile.id === row.sender_id);
+          const sender = allProfilesRef.current.find(profile => profile.id === row.sender_id);
           const incomingMessage: Message = {
             id: row.id,
             conversationId: row.conversation_id,
@@ -311,7 +313,7 @@ export const AppProvider: React.FC<{
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [supabaseAuthUserId, allProfiles]);
+  }, [supabaseAuthUserId]);
 
   useEffect(() => {
     let isMounted = true;
