@@ -120,7 +120,7 @@ export const ExerciseLibrary: React.FC = () => {
             <h1 className="text-2xl font-extrabold text-white">Movement Library</h1>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Standardized movement catalog with biomechanics, execution cues, and video references.
+            Choose movements that serve the plan, with clear execution cues and references for the work.
           </p>
         </div>
 
