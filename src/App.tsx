@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Navbar } from './components/layout/Navbar';
 import { Sidebar } from './components/layout/Sidebar';
-import { MobileBottomNav } from './components/layout/MobileBottomNav';
 import { CoachDashboard } from './components/dashboard/CoachDashboard';
 import { ClientDashboard } from './components/dashboard/ClientDashboard';
 import { AdminDashboard } from './components/dashboard/AdminDashboard';
@@ -120,14 +119,11 @@ const MainLayout: React.FC = () => {
           onCloseMobile={() => setIsMobileMenuOpen(false)}
         />
 
-        {/* Main Scrollable Content Area with Mobile Safe Bottom Spacing */}
-        <main className="min-w-0 flex-1 overflow-y-auto p-3 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto pb-24 lg:pb-12">
+        {/* Main Scrollable Content Area */}
+        <main className="min-w-0 flex-1 overflow-y-auto p-3 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto pb-8 lg:pb-12">
           {renderCurrentView()}
         </main>
       </div>
-
-      {/* Mobile Sticky Bottom Navigation Bar (Hidden on lg+ screens) */}
-      <MobileBottomNav onOpenMobileMenu={() => setIsMobileMenuOpen(true)} />
 
       {/* Global Interactive Modals & Drawers */}
       <ActiveWorkoutModal />
