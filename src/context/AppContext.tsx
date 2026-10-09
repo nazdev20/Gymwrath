@@ -407,8 +407,19 @@ export const AppProvider: React.FC<{
   const currentUser = allProfiles.find(p => p.id === currentUserId) || GUEST_PROFILE;
 
   const updateProfile = async (updated: Partial<Profile>): Promise<boolean> => {
-    const nextProfile = { ...currentUser, ...updated };
-    const saved = await SupabaseService.saveProfile(nextProfile);
+    // Only merge editable profile fields; never accept role/status/email changes here.
+    const nextProfile: Profile = {
+      ...currentUser,
+      fullName: updated.fullName ?? currentUser.fullName,
+      avatarUrl: updated.avatarUrl ?? currentUser.avatarUrl,
+      phone: updated.phone ?? currentUser.phone,
+      bio: updated.bio ?? currentUser.bio,
+      heightCm: updated.heightCm ?? currentUser.heightCm,
+      currentWeightKg: updated.currentWeightKg ?? currentUser.currentWeightKg,
+      targetWeightKg: updated.targetWeightKg ?? currentUser.targetWeightKg,
+      goals: updated.goals ?? currentUser.goals
+    };
+    const saved = await SupabaseService.updateOwnProfile(nextProfile);
     if (!saved) return false;
     setAllProfiles(prev => prev.map(p => (p.id === currentUser.id ? nextProfile : p)));
     return true;
