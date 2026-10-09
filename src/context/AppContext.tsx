@@ -253,6 +253,54 @@ export const AppProvider: React.FC<{
     setIsSupabaseConnected(false);
   }, [supabaseAuthUserId]);
 
+  // Keep the in-app DM history synchronized with messages inserted by the other participant.
+  // Notifications can arrive independently of the currently loaded message list.
+  useEffect(() => {
+    if (!supabaseAuthUserId) return;
+
+    const channel = supabase
+      .channel(`dm-messages-${supabaseAuthUserId}`)
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'fitness', table: 'messages' },
+        payload => {
+          const row = payload.new as {
+            id: string;
+            conversation_id: string;
+            sender_id: string;
+            recipient_id: string;
+            content: string;
+            is_read: boolean;
+            created_at: string;
+          };
+
+          if (!row?.id || (row.sender_id !== supabaseAuthUserId && row.recipient_id !== supabaseAuthUserId)) return;
+
+          const sender = allProfiles.find(profile => profile.id === row.sender_id);
+          const incomingMessage: Message = {
+            id: row.id,
+            conversationId: row.conversation_id,
+            senderId: row.sender_id,
+            recipientId: row.recipient_id,
+            senderName: sender?.fullName || 'User',
+            senderRole: sender?.role || 'coach',
+            content: row.content,
+            isRead: row.is_read,
+            createdAt: row.created_at
+          };
+
+          setMessages(prev => prev.some(message => message.id === incomingMessage.id)
+            ? prev
+            : [...prev, incomingMessage]);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [supabaseAuthUserId, allProfiles]);
+
   useEffect(() => {
     let isMounted = true;
     const applyAuthUser = (userId: string | null) => {
@@ -742,11 +790,50 @@ export const AppProvider: React.FC<{
   };
 
   const sendMessage = async (recipientId: string, content: string): Promise<{ success: boolean; error?: string }> => {
-    const thread = conversations.find(conversation =>
+    let thread = conversations.find(conversation =>
       (conversation.coachId === currentUser.id && conversation.clientId === recipientId)
       || (conversation.clientId === currentUser.id && conversation.coachId === recipientId)
     );
-    if (!thread) return { success: false, error: 'There is no active conversation with this user.' };
+
+    // The local conversation list can be stale when a client opens DM after receiving a notification.
+    // Resolve the existing participant conversation from Supabase before failing the send.
+    if (!thread) {
+      const clientId = currentUser.role === 'client' ? currentUser.id : recipientId;
+      const coachId = currentUser.role === 'client' ? recipientId : currentUser.id;
+      const { data: dbConversation, error: conversationError } = await supabase
+        .from('conversations')
+        .select('*')
+        .eq('client_id', clientId)
+        .eq('coach_id', coachId)
+        .maybeSingle();
+
+      if (conversationError) {
+        return { success: false, error: `Unable to load the conversation: ${conversationError.message}` };
+      }
+      if (!dbConversation) {
+        return { success: false, error: 'There is no active conversation with this user.' };
+      }
+
+      const client = allProfiles.find(profile => profile.id === dbConversation.client_id);
+      const coach = allProfiles.find(profile => profile.id === dbConversation.coach_id);
+      thread = {
+        id: dbConversation.id,
+        clientId: dbConversation.client_id,
+        clientName: client?.fullName || 'Client',
+        clientAvatar: client?.avatarUrl || '',
+        coachId: dbConversation.coach_id,
+        coachName: coach?.fullName || 'Coach',
+        coachAvatar: coach?.avatarUrl || '',
+        lastMessageText: '',
+        lastMessageTime: dbConversation.last_message_at || dbConversation.created_at,
+        unreadCountCoach: 0,
+        unreadCountClient: 0
+      };
+      const resolvedThread = thread;
+      setConversations(prev => prev.some(conversation => conversation.id === resolvedThread.id)
+        ? prev
+        : [resolvedThread, ...prev]);
+    }
 
     const newMsg: Message = {
       id: crypto.randomUUID(),
