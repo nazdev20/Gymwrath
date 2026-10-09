@@ -117,7 +117,7 @@ export const ExerciseLibrary: React.FC = () => {
             <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
               <Dumbbell className="w-4 h-4" />
             </div>
-            <h1 className="text-2xl font-extrabold text-white">Exercise Movement Library</h1>
+            <h1 className="text-2xl font-extrabold text-white">Movement Library</h1>
           </div>
           <p className="text-xs text-slate-400 mt-1">
             Standardized movement catalog with biomechanics, execution cues, and video references.
