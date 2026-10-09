@@ -469,6 +469,37 @@ export const SupabaseService = {
     }
   },
 
+  // Persist the coach-client relationship in its own table, not inside check-in records.
+  async assignClientToCoach(
+    clientId: string,
+    coachId: string,
+    activateClient = false
+  ): Promise<SupabaseWriteResult> {
+    if (getSupabaseConfig().isOfflineMode || getSupabaseReachableState() === false) {
+      return { success: false, error: 'Supabase is not configured or is unreachable.' };
+    }
+
+    try {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError) return { success: false, error: `Unable to verify the signed-in user: ${authError.message}` };
+      if (!user) return { success: false, error: 'Sign in as an administrator to assign a coach.' };
+
+      const { error } = await supabase.rpc('assign_client_to_coach', {
+        p_client_id: clientId,
+        p_coach_id: coachId,
+        p_activate_client: activateClient
+      });
+      if (error) {
+        console.error('Failed to save coach-client assignment:', error);
+        return { success: false, error: error.message };
+      }
+      return { success: true };
+    } catch (error) {
+      console.error('Failed to save coach-client assignment:', error);
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown Supabase error.' };
+    }
+  },
+
   // Insert or Upsert a single profile to Supabase
   async saveProfile(profile: Partial<Profile>): Promise<boolean> {
     if (getSupabaseConfig().isOfflineMode || getSupabaseReachableState() === false) return false;
