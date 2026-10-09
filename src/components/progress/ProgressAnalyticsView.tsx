@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import {
   Activity,
@@ -40,6 +40,9 @@ export const ProgressAnalyticsView: React.FC = () => {
     currentUser.targetWeightKg == null ? '' : String(currentUser.targetWeightKg)
   );
   const [isSavingTarget, setIsSavingTarget] = useState(false);
+  useEffect(() => {
+    setTargetWeightInput(currentUser.targetWeightKg == null ? '' : String(currentUser.targetWeightKg));
+  }, [currentUser.targetWeightKg]);
   const [targetMessage, setTargetMessage] = useState<string | null>(null);
   const [targetError, setTargetError] = useState<string | null>(null);
 
@@ -105,7 +108,7 @@ export const ProgressAnalyticsView: React.FC = () => {
   const currentWeight = latestCheckInWithWeight?.weightKg || currentUser.currentWeightKg;
   const targetWeight = currentUser.targetWeightKg;
   const nutritionTarget = nutritionTargets
-    .filter(target => target.clientId === currentUser.id)
+    .filter(target => target.clientId === currentUser.id && target.effectiveDate <= todayKey)
     .sort((a, b) => b.effectiveDate.localeCompare(a.effectiveDate))[0];
 
   const personalBests = useMemo(() => {
