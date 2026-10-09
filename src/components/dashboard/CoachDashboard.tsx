@@ -90,7 +90,7 @@ export const CoachDashboard: React.FC = () => {
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2 mb-1">
               <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                Coach Command Center
+                Coaching Overview
               </span>
               <span className="text-xs text-slate-400">
                 {new Date().toLocaleDateString('en-US', {
@@ -103,10 +103,10 @@ export const CoachDashboard: React.FC = () => {
               </span>
             </div>
             <h1 className="break-words text-xl sm:text-3xl leading-tight font-extrabold text-white tracking-tight">
-              Welcome back, {currentUser.fullName.split(' ')[0]} 👋
+              Welcome back, {currentUser.fullName.split(' ')[0]}
             </h1>
             <p className="text-sm text-slate-400 mt-1 max-w-2xl">
-              You have <span className="text-amber-400 font-semibold">{pendingCheckins.length} check-in{pendingCheckins.length === 1 ? '' : 's'}</span> awaiting feedback and <span className="text-emerald-400 font-semibold">{myClients.length} assigned clients</span> under your guidance.
+              You have <span className="text-amber-400 font-semibold">{pendingCheckins.length} check-in{pendingCheckins.length === 1 ? '' : 's'}</span> to review and <span className="text-emerald-400 font-semibold">{myClients.length} clients</span> on your roster.
             </p>
           </div>
 

@@ -65,14 +65,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div className="hidden min-w-0 min-[480px]:block">
                 <div className="flex items-center gap-1.5">
                   <span className="font-extrabold text-base sm:text-lg tracking-tight text-white truncate">
-                    ApexCoaching
+                    GymWrath
                   </span>
                   <span className="hidden min-[480px]:inline text-[10px] text-emerald-400 px-1 py-0.2 rounded bg-emerald-950/80 border border-emerald-800/60 font-mono font-bold">
                     PRO
                   </span>
                 </div>
                 <span className="hidden sm:block text-[11px] text-slate-400 -mt-0.5 font-medium truncate">
-                  Performance & Nutrition Engine
+                  Training plans · Client progress · Nutrition
                 </span>
               </div>
             </button>
