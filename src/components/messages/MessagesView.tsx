@@ -14,6 +14,7 @@ export const MessagesView: React.FC = () => {
     currentUser,
     allProfiles,
     messages,
+    conversations,
     sendMessage,
     selectedClientId,
     setSelectedClientId,
@@ -23,7 +24,20 @@ export const MessagesView: React.FC = () => {
   } = useApp();
 
   const isClient = currentUser.role === 'client';
-  const assignedCoach = allProfiles.find(p => p.id === currentUser.assignedCoachId);
+  // Notifications and persisted messages can arrive even when the profile's coach
+  // assignment is missing or stale. Recover the partner from existing DM history.
+  const messagePartnerId = isClient
+    ? [...messages]
+        .filter(m => m.senderId === currentUser.id || m.recipientId === currentUser.id)
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .map(m => m.senderId === currentUser.id ? m.recipientId : m.senderId)
+        .find(id => allProfiles.some(p => p.id === id && (p.role === 'coach' || p.role === 'admin')))
+    : undefined;
+  const conversationPartnerId = isClient
+    ? conversations.find(c => c.clientId === currentUser.id)?.coachId
+    : undefined;
+  const assignedCoachId = currentUser.assignedCoachId || conversationPartnerId || messagePartnerId;
+  const assignedCoach = allProfiles.find(p => p.id === assignedCoachId);
   const availableClients = getAssignedClients();
 
   // If coach/admin, select active chat partner
