@@ -180,12 +180,19 @@ export interface StepRecord {
   updatedAt?: string;
 }
 
+export type FoodCategory = 'Protein' | 'Carbohydrates' | 'Fats' | 'Dairy' | 'Fruits' | 'Vegetables' | 'Snacks' | 'Beverages' | 'Other';
+export type FoodType = 'packaged' | 'home_cooked' | 'restaurant' | 'fast_food' | 'generic';
+
 export interface Food {
   id: string;
   name: string;
-  category: 'Protein' | 'Carbohydrates' | 'Fats' | 'Dairy' | 'Fruits' | 'Vegetables' | 'Snacks' | 'Beverages' | 'Other';
+  category: FoodCategory;
+  foodType?: FoodType;
+  brand?: string;
+  barcode?: string;
+  notes?: string;
   servingSize: number;
-  servingUnit: string; // 'g', 'ml', 'unit', 'tbsp', 'scoop'
+  servingUnit: string; // Flexible: g, ml, piece, burger, slice, cup, order, pack, etc.
   calories: number;
   proteinG: number;
   carbsG: number;
