@@ -161,7 +161,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Database controls are restricted to administrators. */}
             {currentUser.role === 'admin' && (
-              {/* Database / Supabase Status Pill */}
               <button
                 onClick={() => setActiveView('database')}
                 className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
