@@ -361,8 +361,8 @@ export const ClientDashboard: React.FC = () => {
                   <Utensils className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-white">Today's Nutrition Budget</h2>
-                  <p className="text-xs text-slate-400">Macro targets prescribed by your coach</p>
+                  <h2 className="text-lg font-bold text-white">Fuel the Target</h2>
+                  <p className="text-xs text-slate-400">Today's calories and macros, measured against your plan.</p>
                 </div>
               </div>
               <button
