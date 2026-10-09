@@ -24,7 +24,7 @@ import { AuthModal } from './components/auth/AuthModal';
 import { Profile } from './types';
 
 const MainLayout: React.FC = () => {
-  const { currentUser, activeView, selectedClientId } = useApp();
+  const { currentUser, activeView, setActiveView, selectedClientId } = useApp();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [themeMode, setThemeMode] = useState<'dark' | 'light' | 'system'>('dark');
@@ -53,6 +53,13 @@ const MainLayout: React.FC = () => {
     window.localStorage.setItem('gymwrath-theme', mode);
     setThemeMode(mode);
   };
+
+  // Keep the database/schema tools confined to the admin role.
+  useEffect(() => {
+    if (currentUser.role !== 'admin' && activeView === 'database') {
+      setActiveView('dashboard');
+    }
+  }, [currentUser.role, activeView, setActiveView]);
 
   const renderCurrentView = () => {
     // If a client is selected for deep drill-down
@@ -91,6 +98,9 @@ const MainLayout: React.FC = () => {
         return <MessagesView />;
 
       case 'database':
+        if (currentUser.role !== 'admin') {
+          return currentUser.role === 'client' ? <ClientDashboard /> : <CoachDashboard />;
+        }
         return <DatabaseSchemaView />;
 
       case 'admin':
