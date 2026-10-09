@@ -73,8 +73,7 @@ export const CoachDashboard: React.FC = () => {
       workout.clientId === clientId &&
       workout.scheduledDate >= workoutCutoffStr &&
       workout.scheduledDate <= todayStr &&
-      workout.status !== 'completed' &&
-      workout.status !== 'skipped'
+      workout.status !== 'completed'
     );
     if (hasOverdueWorkout) reasons.push('Workout needs follow-up');
 
