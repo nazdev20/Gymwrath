@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import {
   Dumbbell,
@@ -56,14 +56,37 @@ export const ClientDashboard: React.FC = () => {
   );
   const [stepInput, setStepInput] = useState<string>(todayStepRecord ? String(todayStepRecord.stepCount) : '');
   const [stepSuccessMsg, setStepSuccessMsg] = useState(false);
+  const [stepSaveError, setStepSaveError] = useState<string | null>(null);
+  const [isSavingSteps, setIsSavingSteps] = useState(false);
 
-  const handleSaveSteps = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (todayStepRecord) setStepInput(String(todayStepRecord.stepCount));
+  }, [todayStepRecord?.stepCount]);
+
+  const handleSaveSteps = async (e: React.FormEvent) => {
     e.preventDefault();
-    const count = parseInt(stepInput, 10);
-    if (!isNaN(count) && count >= 0) {
-      logDailySteps(todayStr, count);
+    if (isSavingSteps) return;
+    const count = Number(stepInput);
+    if (!Number.isInteger(count) || count < 0 || count > 100000) {
+      setStepSaveError('Enter a step count from 0 to 100,000.');
+      return;
+    }
+
+    setStepSaveError(null);
+    setStepSuccessMsg(false);
+    setIsSavingSteps(true);
+    try {
+      const result = await logDailySteps(todayStr, count);
+      if (!result.success) {
+        setStepSaveError(result.error || 'Step record was not saved.');
+        return;
+      }
       setStepSuccessMsg(true);
       setTimeout(() => setStepSuccessMsg(false), 2500);
+    } catch (error) {
+      setStepSaveError(error instanceof Error ? error.message : 'Step record was not saved.');
+    } finally {
+      setIsSavingSteps(false);
     }
   };
 
@@ -482,16 +505,18 @@ export const ClientDashboard: React.FC = () => {
                 />
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-colors shrink-0"
+                  disabled={isSavingSteps}
+                  className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-colors shrink-0 disabled:cursor-wait disabled:opacity-60"
                 >
-                  Save
+                  {isSavingSteps ? 'Saving…' : 'Log steps'}
                 </button>
               </div>
               {stepSuccessMsg && (
-                <p className="text-xs text-emerald-400 font-medium flex items-center gap-1 animate-in fade-in">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Step record saved for today!
+                <p role="status" className="text-xs text-emerald-400 font-medium flex items-center gap-1 animate-in fade-in">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Movement logged. Keep momentum.
                 </p>
               )}
+              {stepSaveError && <p role="alert" className="text-xs text-rose-400">{stepSaveError}</p>}
             </form>
           </div>
 
