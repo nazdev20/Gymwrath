@@ -13,17 +13,17 @@ import {
 } from 'lucide-react';
 
 export const ActiveWorkoutModal: React.FC = () => {
-  const {
-    activeWorkoutModalId,
-    setActiveWorkoutModalId,
-    scheduledWorkouts,
-    logWorkoutCompletion
-  } = useApp();
+  const { activeWorkoutModalId, scheduledWorkouts } = useApp();
 
   if (!activeWorkoutModalId) return null;
-
   const workout = scheduledWorkouts.find(w => w.id === activeWorkoutModalId);
   if (!workout) return null;
+
+  return <ActiveWorkoutSession key={workout.id} workout={workout} />;
+};
+
+const ActiveWorkoutSession: React.FC<{ workout: ScheduledWorkout }> = ({ workout }) => {
+  const { setActiveWorkoutModalId, scheduledWorkouts, logWorkoutCompletion } = useApp();
 
   // Initialize logged data from existing or template
   const [loggedExercises, setLoggedExercises] = useState<LoggedExercise[]>(() => {
@@ -94,7 +94,12 @@ export const ActiveWorkoutModal: React.FC = () => {
 
   const newPersonalRecords = loggedExercises.flatMap(exercise => {
     const previousBest = scheduledWorkouts
-      .filter(previous => previous.clientId === workout.clientId && previous.status === 'completed' && previous.id !== workout.id)
+      .filter(previous =>
+        previous.clientId === workout.clientId &&
+        previous.status === 'completed' &&
+        previous.id !== workout.id &&
+        (previous.completedAt || previous.scheduledDate) < (workout.completedAt || workout.scheduledDate)
+      )
       .flatMap(previous => (previous.loggedData || [])
         .filter(logged => logged.exerciseId === exercise.exerciseId)
         .flatMap(logged => logged.sets.filter(set => set.completed && set.actualWeightKg > 0).map(set => set.actualWeightKg)))
