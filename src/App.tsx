@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Navbar } from './components/layout/Navbar';
 import { Sidebar } from './components/layout/Sidebar';
+import { LandingPage } from './components/landing/LandingPage';
 import { CoachDashboard } from './components/dashboard/CoachDashboard';
 import { ClientDashboard } from './components/dashboard/ClientDashboard';
 import { AdminDashboard } from './components/dashboard/AdminDashboard';
@@ -25,7 +26,7 @@ import { AuthModal } from './components/auth/AuthModal';
 import { Profile } from './types';
 
 const MainLayout: React.FC = () => {
-  const { currentUser, activeView, setActiveView, selectedClientId } = useApp();
+  const { currentUser, activeView, setActiveView, selectedClientId, supabaseAuthUserId } = useApp();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [themeMode, setThemeMode] = useState<'dark' | 'light' | 'system'>('dark');
@@ -63,6 +64,10 @@ const MainLayout: React.FC = () => {
   }, [currentUser.role, activeView, setActiveView]);
 
   const renderCurrentView = () => {
+    if (!supabaseAuthUserId) {
+      return <LandingPage onGetStarted={() => setIsAuthModalOpen(true)} />;
+    }
+
     // If a client is selected for deep drill-down
     if (selectedClientId && (currentUser.role === 'coach' || currentUser.role === 'admin') && (activeView === 'clients' || activeView === 'dashboard')) {
       return <ClientProfileView />;
@@ -122,7 +127,7 @@ const MainLayout: React.FC = () => {
     <div className="min-h-screen w-full min-w-0 max-w-full bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-emerald-500 selection:text-slate-950">
       {/* Top Sticky Navigation */}
       <Navbar
-        onToggleSidebar={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        onToggleSidebar={supabaseAuthUserId ? () => setIsMobileMenuOpen(!isMobileMenuOpen) : undefined}
         isMobileMenuOpen={isMobileMenuOpen}
         onOpenAuth={() => setIsAuthModalOpen(true)}
         themeMode={themeMode}
@@ -130,11 +135,13 @@ const MainLayout: React.FC = () => {
       />
 
       <div className="flex w-full min-w-0 flex-1 overflow-hidden">
-        {/* Responsive Desktop Sidebar & Mobile Drawer */}
-        <Sidebar
-          isMobileOpen={isMobileMenuOpen}
-          onCloseMobile={() => setIsMobileMenuOpen(false)}
-        />
+        {/* Authenticated users get role-specific navigation. Guests see the public landing page. */}
+        {supabaseAuthUserId && (
+          <Sidebar
+            isMobileOpen={isMobileMenuOpen}
+            onCloseMobile={() => setIsMobileMenuOpen(false)}
+          />
+        )}
 
         {/* Main Scrollable Content Area */}
         <main className="min-w-0 flex-1 overflow-y-auto p-3 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto pb-8 lg:pb-12">
