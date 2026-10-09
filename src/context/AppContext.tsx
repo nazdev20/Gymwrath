@@ -683,14 +683,18 @@ export const AppProvider: React.FC<{
     return { success: true };
   };
 
-  const addFood = (food: Omit<Food, 'id' | 'createdAt'>): Food => {
+  const addFood = async (food: Omit<Food, 'id' | 'createdAt'>): Promise<{ success: boolean; food?: Food; error?: string }> => {
     const newFood: Food = {
       ...food,
-      id: `food-${Date.now()}`,
+      id: crypto.randomUUID(),
       createdAt: new Date().toISOString()
     };
-    setFoods(prev => [newFood, ...prev]);
-    return newFood;
+    const saved = await SupabaseService.saveFood(newFood);
+    if (!saved.success || !saved.food) {
+      return { success: false, error: saved.error || 'Food item was not saved.' };
+    }
+    setFoods(prev => [saved.food!, ...prev.filter(existing => existing.id !== saved.food!.id)]);
+    return { success: true, food: saved.food };
   };
 
   const setNutritionTarget = (target: Omit<NutritionTarget, 'id'>) => {
