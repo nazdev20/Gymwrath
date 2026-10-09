@@ -246,7 +246,7 @@ const ActiveWorkoutSession: React.FC<{ workout: ScheduledWorkout }> = ({ workout
           <div className="flex items-start gap-2 border-b border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-xs">
             <Award className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
             <div>
-              <p className="font-bold text-emerald-300">New PR on this session</p>
+              <p className="font-bold text-emerald-300">Target destroyed. Set the bar higher.</p>
               <p className="mt-0.5 text-slate-300">
                 {newPersonalRecords.map(record => `${record.exerciseName}: ${record.weight} kg × ${record.reps}`).join(' · ')}
               </p>
