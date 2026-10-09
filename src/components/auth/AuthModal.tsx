@@ -71,6 +71,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           </div>
         </div>
 
+        <div className="mb-5 border-l-2 border-emerald-500 pl-4">
+          <p className="text-sm font-bold tracking-tight text-white">Channel the fire. Own the result.</p>
+          <p className="mt-1 text-xs leading-relaxed text-slate-400">
+            Most people train to pass the time. You're here because you have a target.
+            Log the work, fuel the plan, and turn your drive into measurable progress.
+          </p>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           {mode === 'sign-up' && (
             <>
