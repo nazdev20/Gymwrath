@@ -8,6 +8,7 @@ import { CoachDashboard } from './components/dashboard/CoachDashboard';
 import { ClientDashboard } from './components/dashboard/ClientDashboard';
 import { AdminDashboard } from './components/dashboard/AdminDashboard';
 import { ClientProfileView } from './components/clients/ClientProfileView';
+import { ProgressAnalyticsView } from './components/progress/ProgressAnalyticsView';
 import { ExerciseLibrary } from './components/workouts/ExerciseLibrary';
 import { ProgramBuilder } from './components/workouts/ProgramBuilder';
 import { WorkoutCalendarView } from './components/workouts/WorkoutCalendarView';
@@ -93,6 +94,12 @@ const MainLayout: React.FC = () => {
 
       case 'steps':
         return <StepsTrackerView />;
+
+      case 'progress':
+        if (currentUser.role !== 'client') {
+          return currentUser.role === 'admin' ? <AdminDashboard /> : <CoachDashboard />;
+        }
+        return <ProgressAnalyticsView />;
 
       case 'messages':
         return <MessagesView />;
