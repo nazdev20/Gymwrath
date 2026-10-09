@@ -4,8 +4,6 @@ import {
   Activity,
   Award,
   CalendarCheck,
-  CheckCircle2,
-  Flame,
   Footprints,
   Scale,
   Target,
@@ -53,8 +51,8 @@ export const ProgressAnalyticsView: React.FC = () => {
 
   const periodDates = useMemo(() => {
     return Array.from({ length: rangeDays }, (_, index) => {
-      const date = new Date(periodStart);
-      date.setDate(periodStart.getDate() + index);
+      const date = dateFromKey(periodStartKey);
+      date.setDate(date.getDate() + index);
       return toLocalDateKey(date);
     });
   }, [rangeDays, periodStartKey]);
@@ -159,7 +157,7 @@ export const ProgressAnalyticsView: React.FC = () => {
   };
 
   const maxStepCount = Math.max(10000, ...periodDates.map(date => stepByDate.get(date) || 0));
-  const stepBarHeight = (count: number) => `${Math.max(3, Math.round((count / maxStepCount) * 100))}%`;
+  const stepBarHeight = (count: number) => count > 0 ? `${Math.max(5, Math.round((count / maxStepCount) * 100))}%` : '0%';
 
   return (
     <div className="min-w-0 space-y-6">
@@ -305,7 +303,7 @@ export const ProgressAnalyticsView: React.FC = () => {
           </div>
           {weightHistory.length ? (
             <div className="space-y-3">
-              {weightHistory.map((checkIn, index) => (
+              {weightHistory.map(checkIn => (
                 <div key={checkIn.id || checkIn.checkInDate} className="flex items-center gap-3">
                   <span className="w-14 shrink-0 text-xs text-slate-500">{formatShortDate(checkIn.checkInDate)}</span>
                   <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-800">
