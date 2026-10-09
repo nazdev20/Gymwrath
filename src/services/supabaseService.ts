@@ -50,6 +50,26 @@ export interface SupabaseWriteResult {
   conversationId?: string;
 }
 
+const mapFoodCatalogRow = (f: any): Food => ({
+  id: f.id,
+  name: f.name,
+  category: (['Protein', 'Carbohydrates', 'Fats', 'Dairy', 'Fruits', 'Vegetables', 'Snacks', 'Beverages', 'Other'].includes(f.category) ? f.category : 'Other') as Food['category'],
+  foodType: (['packaged', 'home_cooked', 'restaurant', 'fast_food', 'generic'].includes(f.food_type) ? f.food_type : 'generic') as NonNullable<Food['foodType']>,
+  brand: f.brand || undefined,
+  barcode: f.barcode || undefined,
+  notes: f.notes || undefined,
+  servingSize: Number(f.serving_size) || 100,
+  servingUnit: f.serving_unit || 'g',
+  calories: Number(f.calories) || 0,
+  proteinG: Number(f.protein_g) || 0,
+  carbsG: Number(f.carbs_g) || 0,
+  fatG: Number(f.fat_g) || 0,
+  fiberG: Number(f.fiber_g) || 0,
+  isGlobal: true,
+  createdBy: f.created_by || 'system',
+  createdAt: f.created_at || new Date().toISOString()
+});
+
 export const SupabaseService = {
   // Test connection to Supabase instance
   async testConnection(customUrl?: string, customKey?: string): Promise<{ success: boolean; message: string; isDomainError?: boolean }> {
@@ -288,23 +308,10 @@ export const SupabaseService = {
           loggedAt: p.recorded_at || p.created_at
         }));
 
-      // 8. Query Foods
-      const { data: dbMealFoods } = await supabase.from('meal_foods').select('*');
-      const foods: Food[] = (dbMealFoods || []).map(f => ({
-        id: f.id,
-        name: f.food_name,
-        category: 'Protein',
-        servingSize: f.quantity || 100,
-        servingUnit: f.unit || 'g',
-        calories: Number(f.calories) || 0,
-        proteinG: Number(f.protein_g) || 0,
-        carbsG: Number(f.carbs_g) || 0,
-        fatG: Number(f.fat_g) || 0,
-        fiberG: 0,
-        isGlobal: true,
-        createdBy: 'coach',
-        createdAt: f.created_at || new Date().toISOString()
-      }));
+      // 8. Query the shared food catalog. Meal-plan ingredients are stored separately.
+      const { data: dbFoods, error: foodsError } = await supabase.from('food_catalog').select('*').order('name');
+      if (foodsError) throw foodsError;
+      const foods: Food[] = (dbFoods || []).map(mapFoodCatalogRow);
 
       // 9. Query Nutrition Targets
       const { data: dbNutrPlans } = await supabase.from('nutrition_plan_assignments').select(`
@@ -695,6 +702,48 @@ export const SupabaseService = {
       return { success: true };
     } catch (error) {
       console.error('Failed to save step record to Supabase:', error);
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown Supabase error.' };
+    }
+  },
+
+  // Add an authenticated user's contribution to the shared food catalog.
+  async saveFood(food: Food): Promise<{ success: boolean; food?: Food; error?: string }> {
+    if (getSupabaseConfig().isOfflineMode || getSupabaseReachableState() === false) {
+      return { success: false, error: 'Supabase is not configured or is unreachable.' };
+    }
+    try {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError) return { success: false, error: `Unable to verify the signed-in user: ${authError.message}` };
+      if (!user) return { success: false, error: 'Sign in before adding a food item.' };
+
+      const { data, error } = await supabase.from('food_catalog').insert({
+        id: food.id,
+        name: food.name.trim(),
+        brand: food.brand?.trim() || null,
+        category: food.category,
+        food_type: food.foodType || 'generic',
+        barcode: food.barcode?.trim() || null,
+        serving_size: food.servingSize,
+        serving_unit: food.servingUnit.trim(),
+        calories: food.calories,
+        protein_g: food.proteinG,
+        carbs_g: food.carbsG,
+        fat_g: food.fatG,
+        fiber_g: food.fiberG,
+        notes: food.notes?.trim() || null,
+        created_by: user.id
+      }).select('*').single();
+
+      if (error) {
+        console.error('Failed to add food to shared catalog:', error);
+        if (error.code === '23505') {
+          return { success: false, error: 'That barcode is already registered. Search the food list for the existing item or leave the barcode blank for an unlabelled meal.' };
+        }
+        return { success: false, error: error.message };
+      }
+      return { success: true, food: mapFoodCatalogRow(data) };
+    } catch (error) {
+      console.error('Failed to add food to shared catalog:', error);
       return { success: false, error: error instanceof Error ? error.message : 'Unknown Supabase error.' };
     }
   },
