@@ -354,6 +354,9 @@ export const AppProvider: React.FC<{
   const approveUser = async (userId: string, assignedCoachId: string): Promise<SupabaseWriteResult> => {
     const saved = await SupabaseService.assignClientToCoach(userId, assignedCoachId, true);
     if (!saved.success) return saved;
+    if (!saved.conversationId) {
+      return { success: false, error: 'The coach assignment was saved, but the conversation ID is missing. Refresh and try again.' };
+    }
 
     setAllProfiles(prev => prev.map(p => p.id === userId
       ? { ...p, status: 'active' as AccountStatus, assignedCoachId }
@@ -363,8 +366,8 @@ export const AppProvider: React.FC<{
     const targetUser = allProfiles.find(p => p.id === userId);
     const coachUser = allProfiles.find(p => p.id === assignedCoachId);
     if (targetUser && coachUser) {
-      const convId = `conv-${coachUser.id}-${targetUser.id}`;
-      if (!conversations.some(c => c.clientId === targetUser.id && c.coachId === coachUser.id)) {
+      const convId = saved.conversationId;
+      if (!conversations.some(c => c.id === convId)) {
         const newConv: Conversation = {
           id: convId,
           clientId: targetUser.id,
@@ -391,8 +394,12 @@ export const AppProvider: React.FC<{
           isRead: false,
           createdAt: new Date().toISOString()
         };
-        setMessages(prev => [...prev, welcomeMsg]);
-        void SupabaseService.saveMessage(welcomeMsg);
+        const welcomeSave = await SupabaseService.saveMessage(welcomeMsg);
+        if (welcomeSave.success) {
+          setMessages(prev => [...prev, welcomeMsg]);
+        } else {
+          console.warn('Coach assignment was saved, but the welcome message could not be saved:', welcomeSave.error);
+        }
       }
 
       setNotifications(prev => [
@@ -428,7 +435,32 @@ export const AppProvider: React.FC<{
   const assignCoach = async (clientId: string, coachId: string): Promise<SupabaseWriteResult> => {
     const saved = await SupabaseService.assignClientToCoach(clientId, coachId);
     if (!saved.success) return saved;
+    if (!saved.conversationId) {
+      return { success: false, error: 'The coach assignment was saved, but the conversation ID is missing. Refresh and try again.' };
+    }
+
     setAllProfiles(prev => prev.map(p => p.id === clientId ? { ...p, assignedCoachId: coachId } : p));
+    const client = allProfiles.find(p => p.id === clientId);
+    const coach = allProfiles.find(p => p.id === coachId);
+    if (client && coach && !conversations.some(c => c.id === saved.conversationId)) {
+      const latestMessage = messages
+        .filter(m => (m.senderId === clientId && m.recipientId === coachId) || (m.senderId === coachId && m.recipientId === clientId))
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+      const conversation: Conversation = {
+        id: saved.conversationId,
+        clientId,
+        clientName: client.fullName,
+        clientAvatar: client.avatarUrl,
+        coachId,
+        coachName: coach.fullName,
+        coachAvatar: coach.avatarUrl,
+        lastMessageText: latestMessage?.content || '',
+        lastMessageTime: latestMessage?.createdAt || new Date().toISOString(),
+        unreadCountCoach: 0,
+        unreadCountClient: 0
+      };
+      setConversations(prev => [conversation, ...prev]);
+    }
     return { success: true };
   };
 
