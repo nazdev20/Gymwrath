@@ -111,8 +111,8 @@ export const CheckInSubmitModal: React.FC = () => {
               <ClipboardCheck className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-white">Athlete Check-In</h2>
-              <p className="text-xs text-slate-400">Submit weight, body tape measurements, biofeedback & progress photos</p>
+              <h2 className="text-base sm:text-lg font-bold text-white">Progress Check-In</h2>
+              <p className="text-xs text-slate-400">Be honest about the work. Record measurements, recovery, and progress for your coach.</p>
             </div>
           </div>
 
