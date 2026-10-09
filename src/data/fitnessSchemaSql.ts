@@ -738,6 +738,7 @@ DECLARE
   v_user_id UUID := auth.uid();
   v_client_id UUID;
   v_workout_id UUID;
+  v_assignment_status TEXT;
   v_completion_id UUID;
   v_exercise JSONB;
   v_set JSONB;
@@ -753,12 +754,17 @@ BEGIN
     RAISE EXCEPTION 'Workout sets must be supplied as a JSON array.';
   END IF;
 
-  SELECT wa.client_id, wa.workout_id
-    INTO v_client_id, v_workout_id
+  SELECT wa.client_id, wa.workout_id, wa.status
+    INTO v_client_id, v_workout_id, v_assignment_status
     FROM fitness.workout_assignments wa
-   WHERE wa.id = p_assignment_id;
+   WHERE wa.id = p_assignment_id
+   FOR UPDATE;
   IF NOT FOUND OR v_client_id <> v_user_id THEN
     RAISE EXCEPTION 'You can only log your own assigned workout.';
+  END IF;
+  IF v_assignment_status = 'completed'
+    OR EXISTS (SELECT 1 FROM fitness.workout_completions wc WHERE wc.assignment_id = p_assignment_id) THEN
+    RAISE EXCEPTION 'This workout has already been logged.';
   END IF;
 
   INSERT INTO fitness.workout_completions (
