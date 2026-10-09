@@ -679,7 +679,7 @@ export const SupabaseService = {
 
       const payload: Record<string, unknown> = { updated_at: new Date().toISOString() };
       if (profile.fullName !== undefined) {
-        const nameParts = profile.fullName.trim().split(/\\s+/);
+        const nameParts = profile.fullName.trim().split(/\s+/);
         payload.first_name = nameParts.shift() || '';
         payload.last_name = nameParts.join(' ');
       }
@@ -693,9 +693,14 @@ export const SupabaseService = {
         payload.fitness_goals = profile.goals.split(',').map(goal => goal.trim()).filter(Boolean);
       }
 
-      const { error } = await supabase.from('profiles').update(payload).eq('id', user.id);
-      if (error) {
-        console.error('Failed to update own profile:', error);
+      const { data: updatedProfile, error } = await supabase
+        .from('profiles')
+        .update(payload)
+        .eq('id', user.id)
+        .select('id')
+        .maybeSingle();
+      if (error || !updatedProfile) {
+        if (error) console.error('Failed to update own profile:', error);
         return false;
       }
       return true;
