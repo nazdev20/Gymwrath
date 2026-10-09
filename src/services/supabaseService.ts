@@ -276,7 +276,7 @@ export const SupabaseService = {
       ]);
 
       const exerciseNameById = new Map<string, string>(
-        (dbExercises || []).map((exercise: any) => [exercise.id, exercise.name])
+        (dbExercises || []).map((exercise: any): [string, string] => [String(exercise.id), String(exercise.name)])
       );
       const templatesByWorkoutExercise = new Map<string, any[]>();
       (dbSetTemplates || []).forEach((set: any) => {
