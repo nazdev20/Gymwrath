@@ -160,7 +160,7 @@ export const ProgramBuilder: React.FC = () => {
             <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
               <BookOpen className="w-4 h-4" />
             </div>
-            <h1 className="text-2xl font-extrabold text-white">Program Builder & Templates</h1>
+            <h1 className="text-2xl font-extrabold text-white">Build the Plan</h1>
           </div>
           <p className="text-xs text-slate-400 mt-1">
             Build multi-week periodized training blocks and assign them directly to client schedules.
