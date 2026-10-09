@@ -85,7 +85,7 @@ export const CheckInsView: React.FC = () => {
             <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
               <ClipboardCheck className="w-4 h-4" />
             </div>
-            <h1 className="text-2xl font-extrabold text-white">Athlete Check-Ins</h1>
+            <h1 className="text-2xl font-extrabold text-white">Progress Check-Ins</h1>
           </div>
           <p className="text-xs text-slate-400 mt-1">
             {isClient
@@ -123,7 +123,7 @@ export const CheckInsView: React.FC = () => {
         <form onSubmit={handleCreateSchedule} className="rounded-2xl border border-slate-800 bg-slate-900 p-4 space-y-3">
           <div>
             <h2 className="text-sm font-bold text-white">Create Check-In Schedule</h2>
-            <p className="text-xs text-slate-400 mt-1">Clients need an active schedule before they can submit check-ins.</p>
+            <p className="text-xs text-slate-400 mt-1">Set a clear review rhythm so clients and coaches can keep targets, recovery, and progress in view.</p>
           </div>
           {scheduleError && <p role="alert" className="text-xs text-rose-300">{scheduleError}</p>}
           {scheduleSaved && <p role="status" className="text-xs text-emerald-300">Schedule created. The client can now submit check-ins.</p>}
