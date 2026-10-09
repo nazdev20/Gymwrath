@@ -113,7 +113,7 @@ interface AppContextType {
   logDailySteps: (dateStr: string, stepCount: number, notes?: string) => Promise<SupabaseWriteResult>;
   
   // Nutrition Actions
-  addFood: (food: Omit<Food, 'id' | 'createdAt'>) => Food;
+  addFood: (food: Omit<Food, 'id' | 'createdAt'>) => Promise<{ success: boolean; food?: Food; error?: string }>;
   setNutritionTarget: (target: Omit<NutritionTarget, 'id'>) => void;
   saveMealPlan: (plan: Omit<MealPlan, 'id' | 'createdAt' | 'updatedAt'>) => MealPlan;
   logFoodItem: (item: Omit<FoodLogItem, 'id' | 'loggedAt'>) => Promise<SupabaseWriteResult>;
