@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, ChartNoAxesCombined, Dumbbell, Target, Utensils } from 'lucide-react';
+import { ArrowRight, TrendingUp, Dumbbell, Target, Utensils } from 'lucide-react';
 
 interface LandingPageProps {
   onGetStarted: () => void;
