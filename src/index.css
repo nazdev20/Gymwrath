@@ -1,18 +1,25 @@
 @import "tailwindcss";
 
-/* GymWrath: charcoal surfaces with a red-to-orange training accent. */
+/*
+ * GymWrath visual system
+ * Charcoal surfaces, a controlled crimson primary, and orange for secondary emphasis.
+ * Standard green utilities remain available for genuine success states.
+ */
 @theme {
-  --color-emerald-50: #fff1f0;
-  --color-emerald-100: #ffe4e1;
-  --color-emerald-200: #fecaca;
-  --color-emerald-300: #fca5a5;
-  --color-emerald-400: #fb6b5b;
-  --color-emerald-500: #ef4444;
-  --color-emerald-600: #dc2626;
-  --color-emerald-700: #b91c1c;
-  --color-emerald-800: #991b1b;
-  --color-emerald-900: #7f1d1d;
-  --color-emerald-950: #450a0a;
+  /* Primary action palette */
+  --color-emerald-50: #fff1f2;
+  --color-emerald-100: #ffe4e6;
+  --color-emerald-200: #fecdd3;
+  --color-emerald-300: #fda4af;
+  --color-emerald-400: #f06b78;
+  --color-emerald-500: #d93646;
+  --color-emerald-600: #c5283d;
+  --color-emerald-700: #a61e32;
+  --color-emerald-800: #821b2c;
+  --color-emerald-900: #641824;
+  --color-emerald-950: #3f0b16;
+
+  /* Secondary training accent */
   --color-teal-300: #fdba74;
   --color-teal-400: #fb923c;
   --color-teal-500: #f97316;
@@ -20,21 +27,36 @@
   --color-teal-700: #c2410c;
   --color-teal-800: #9a3412;
   --color-teal-900: #7c2d12;
+
+  /* Neutral coaching-app surfaces */
+  --color-slate-950: #111113;
+  --color-slate-900: #202023;
+  --color-slate-850: #252528;
+  --color-slate-800: #29292d;
+  --color-slate-750: #343438;
+  --color-slate-700: #3f3f46;
+  --color-slate-600: #52525b;
+  --color-slate-500: #71717a;
+  --color-slate-400: #a1a1aa;
+  --color-slate-300: #d4d4d8;
+  --color-slate-200: #e4e4e7;
+  --color-slate-100: #f4f4f5;
+  --color-slate-50: #fafafa;
 }
 
 @layer base {
   :root { color-scheme: dark; }
   body {
-    background: #09090b;
-    color: #f4f4f5;
+    background: #111113;
+    color: #fafafa;
     text-rendering: optimizeLegibility;
   }
-  ::selection { background: #ef4444; color: #09090b; }
+  ::selection { background: #d93646; color: #ffffff; }
   * { scrollbar-width: thin; scrollbar-color: #3f3f46 #18181b; }
   *::-webkit-scrollbar { width: 8px; height: 8px; }
   *::-webkit-scrollbar-track { background: #18181b; }
   *::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 999px; }
   *::-webkit-scrollbar-thumb:hover { background: #52525b; }
   button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
-  :focus-visible { outline: 2px solid #fb6b5b; outline-offset: 2px; }
+  :focus-visible { outline: 2px solid #d93646; outline-offset: 2px; }
 }
