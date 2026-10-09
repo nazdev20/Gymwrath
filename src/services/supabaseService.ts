@@ -47,6 +47,7 @@ export interface SupabaseWriteResult {
   success: boolean;
   error?: string;
   scheduleId?: string;
+  conversationId?: string;
 }
 
 export const SupabaseService = {
@@ -493,7 +494,22 @@ export const SupabaseService = {
         console.error('Failed to save coach-client assignment:', error);
         return { success: false, error: error.message };
       }
-      return { success: true };
+
+      // The database generates the UUID for conversations. Never build IDs such as "conv-...".
+      const { data: conversation, error: conversationError } = await supabase
+        .from('conversations')
+        .select('id')
+        .eq('coach_id', coachId)
+        .eq('client_id', clientId)
+        .single();
+      if (conversationError || !conversation) {
+        console.error('Coach assignment saved, but conversation lookup failed:', conversationError);
+        return {
+          success: false,
+          error: conversationError?.message || 'Coach assignment saved, but its conversation could not be loaded.'
+        };
+      }
+      return { success: true, conversationId: conversation.id };
     } catch (error) {
       console.error('Failed to save coach-client assignment:', error);
       return { success: false, error: error instanceof Error ? error.message : 'Unknown Supabase error.' };
