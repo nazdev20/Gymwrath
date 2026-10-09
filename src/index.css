@@ -60,3 +60,94 @@
   button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
   :focus-visible { outline: 2px solid #d93646; outline-offset: 2px; }
 }
+
+
+/* Light appearance: preserve the existing layout while switching neutral surfaces. */
+:root.theme-light {
+  color-scheme: light;
+  --color-slate-950: #f8fafc;
+  --color-slate-900: #ffffff;
+  --color-slate-850: #f1f5f9;
+  --color-slate-800: #e8edf4;
+  --color-slate-750: #e2e8f0;
+  --color-slate-700: #cbd5e1;
+  --color-slate-600: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-400: #64748b;
+  --color-slate-300: #475569;
+  --color-slate-200: #334155;
+  --color-slate-100: #1e293b;
+  --color-slate-50: #0f172a;
+}
+
+:root.theme-light body {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+:root.theme-light,
+:root.theme-light body {
+  scrollbar-color: #cbd5e1 #f8fafc;
+}
+
+:root.theme-light *::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+
+:root.theme-light *::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+
+:root.theme-light *::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Neutral text classes are intentionally independent from surface tokens. */
+:root.theme-light [class~="text-white"],
+:root.theme-light [class~="text-slate-50"],
+:root.theme-light [class~="text-slate-100"],
+:root.theme-light [class~="text-slate-950"] {
+  color: #0f172a !important;
+}
+
+:root.theme-light [class~="text-slate-200"] { color: #1e293b !important; }
+:root.theme-light [class~="text-slate-300"] { color: #334155 !important; }
+:root.theme-light [class~="text-slate-400"],
+:root.theme-light [class~="text-slate-500"] { color: #64748b !important; }
+:root.theme-light [class~="text-slate-600"],
+:root.theme-light [class~="text-slate-700"] { color: #475569 !important; }
+:root.theme-light [class~="text-slate-800"],
+:root.theme-light [class~="text-slate-900"] { color: #1e293b !important; }
+
+:root.theme-light [class~="hover:text-white"]:hover { color: #0f172a !important; }
+:root.theme-light [class~="hover:text-slate-200"]:hover,
+:root.theme-light [class~="hover:text-slate-300"]:hover { color: #1e293b !important; }
+
+/* Dark-theme accent text can be too pale on light surfaces; deepen it for contrast. */
+:root.theme-light [class~="text-emerald-300"],
+:root.theme-light [class~="text-emerald-400"],
+:root.theme-light [class~="text-emerald-500"] { color: #b42336 !important; }
+:root.theme-light [class~="text-teal-300"],
+:root.theme-light [class~="text-teal-400"],
+:root.theme-light [class~="text-orange-300"],
+:root.theme-light [class~="text-orange-400"] { color: #c2410c !important; }
+:root.theme-light [class~="text-blue-300"],
+:root.theme-light [class~="text-blue-400"] { color: #1d4ed8 !important; }
+:root.theme-light [class~="text-sky-300"],
+:root.theme-light [class~="text-sky-400"] { color: #0369a1 !important; }
+:root.theme-light [class~="text-amber-300"],
+:root.theme-light [class~="text-amber-400"] { color: #92400e !important; }
+:root.theme-light [class~="text-rose-300"],
+:root.theme-light [class~="text-rose-400"],
+:root.theme-light [class~="text-red-300"],
+:root.theme-light [class~="text-red-400"] { color: #be123c !important; }
+:root.theme-light [class~="text-purple-300"],
+:root.theme-light [class~="text-purple-400"],
+:root.theme-light [class~="text-violet-300"],
+:root.theme-light [class~="text-violet-400"] { color: #7e22ce !important; }
+
+/* Backdrops should remain dark rather than inheriting the light page surface. */
+:root.theme-light [class~="bg-slate-950/70"],
+:root.theme-light [class~="bg-slate-950/80"] {
+  background-color: rgb(15 23 42 / 0.68) !important;
+}
