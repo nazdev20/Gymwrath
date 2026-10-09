@@ -24,6 +24,14 @@ const dateFromKey = (dateKey: string) => new Date(`${dateKey}T12:00:00`);
 const formatShortDate = (dateKey: string) => dateFromKey(dateKey).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 const formatDay = (dateKey: string) => dateFromKey(dateKey).toLocaleDateString('en-US', { weekday: 'short' });
 
+const SESSION_MILESTONES = [
+  { target: 1, title: 'First session', detail: 'First workout saved to your history.' },
+  { target: 10, title: '10 sessions', detail: 'Ten workouts on the record.' },
+  { target: 25, title: '25 sessions', detail: 'Consistency is becoming a habit.' },
+  { target: 50, title: '50 sessions', detail: 'Fifty sessions of deliberate work.' },
+  { target: 100, title: '100 sessions', detail: 'A hundred sessions, earned.' },
+  { target: 250, title: '250 sessions', detail: 'Long-term work, still on the record.' }
+] as const;
 export const ProgressAnalyticsView: React.FC = () => {
   const {
     currentUser,
@@ -66,6 +74,19 @@ export const ProgressAnalyticsView: React.FC = () => {
     return completedDate >= periodStartKey && completedDate <= todayKey;
   });
 
+  // Milestones are derived from saved, completed workouts—no synthetic achievements or extra database writes.
+  const allCompletedWorkouts = scheduledWorkouts.filter(
+    workout => workout.clientId === currentUser.id && workout.status === 'completed'
+  );
+  const allTimeSessionCount = allCompletedWorkouts.length;
+  const nextSessionMilestone = SESSION_MILESTONES.find(milestone => allTimeSessionCount < milestone.target);
+  const previousSessionMilestone = [...SESSION_MILESTONES].reverse().find(
+    milestone => allTimeSessionCount >= milestone.target
+  )?.target || 0;
+  const sessionMilestoneProgress = nextSessionMilestone
+    ? Math.min(100, Math.round(((allTimeSessionCount - previousSessionMilestone) /
+      (nextSessionMilestone.target - previousSessionMilestone)) * 100))
+    : 100;
   const myStepRecords = stepRecords.filter(
     record => record.clientId === currentUser.id && record.logDate >= periodStartKey && record.logDate <= todayKey
   );
@@ -234,6 +255,72 @@ export const ProgressAnalyticsView: React.FC = () => {
         </div>
       </section>
 
+      <section className="space-y-4 rounded-xl border border-slate-800 bg-slate-900 p-4 sm:p-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <div className="flex items-center gap-2">
+              <Award className="h-5 w-5 text-emerald-400" />
+              <h2 className="font-bold text-white">Milestones earned</h2>
+            </div>
+            <p className="mt-1 text-xs text-slate-400">
+              Real achievements, counted from completed workouts saved to your history.
+            </p>
+          </div>
+          <div className="rounded-lg border border-slate-700 bg-slate-950/40 px-3 py-2">
+            <span className="font-mono text-xl font-extrabold text-white">{allTimeSessionCount}</span>
+            <span className="ml-2 text-xs text-slate-400">sessions logged</span>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+            <span className="font-semibold text-slate-300">{nextSessionMilestone ? 'Next target' : 'All listed milestones unlocked'}</span>
+            <span className="font-mono text-slate-400">
+              {nextSessionMilestone ? `${nextSessionMilestone.target} sessions` : '250+ sessions'}
+            </span>
+          </div>
+          <div
+            className="h-2 overflow-hidden rounded-full bg-slate-800"
+            role="progressbar"
+            aria-label="Progress toward next workout milestone"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={sessionMilestoneProgress}
+          >
+            <div className="h-full rounded-full bg-emerald-500 transition-[width] duration-300" style={{ width: `${sessionMilestoneProgress}%` }} />
+          </div>
+          <p className="text-xs text-slate-500">
+            {nextSessionMilestone
+              ? `${nextSessionMilestone.target - allTimeSessionCount} more ${nextSessionMilestone.target - allTimeSessionCount === 1 ? 'session' : 'sessions'} to unlock the next milestone.`
+              : 'Every milestone shown is unlocked. Keep building your own standard.'}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+          {SESSION_MILESTONES.map(milestone => {
+            const unlocked = allTimeSessionCount >= milestone.target;
+            return (
+              <div
+                key={milestone.target}
+                className={`rounded-xl border p-3 ${unlocked ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-slate-800 bg-slate-950/30'}`}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <p className={`text-sm font-bold ${unlocked ? 'text-white' : 'text-slate-400'}`}>{milestone.title}</p>
+                  <span className={`shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-bold uppercase ${unlocked ? 'bg-emerald-500/10 text-emerald-400' : 'bg-slate-800 text-slate-500'}`}>
+                    {unlocked ? 'Unlocked' : 'Locked'}
+                  </span>
+                </div>
+                <p className="mt-2 text-xs leading-relaxed text-slate-500">{milestone.detail}</p>
+                {!unlocked && (
+                  <p className="mt-2 text-[11px] font-semibold text-slate-400">
+                    {milestone.target - allTimeSessionCount} to go
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </section>
       <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-4 sm:p-5">
           <div className="mb-4 flex items-center justify-between gap-3">
