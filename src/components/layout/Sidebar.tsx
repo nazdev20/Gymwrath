@@ -12,6 +12,7 @@ import {
   Utensils,
   MessageSquare,
   ShieldCheck,
+  Database,
   X
 } from 'lucide-react';
 
@@ -79,7 +80,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen = false, onCloseM
         { id: 'exercises', label: 'Exercise Library', icon: <Dumbbell className="w-5 h-5" /> },
         { id: 'programs', label: 'Programs & Templates', icon: <BookOpen className="w-5 h-5" /> },
         { id: 'nutrition', label: 'Food & Nutrition DB', icon: <Utensils className="w-5 h-5" /> },
-        { id: 'database', label: 'Database & Schema', icon: <ShieldCheck className="w-5 h-5" />, badge: 'Admin', badgeColor: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' }
+        { id: 'database', label: 'Database & Schema', icon: <Database className="w-5 h-5" />, badge: 'Admin', badgeColor: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' }
       ];
     }
 
