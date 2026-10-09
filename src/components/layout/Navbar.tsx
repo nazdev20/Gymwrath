@@ -5,19 +5,26 @@ import {
   Dumbbell,
   Menu,
   X,
-  Database
+  Database,
+  Sun,
+  Moon,
+  Monitor
 } from 'lucide-react';
 
 interface NavbarProps {
   onToggleSidebar?: () => void;
   isMobileMenuOpen?: boolean;
   onOpenAuth?: () => void;
+  themeMode: 'dark' | 'light' | 'system';
+  onThemeModeChange: (mode: 'dark' | 'light' | 'system') => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   onToggleSidebar,
   isMobileMenuOpen,
-  onOpenAuth
+  onOpenAuth,
+  themeMode,
+  onThemeModeChange
 }) => {
   const {
     currentUser,
@@ -32,6 +39,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   } = useApp();
 
   const [signOutError, setSignOutError] = useState<string | null>(null);
+  const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false);
+  const ThemeIcon = themeMode === 'dark' ? Moon : themeMode === 'light' ? Sun : Monitor;
 
   return (
     <header className="sticky top-0 z-30 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 text-white">
@@ -105,6 +114,56 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             )}
             {signOutError && <span role="alert" className="max-w-32 text-xs text-rose-300">{signOutError}</span>}
+
+            {/* Appearance selector */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setIsThemeMenuOpen(open => !open)}
+                className="flex min-h-[38px] min-w-[38px] items-center justify-center rounded-xl border border-slate-700 bg-slate-800 text-slate-200 transition-colors hover:bg-slate-700"
+                aria-label="Appearance settings"
+                aria-haspopup="menu"
+                aria-expanded={isThemeMenuOpen}
+                title={`Appearance: ${themeMode}`}
+              >
+                <ThemeIcon className="h-4 w-4" />
+              </button>
+              {isThemeMenuOpen && (
+                <div
+                  role="menu"
+                  aria-label="Choose appearance"
+                  className="absolute right-0 top-full z-50 mt-2 w-40 rounded-xl border border-slate-700 bg-slate-900 p-1.5 text-white shadow-2xl"
+                >
+                  <button
+                    type="button"
+                    role="menuitemradio"
+                    aria-checked={themeMode === 'light'}
+                    onClick={() => { onThemeModeChange('light'); setIsThemeMenuOpen(false); }}
+                    className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors ${themeMode === 'light' ? 'bg-emerald-500/15 text-emerald-400' : 'text-slate-300 hover:bg-slate-800'}`}
+                  >
+                    <Sun className="h-4 w-4" /> Light
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitemradio"
+                    aria-checked={themeMode === 'dark'}
+                    onClick={() => { onThemeModeChange('dark'); setIsThemeMenuOpen(false); }}
+                    className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors ${themeMode === 'dark' ? 'bg-emerald-500/15 text-emerald-400' : 'text-slate-300 hover:bg-slate-800'}`}
+                  >
+                    <Moon className="h-4 w-4" /> Dark
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitemradio"
+                    aria-checked={themeMode === 'system'}
+                    onClick={() => { onThemeModeChange('system'); setIsThemeMenuOpen(false); }}
+                    className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors ${themeMode === 'system' ? 'bg-emerald-500/15 text-emerald-400' : 'text-slate-300 hover:bg-slate-800'}`}
+                  >
+                    <Monitor className="h-4 w-4" /> System
+                  </button>
+                </div>
+              )}
+            </div>
 
             {/* Database / Supabase Status Pill */}
             <button
