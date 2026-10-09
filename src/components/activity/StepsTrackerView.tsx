@@ -75,10 +75,10 @@ export const StepsTrackerView: React.FC = () => {
             <div className="w-8 h-8 shrink-0 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
               <Footprints className="w-4 h-4" />
             </div>
-            <h1 className="min-w-0 break-words text-xl sm:text-2xl leading-tight font-extrabold text-white">Daily Steps & NEAT Tracker</h1>
+            <h1 className="min-w-0 break-words text-xl sm:text-2xl leading-tight font-extrabold text-white">Daily Movement</h1>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Manual step tracking logs, baseline activity trends, and daily compliance records.
+            Every step supports the plan. Log your movement and review the consistency you are building.
           </p>
         </div>
 
