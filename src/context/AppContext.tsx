@@ -905,11 +905,23 @@ export const AppProvider: React.FC<{
   };
 
   const markNotificationRead = (id: string) => {
-    setNotifications(prev => prev.map(n => (n.id === id ? { ...n, isRead: true } : n)));
+    void SupabaseService.markNotificationRead(id).then(result => {
+      if (!result.success) {
+        console.error('Failed to persist notification read status:', result.error);
+        return;
+      }
+      setNotifications(prev => prev.map(n => (n.id === id ? { ...n, isRead: true } : n)));
+    });
   };
 
   const markAllNotificationsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    void SupabaseService.markAllNotificationsRead().then(result => {
+      if (!result.success) {
+        console.error('Failed to persist all notification read statuses:', result.error);
+        return;
+      }
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    });
   };
 
   const getAssignedClients = (): Profile[] => {
