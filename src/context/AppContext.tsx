@@ -168,7 +168,7 @@ export const AppProvider: React.FC<{
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
 
   // Supabase Loading & Connectivity State
-  const [isLoadingSupabase, setIsLoadingSupabase] = useState<boolean>(Boolean(initialUserId));
+  const [isLoadingSupabase, setIsLoadingSupabase] = useState<boolean>(true);
   const [isSupabaseConnected, setIsSupabaseConnected] = useState<boolean>(false);
   const [supabaseAuthUserId, setSupabaseAuthUserId] = useState<string | null>(initialUserId || null);
 
@@ -307,6 +307,9 @@ export const AppProvider: React.FC<{
       if (!isMounted) return;
       setSupabaseAuthUserId(userId);
       setCurrentUserId(userId || '');
+      // Keep the boot screen visible while the saved session is being restored.
+      // Authenticated sessions remain loading until loadFromSupabase finishes.
+      setIsLoadingSupabase(Boolean(userId));
     };
 
     void supabase.auth.getSession().then(({ data, error }) => {
