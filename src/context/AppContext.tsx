@@ -168,7 +168,7 @@ export const AppProvider: React.FC<{
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
 
   // Supabase Loading & Connectivity State
-  const [isLoadingSupabase, setIsLoadingSupabase] = useState<boolean>(false);
+  const [isLoadingSupabase, setIsLoadingSupabase] = useState<boolean>(Boolean(initialUserId));
   const [isSupabaseConnected, setIsSupabaseConnected] = useState<boolean>(false);
   const [supabaseAuthUserId, setSupabaseAuthUserId] = useState<string | null>(initialUserId || null);
 
