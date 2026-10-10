@@ -31,6 +31,13 @@ const MainLayout: React.FC = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [themeMode, setThemeMode] = useState<'dark' | 'light' | 'system'>('dark');
 
+  // Keep the server-rendered boot screen in place until React has hydrated and
+  // the initial Supabase load has completed, avoiding a dashboard flash on refresh.
+  useEffect(() => {
+    if (isLoadingSupabase) return;
+    document.getElementById('gymwrath-boot-loader')?.remove();
+  }, [isLoadingSupabase]);
+
   useEffect(() => {
     const savedTheme = window.localStorage.getItem('gymwrath-theme');
     if (savedTheme === 'dark' || savedTheme === 'light' || savedTheme === 'system') {
