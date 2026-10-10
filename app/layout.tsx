@@ -12,8 +12,11 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `(() => { try { const mode = localStorage.getItem('gymwrath-theme') || 'dark'; const light = mode === 'light' || (mode === 'system' && window.matchMedia('(prefers-color-scheme: light)').matches); document.documentElement.classList.toggle('theme-light', light); document.documentElement.style.colorScheme = light ? 'light' : 'dark'; } catch (_) {} })();` }} />
+      </head>
       <body>
-        <div id="gymwrath-boot-loader" role="status" aria-live="polite" aria-label="Loading Gymwrath" style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#020617', color: '#f8fafc', fontFamily: 'system-ui, sans-serif' }}>
+        <div id="gymwrath-boot-loader" role="status" aria-live="polite" aria-label="Loading Gymwrath" style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#111113', color: '#fafafa', fontFamily: 'system-ui, sans-serif' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, padding: 24, textAlign: 'center' }}>
             <div style={{ position: 'relative', display: 'flex', height: 64, width: 64, alignItems: 'center', justifyContent: 'center' }}>
               <div style={{ position: 'absolute', inset: 0, border: '4px solid #334155', borderRadius: '9999px' }} />
