@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import {
   Profile,
   AccountStatus,
@@ -152,6 +152,8 @@ export const AppProvider: React.FC<{
   initialProfile?: Profile | null;
 }> = ({ children, initialUserId = null, initialProfile = null }) => {
   const [allProfiles, setAllProfiles] = useState<Profile[]>(initialProfile ? [initialProfile] : []);
+  const allProfilesRef = useRef(allProfiles);
+  allProfilesRef.current = allProfiles;
   const [currentUserId, setCurrentUserId] = useState<string>(initialUserId || '');
   
   const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -171,6 +173,8 @@ export const AppProvider: React.FC<{
   const [isLoadingSupabase, setIsLoadingSupabase] = useState<boolean>(false);
   const [isSupabaseConnected, setIsSupabaseConnected] = useState<boolean>(false);
   const [supabaseAuthUserId, setSupabaseAuthUserId] = useState<string | null>(initialUserId || null);
+  // Prevent an older request from applying results after a newer load or account switch.
+  const loadRequestId = useRef(0);
 
   // Navigation & Modals
   const [activeView, setActiveView] = useState<AppView>('dashboard');
@@ -182,10 +186,18 @@ export const AppProvider: React.FC<{
 
   // Load application records only after Supabase Auth identifies the current user.
   const loadFromSupabase = async (authenticatedUserId = supabaseAuthUserId): Promise<boolean> => {
-    if (!authenticatedUserId) return false;
+    const requestId = ++loadRequestId.current;
+    if (!authenticatedUserId) {
+      setIsLoadingSupabase(false);
+      return false;
+    }
+
     setIsLoadingSupabase(true);
     try {
       const result = await SupabaseService.loadAllDataFromSupabase();
+      // A later request (including an account switch) owns the state now.
+      if (requestId !== loadRequestId.current) return false;
+
       const authenticatedProfile = result?.profiles.find(profile => profile.id === authenticatedUserId);
       if (result && authenticatedProfile) {
         setAllProfiles(result.profiles);
@@ -203,36 +215,38 @@ export const AppProvider: React.FC<{
 
         setCurrentUserId(authenticatedUserId);
         setIsSupabaseConnected(true);
-        setIsLoadingSupabase(false);
         return true;
-      } else {
-        setAllProfiles([]);
-        setCurrentUserId('');
-        setExercises([]);
-        setPrograms([]);
-        setScheduledWorkouts([]);
-        setCheckIns([]);
-        setStepRecords([]);
-        setFoods([]);
-        setNutritionTargets([]);
-        setMealPlans([]);
-        setFoodLogs([]);
-        setConversations([]);
-        setMessages([]);
-        setNotifications([]);
-        setIsSupabaseConnected(Boolean(result));
-        setIsLoadingSupabase(false);
-        return false;
       }
+
+      setAllProfiles([]);
+      setCurrentUserId('');
+      setExercises([]);
+      setPrograms([]);
+      setScheduledWorkouts([]);
+      setCheckIns([]);
+      setStepRecords([]);
+      setFoods([]);
+      setNutritionTargets([]);
+      setMealPlans([]);
+      setFoodLogs([]);
+      setConversations([]);
+      setMessages([]);
+      setNotifications([]);
+      setIsSupabaseConnected(Boolean(result));
+      return false;
     } catch (err) {
+      if (requestId !== loadRequestId.current) return false;
       console.error('Failed to load from Supabase:', err);
       setIsSupabaseConnected(false);
-      setIsLoadingSupabase(false);
       return false;
+    } finally {
+      if (requestId === loadRequestId.current) setIsLoadingSupabase(false);
     }
   };
 
   useEffect(() => {
+    // Invalidate any in-flight fetch immediately when the authenticated account changes.
+    loadRequestId.current += 1;
     if (supabaseAuthUserId) {
       void loadFromSupabase();
       return;
@@ -276,7 +290,7 @@ export const AppProvider: React.FC<{
 
           if (!row?.id || (row.sender_id !== supabaseAuthUserId && row.recipient_id !== supabaseAuthUserId)) return;
 
-          const sender = allProfiles.find(profile => profile.id === row.sender_id);
+          const sender = allProfilesRef.current.find(profile => profile.id === row.sender_id);
           const incomingMessage: Message = {
             id: row.id,
             conversationId: row.conversation_id,
@@ -299,7 +313,7 @@ export const AppProvider: React.FC<{
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [supabaseAuthUserId, allProfiles]);
+  }, [supabaseAuthUserId]);
 
   useEffect(() => {
     let isMounted = true;
@@ -395,8 +409,19 @@ export const AppProvider: React.FC<{
   const currentUser = allProfiles.find(p => p.id === currentUserId) || GUEST_PROFILE;
 
   const updateProfile = async (updated: Partial<Profile>): Promise<boolean> => {
-    const nextProfile = { ...currentUser, ...updated };
-    const saved = await SupabaseService.saveProfile(nextProfile);
+    // Only merge editable profile fields; never accept role/status/email changes here.
+    const nextProfile: Profile = {
+      ...currentUser,
+      fullName: updated.fullName ?? currentUser.fullName,
+      avatarUrl: updated.avatarUrl ?? currentUser.avatarUrl,
+      phone: updated.phone ?? currentUser.phone,
+      bio: updated.bio ?? currentUser.bio,
+      heightCm: updated.heightCm ?? currentUser.heightCm,
+      currentWeightKg: updated.currentWeightKg ?? currentUser.currentWeightKg,
+      targetWeightKg: updated.targetWeightKg ?? currentUser.targetWeightKg,
+      goals: updated.goals ?? currentUser.goals
+    };
+    const saved = await SupabaseService.updateOwnProfile(nextProfile);
     if (!saved) return false;
     setAllProfiles(prev => prev.map(p => (p.id === currentUser.id ? nextProfile : p)));
     return true;
@@ -849,7 +874,7 @@ export const AppProvider: React.FC<{
 
     const saved = await SupabaseService.saveMessage(newMsg);
     if (!saved.success) return { success: false, error: saved.error || 'Message was not saved to Supabase.' };
-    setMessages(prev => [...prev, newMsg]);
+    setMessages(prev => prev.some(message => message.id === newMsg.id) ? prev : [...prev, newMsg]);
 
     setConversations(prev => prev.map(c => {
       if (c.id === thread.id) {
@@ -880,11 +905,23 @@ export const AppProvider: React.FC<{
   };
 
   const markNotificationRead = (id: string) => {
-    setNotifications(prev => prev.map(n => (n.id === id ? { ...n, isRead: true } : n)));
+    void SupabaseService.markNotificationRead(id).then(result => {
+      if (!result.success) {
+        console.error('Failed to persist notification read status:', result.error);
+        return;
+      }
+      setNotifications(prev => prev.map(n => (n.id === id ? { ...n, isRead: true } : n)));
+    });
   };
 
   const markAllNotificationsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    void SupabaseService.markAllNotificationsRead().then(result => {
+      if (!result.success) {
+        console.error('Failed to persist all notification read statuses:', result.error);
+        return;
+      }
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    });
   };
 
   const getAssignedClients = (): Profile[] => {

@@ -399,7 +399,7 @@ export const SupabaseService = {
         .map(p => ({
           id: p.id,
           clientId: p.client_id,
-          logDate: p.recorded_at ? p.recorded_at.split('T')[0] : new Date().toISOString().split('T')[0],
+          logDate: p.log_date || (p.recorded_at ? new Date(p.recorded_at).toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' }) : new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' })),
           stepCount: p.step_count || 0,
           notes: p.notes,
           loggedAt: p.recorded_at || p.created_at
@@ -669,6 +669,47 @@ export const SupabaseService = {
     }
   },
 
+  // Update only fields a signed-in user may edit on their own profile.
+  // Account role, approval status, activation state, and email are deliberately excluded.
+  async updateOwnProfile(profile: Partial<Profile>): Promise<boolean> {
+    if (getSupabaseConfig().isOfflineMode || getSupabaseReachableState() === false) return false;
+    try {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user || (profile.id && profile.id !== user.id)) return false;
+
+      const payload: Record<string, unknown> = { updated_at: new Date().toISOString() };
+      if (profile.fullName !== undefined) {
+        const nameParts = profile.fullName.trim().split(/\s+/);
+        payload.first_name = nameParts.shift() || '';
+        payload.last_name = nameParts.join(' ');
+      }
+      if (profile.avatarUrl !== undefined) payload.avatar_url = profile.avatarUrl;
+      if (profile.phone !== undefined) payload.phone = profile.phone;
+      if (profile.bio !== undefined) payload.bio = profile.bio;
+      if (profile.heightCm !== undefined) payload.height_cm = profile.heightCm;
+      if (profile.currentWeightKg !== undefined) payload.current_weight_kg = profile.currentWeightKg;
+      if (profile.targetWeightKg !== undefined) payload.target_weight_kg = profile.targetWeightKg;
+      if (profile.goals !== undefined) {
+        payload.fitness_goals = profile.goals.split(',').map(goal => goal.trim()).filter(Boolean);
+      }
+
+      const { data: updatedProfile, error } = await supabase
+        .from('profiles')
+        .update(payload)
+        .eq('id', user.id)
+        .select('id')
+        .maybeSingle();
+      if (error || !updatedProfile) {
+        if (error) console.error('Failed to update own profile:', error);
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error('Failed to update own profile:', error);
+      return false;
+    }
+  },
+
   // Insert or Upsert a single profile to Supabase
   async saveProfile(profile: Partial<Profile>): Promise<boolean> {
     if (getSupabaseConfig().isOfflineMode || getSupabaseReachableState() === false) return false;
@@ -760,8 +801,7 @@ export const SupabaseService = {
           error: 'Your coach must create an active check-in schedule before you can submit a check-in.'
         };
       }
-      const { error } = await supabase.from('check_ins').upsert({
-        id: chk.id,
+      const checkInPayload = {
         schedule_id: scheduleId,
         client_id: chk.clientId,
         coach_id: chk.coachId,
@@ -783,9 +823,17 @@ export const SupabaseService = {
         coach_feedback: chk.coachFeedback,
         coach_reviewed_at: chk.reviewedAt,
         updated_at: new Date().toISOString()
-      }, { onConflict: 'id' });
+      };
+
+      const query = chk.status === 'submitted'
+        ? supabase.from('check_ins').insert({ id: chk.id, ...checkInPayload })
+        : supabase.from('check_ins').update(checkInPayload).eq('id', chk.id);
+      const { error } = await query;
       if (error) {
         console.error('Failed to save check-in to Supabase:', error);
+        if (error.code === '23505') {
+          return { success: false, error: 'A check-in for this client, coach, and day already exists.' };
+        }
         return { success: false, error: error.message };
       }
       return { success: true, scheduleId };
@@ -832,6 +880,52 @@ export const SupabaseService = {
   },
 
   // Insert or Upsert a step record
+  async markNotificationRead(notificationId: string): Promise<SupabaseWriteResult> {
+    // Temporary client-generated notifications are not rows in the database.
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(notificationId)) {
+      return { success: true, persisted: false };
+    }
+    if (getSupabaseConfig().isOfflineMode || getSupabaseReachableState() === false) {
+      return { success: false, error: 'Supabase is not configured or is unreachable.' };
+    }
+    try {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError) return { success: false, error: authError.message };
+      if (!user) return { success: false, error: 'Sign in before updating notifications.' };
+      const { data, error } = await supabase
+        .from('notifications')
+        .update({ is_read: true, read_at: new Date().toISOString() })
+        .eq('id', notificationId)
+        .eq('user_id', user.id)
+        .select('id')
+        .maybeSingle();
+      if (error) return { success: false, error: error.message };
+      return { success: true, persisted: Boolean(data) };
+    } catch (error) {
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown notification update error.' };
+    }
+  },
+
+  async markAllNotificationsRead(): Promise<SupabaseWriteResult> {
+    if (getSupabaseConfig().isOfflineMode || getSupabaseReachableState() === false) {
+      return { success: false, error: 'Supabase is not configured or is unreachable.' };
+    }
+    try {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError) return { success: false, error: authError.message };
+      if (!user) return { success: false, error: 'Sign in before updating notifications.' };
+      const { error } = await supabase
+        .from('notifications')
+        .update({ is_read: true, read_at: new Date().toISOString() })
+        .eq('user_id', user.id)
+        .eq('is_read', false);
+      if (error) return { success: false, error: error.message };
+      return { success: true, persisted: true };
+    } catch (error) {
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown notification update error.' };
+    }
+  },
+
   async saveStepRecord(step: StepRecord): Promise<SupabaseWriteResult> {
     if (getSupabaseConfig().isOfflineMode || getSupabaseReachableState() === false) {
       return { success: false, error: 'Supabase is not configured or is unreachable.' };
@@ -840,11 +934,12 @@ export const SupabaseService = {
       const { error } = await supabase.from('progress_records').upsert({
         id: step.id,
         client_id: step.clientId,
+        log_date: step.logDate,
         recorded_at: step.loggedAt,
         record_type: 'steps',
         step_count: step.stepCount,
         notes: step.notes
-      }, { onConflict: 'id' });
+      }, { onConflict: 'client_id,log_date' });
       if (error) {
         console.error('Failed to save step record to Supabase:', error);
         return { success: false, error: error.message };
