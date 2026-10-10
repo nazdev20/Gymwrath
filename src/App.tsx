@@ -26,7 +26,7 @@ import { AuthModal } from './components/auth/AuthModal';
 import { Profile } from './types';
 
 const MainLayout: React.FC = () => {
-  const { currentUser, activeView, setActiveView, selectedClientId, supabaseAuthUserId } = useApp();
+  const { currentUser, activeView, setActiveView, selectedClientId, supabaseAuthUserId, isLoadingSupabase } = useApp();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [themeMode, setThemeMode] = useState<'dark' | 'light' | 'system'>('dark');
@@ -148,6 +148,30 @@ const MainLayout: React.FC = () => {
           {renderCurrentView()}
         </main>
       </div>
+
+      {isLoadingSupabase && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/95 backdrop-blur-sm"
+          role="status"
+          aria-live="polite"
+          aria-label="Loading your Gymwrath data"
+        >
+          <div className="flex flex-col items-center gap-5 px-6 text-center">
+            <div className="relative flex h-16 w-16 items-center justify-center">
+              <div className="absolute inset-0 rounded-full border-4 border-slate-700" />
+              <div className="absolute inset-0 animate-spin rounded-full border-4 border-transparent border-t-emerald-400 border-r-emerald-400" />
+              <span className="text-xl font-black tracking-tight text-emerald-400">G</span>
+            </div>
+            <div>
+              <p className="text-lg font-semibold tracking-wide text-white">Gymwrath</p>
+              <p className="mt-1 text-sm text-slate-400">Loading your data…</p>
+            </div>
+            <div className="h-1 w-40 overflow-hidden rounded-full bg-slate-800">
+              <div className="h-full w-1/2 animate-pulse rounded-full bg-emerald-400" />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Global Interactive Modals & Drawers */}
       <ActiveWorkoutModal />
