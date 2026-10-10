@@ -881,6 +881,10 @@ export const SupabaseService = {
 
   // Insert or Upsert a step record
   async markNotificationRead(notificationId: string): Promise<SupabaseWriteResult> {
+    // Temporary client-generated notifications are not rows in the database.
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(notificationId)) {
+      return { success: true, persisted: false };
+    }
     if (getSupabaseConfig().isOfflineMode || getSupabaseReachableState() === false) {
       return { success: false, error: 'Supabase is not configured or is unreachable.' };
     }
